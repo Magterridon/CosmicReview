@@ -1,0 +1,20 @@
+---
+/**
+ * Cosmic Review — lien direct vers la scène « Le Projet ».
+ *
+ * Les quatre routes rendent exactement la même pile de scènes ; seule la
+ * scène active au chargement change. C'est ce qui permet à la fois les
+ * liens partageables (/equipe s'ouvre directement sur le désert) et la
+ * navigation sans rechargement une fois la page chargée.
+ */
+import Layout from "../layouts/Layout.astro";
+import team from "../data/team.json";
+import projet from "../data/projet.json";
+import { siteMarkup, TITLES, DESCRIPTIONS } from "../lib/site.js";
+
+const scene = "le-projet";
+---
+
+<Layout title={TITLES[scene]} description={DESCRIPTIONS[scene]} scene={scene}>
+  <Fragment set:html={siteMarkup(team.members, projet, scene)} />
+</Layout>

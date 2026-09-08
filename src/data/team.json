@@ -1,0 +1,85 @@
+{
+  "_comment": "Ordre et couleurs de craie repris de Présentation projet/Photos/team.jpg (le dessin de l'équipe). Les portraits sont les découpes extraites de ce même dessin — voir tools/extract-portraits.py.",
+  "members": [
+    {
+      "id": "alexis-c",
+      "shortName": "Alexis C.",
+      "fullName": "Alexis Clercelet-Baguet",
+      "role": "Contenus & réseaux",
+      "roleLong": "Contenus & réseaux sociaux",
+      "chalk": "violet",
+      "image": "/team/portraits/alexis-c.webp",
+      "description": "Contenus et réseaux sociaux du projet, et caméra du making-of : c'est lui qui filme le film en train de se faire. Co-fondateur de Bloopeurs, plus de 40 000 abonnés sur TikTok et Instagram."
+    },
+    {
+      "id": "alix",
+      "shortName": "Alix",
+      "fullName": "Alix Moulin",
+      "role": "Graphisme & illustrations",
+      "roleLong": "Graphisme & illustrations",
+      "chalk": "rose",
+      "image": "/team/portraits/alix.webp",
+      "description": "Graphisme et illustrations. Certaines de ses illustrations ne sont pas de la communication : elles font partie de la narration du film."
+    },
+    {
+      "id": "louis",
+      "shortName": "Louis",
+      "fullName": "Louis Bachetti",
+      "role": "Arthur",
+      "roleLong": "Arthur — comédien",
+      "chalk": "or",
+      "image": "/team/portraits/louis.webp",
+      "description": "Joue Arthur, l'autre moitié de Cosmic Review — et le meilleur ami de Benjamin dans la vie, depuis leurs quinze ans sur les planches."
+    },
+    {
+      "id": "benjamin",
+      "shortName": "Ben",
+      "fullName": "Benjamin Cléry",
+      "role": "Axel · réalisation",
+      "roleLong": "Axel — réalisateur, scénariste, acteur",
+      "chalk": "bleu",
+      "image": "/team/portraits/benjamin.webp",
+      "description": "À l'origine du projet : il l'écrit, le réalise et joue le rôle principal, Axel. Comédien depuis plus de dix ans — Nouvelle Vague et L'Inconnu de la Grande Arche (sélection officielle Cannes 2025), Full Phil de Quentin Dupieux (Cannes 2026), À pied d'œuvre de Valérie Donzelli (Mostra de Venise), et les séries The Summer I Turned Pretty, Heartstopper, Paris Police 1905, HPI. Il a tourné avec Richard Linklater, Quentin Dupieux, Valérie Donzelli, Anaïs Demoustier, Grand Corps Malade & Mehdi Idir, Jean-Paul Salomé et Luc Besson."
+    },
+    {
+      "id": "thomas",
+      "shortName": "Thomas",
+      "fullName": "Thomas Cortese",
+      "role": "Co-réalisation",
+      "roleLong": "Co-réalisateur",
+      "chalk": "violet",
+      "image": "/team/portraits/thomas.webp",
+      "description": "Co-réalisateur. Il a déjà signé un court métrage found footage, La Nuit des Loups (2025), après La Cabale du Latin (2023)."
+    },
+    {
+      "id": "damien",
+      "shortName": "Damien",
+      "fullName": "Damien Carlier",
+      "role": "Ingénieur du son",
+      "roleLong": "Ingénieur du son & sound design",
+      "chalk": "or",
+      "image": "/team/portraits/damien.webp",
+      "description": "Ingénieur du son et sound design. Dans un found footage tourné en plein désert, le son n'accompagne pas l'image : il est la moitié de la peur."
+    },
+    {
+      "id": "julie",
+      "shortName": "Julie",
+      "fullName": "Julie Cortese",
+      "role": "Co-scénario",
+      "roleLong": "Co-scénariste",
+      "chalk": "rose",
+      "image": "/team/portraits/julie.webp",
+      "description": "Co-scénariste du projet."
+    },
+    {
+      "id": "alexis-m",
+      "shortName": "Alexis M.",
+      "fullName": "Alexis Motreff",
+      "role": "Effets visuels",
+      "roleLong": "Effets visuels",
+      "chalk": "bleu",
+      "image": "/team/portraits/alexis-m.webp",
+      "description": "Effets visuels. Ancien réalisateur au sein du groupe M6."
+    }
+  ]
+}

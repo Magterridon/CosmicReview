@@ -1,0 +1,103 @@
+{
+  "slate": {
+    "avant": { "tc": "00:41:22", "date": "12.04", "vlog": "Vlog 50" },
+    "apres": { "tc": "00:07:09", "date": "07.11", "vlog": "Vlog 51" }
+  },
+  "hint": {
+    "avant": "Choisissez un élément de l'image",
+    "apres": "Les mêmes éléments. Plus la même nuit."
+  },
+  "elements": [
+    {
+      "id": "arthur",
+      "label": "Arthur",
+      "credit": { "avant": "Arthur — joué par Louis Bachetti", "apres": "Arthur — enregistrement du vlog 50" },
+      "avant": [
+        "Celle-là, elle est morte depuis longtemps. On regarde une lumière qui n'existe plus.",
+        "J'ai refait les calculs trois fois, Axel. Ça vient pas d'où je croyais."
+      ],
+      "apres": [
+        "(enregistrement du 12 avril) …ça vient pas d'où je croyais.",
+        "Si tu réécoutes ça un jour, va voir les coordonnées."
+      ]
+    },
+    {
+      "id": "axel",
+      "label": "Axel",
+      "credit": { "avant": "Axel — rôle principal, joué par Benjamin Cléry", "apres": "Axel — rôle principal, joué par Benjamin Cléry" },
+      "avant": [
+        "Vlog 50. Quarante minutes d'Indian Springs, quatre degrés, et Arthur a oublié les gants.",
+        "Il y en aura un cinquante-et-unième. Il dit qu'il connaît un meilleur spot."
+      ],
+      "apres": [
+        "Vlog 51. Même endroit, même heure, sept mois plus tard.",
+        "Je le termine, et j'arrête la chaîne. C'est ce que j'étais venu faire."
+      ]
+    },
+    {
+      "id": "camera",
+      "label": "La caméra",
+      "credit": { "avant": "Le film est tourné en found footage, presque intégralement", "apres": "Plans-séquences, prises longues, lumière naturelle" },
+      "avant": [
+        "Enregistrement. Batterie 61 %. Il reste de la place sur la carte.",
+        "On ne coupe jamais. Ce qui compte arrive toujours quand on a coupé."
+      ],
+      "apres": [
+        "Batterie 12 %.",
+        "Je ne coupe pas."
+      ]
+    },
+    {
+      "id": "pickup",
+      "label": "Le pickup",
+      "credit": { "avant": "Jean Dry Lake, Nevada — plaque R57-A11", "apres": "Jean Dry Lake, Nevada — plaque R57-A11" },
+      "avant": [
+        "Plein fait à Indian Springs. Après, plus rien pendant quatre-vingt-dix kilomètres.",
+        "On laisse le moteur tourner. Ici, tout le monde laisse le moteur tourner."
+      ],
+      "apres": [
+        "Le GPS ne donne plus rien depuis le kilomètre soixante.",
+        "La radio, elle, parle encore."
+      ]
+    },
+    {
+      "id": "panneau",
+      "label": "Le panneau",
+      "credit": { "avant": "Indian Springs, Nevada — à une heure de Las Vegas", "apres": "Indian Springs, Nevada — à une heure de Las Vegas" },
+      "avant": [
+        "Indian Springs, treize miles. Tonopah, cent soixante-quinze.",
+        "Entre les deux, le panneau n'annonce rien."
+      ],
+      "apres": [
+        "Quelqu'un a agrafé un avis de disparition sous le panneau.",
+        "La photo a pris le soleil. On ne reconnaît plus le visage."
+      ]
+    },
+    {
+      "id": "meteore",
+      "label": "Le ciel",
+      "credit": { "avant": "Tourné de nuit, en lumière naturelle", "apres": "Tourné de nuit, en lumière naturelle" },
+      "avant": [
+        "Vingt-deux heures quarante-sept. Trois en dix minutes.",
+        "C'est beaucoup, pour un mardi."
+      ],
+      "apres": [
+        "Celle-là ne tombe pas.",
+        "Elle ralentit."
+      ]
+    },
+    {
+      "id": "logo",
+      "label": "Cosmic Review",
+      "credit": { "avant": "Cosmic Review — la chaîne des deux amis, point de départ du film", "apres": "Cosmic Review — la chaîne des deux amis, point de départ du film" },
+      "avant": [
+        "Cinquante vidéos. Deux types qui filment le ciel depuis le lycée.",
+        "On a dit qu'on irait jusqu'à cinquante et un."
+      ],
+      "apres": [
+        "La chaîne s'arrête après celle-là.",
+        "C'était la promesse."
+      ]
+    }
+  ]
+}

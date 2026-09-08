@@ -1,0 +1,47 @@
+---
+import "../styles/global.css";
+import "../styles/chalk.css";
+import "../styles/projet.css";
+
+interface Props {
+  title: string;
+  description: string;
+  scene: string;
+}
+
+const { title, description, scene } = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta name="theme-color" content="#04050c" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Le ciel et le logotype sont visibles dès la première image ; le
+         monde à la craie attend juste derrière, prêt pour la transition. -->
+    <link rel="preload" as="image" href="/sky.webp" />
+    <link rel="preload" as="image" href="/cosmic-logo.webp" />
+  </head>
+
+  <!-- `data-scene` fixe la scène de départ : elle est rendue active dès le
+       HTML, donc la bonne scène s'affiche même sans JavaScript. -->
+  <body data-scene={scene}>
+    <slot />
+    <script>
+      import "../scripts/main.js";
+    </script>
+  </body>
+</html>

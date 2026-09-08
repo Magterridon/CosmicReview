@@ -1,0 +1,123 @@
+<!doctype html><meta charset="utf-8"><title>selftest</title>
+<style>body{font:13px monospace;background:#111;color:#eee;margin:0}iframe{border:0;position:absolute;left:-9999px;top:0}</style>
+<pre id="out">running…</pre>
+<iframe id="f" src="/le-projet/" width="1440" height="900"></iframe>
+<script>
+const log = [];
+const ok = (name, cond, extra) => log.push((cond ? "PASS " : "FAIL ") + name + (extra !== undefined && !cond ? "  << " + extra : ""));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const f = document.getElementById("f");
+
+f.addEventListener("load", async () => {
+  try { await run(); } catch (e) { log.push("ERROR " + e.message + "\n" + e.stack); }
+  document.getElementById("out").textContent = log.join("\n");
+});
+
+async function run() {
+  const d = f.contentDocument, w = f.contentWindow;
+  const scene = d.querySelector(".scene--projet");
+  const line = d.querySelector(".pj-line");
+  const credit = d.querySelector(".pj-credit");
+  const count = d.querySelector("[data-count]");
+  const live = d.querySelector("#pj-live");
+  const btns = [...d.querySelectorAll(".pj-el")];
+
+  ok("scène présente", !!scene);
+  ok("7 éléments", btns.length === 7, btns.length);
+  ok("scène active au chargement", scene.hasAttribute("data-active"));
+  ok("état initial = avant", scene.dataset.state === "avant", scene.dataset.state);
+
+  // --- source lisible sans JavaScript
+  const src = d.querySelector(".pj-source");
+  const says = src ? src.querySelectorAll(".pj-say").length : 0;
+  ok("répliques présentes dans le HTML (sans JS)", says === 28, says);
+
+  // --- vraie zone cliquable : le point visé retombe-t-il sur le bon bouton ?
+  const probes = {
+    arthur: [0.5, 0.72], axel: [0.5, 0.72], pickup: [0.45, 0.6],
+    camera: [0.5, 0.3], panneau: [0.5, 0.2], logo: [0.5, 0.5], meteore: [0.5, 0.5],
+  };
+  for (const b of btns) {
+    const id = b.dataset.el, r = b.getBoundingClientRect(), p = probes[id];
+    const hit = d.elementFromPoint(r.left + r.width * p[0], r.top + r.height * p[1]);
+    const owner = hit && hit.closest ? hit.closest(".pj-el") : null;
+    ok("clic réel sur « " + id + " »", owner === b, owner ? owner.dataset.el : "rien");
+  }
+
+  // --- une réplique s'écrit
+  btns.find((b) => b.dataset.el === "arthur").click();
+  await sleep(200);
+  ok("l'écriture démarre", line.textContent.length > 0, JSON.stringify(line.textContent));
+  await sleep(9000);
+  ok("réplique complète", line.textContent.includes("calculs trois fois"), line.textContent);
+  ok("crédit affiché", credit.classList.contains("is-on") && /Louis Bachetti/.test(credit.textContent), credit.textContent);
+  ok("annonce lecteur d'écran", live.textContent.length > 40, live.textContent.length);
+  ok("compteur 1/7", count.textContent === "1/7", count.textContent);
+  ok("l'amorce s'efface après la première sélection", d.querySelector(".pj-cue").classList.contains("is-off"));
+  ok("élément marqué comme vu", btns[0].classList.contains("is-seen") || d.querySelector('.pj-el--arthur').classList.contains("is-seen"));
+
+  // --- le bouton de repli apparaît à partir de trois éléments
+  for (const id of ["axel", "camera"]) { btns.find((b) => b.dataset.el === id).click(); await sleep(9000); }
+  ok("compteur 3/7", count.textContent === "3/7", count.textContent);
+  ok("« fin de l'enregistrement » proposé", !d.querySelector("[data-end]").hidden);
+
+  // --- tous les éléments vus : la bascule part toute seule
+  for (const id of ["pickup", "panneau", "meteore", "logo"]) { btns.find((b) => b.dataset.el === id).click(); await sleep(9000); }
+  await sleep(5000);
+  ok("bascule automatique vers l'après", scene.dataset.state === "apres", scene.dataset.state);
+  // Le navigateur sans tête ne fait pas avancer les transitions : on les
+  // neutralise le temps de lire la valeur visée.
+  const freeze = () => { const st = d.createElement("style"); st.id = "freeze";
+    st.textContent = "*{transition:none!important;animation:none!important}"; d.head.appendChild(st);
+    void d.body.offsetWidth; return () => st.remove(); };
+  let unfreeze = freeze();
+  ok("le titre du film apparaît", parseFloat(getComputedStyle(d.querySelector(".pj-filmtitle")).opacity) > 0.5,
+     getComputedStyle(d.querySelector(".pj-filmtitle")).opacity);
+  const arthurBtn = d.querySelector(".pj-el--arthur");
+  ok("Arthur s'efface", parseFloat(getComputedStyle(arthurBtn).opacity) < 0.25, getComputedStyle(arthurBtn).opacity);
+  ok("le ciel se désature", getComputedStyle(d.querySelector(".pj-sky")).filter !== "none", getComputedStyle(d.querySelector(".pj-sky")).filter);
+  unfreeze();
+  ok("compteur remis à zéro", count.textContent === "0/7", count.textContent);
+  ok("« revoir le vlog 50 » proposé", !d.querySelector("[data-rewind]").hidden);
+  ok("« fin de l'enregistrement » retiré", d.querySelector("[data-end]").hidden);
+
+  // --- les répliques d'après sont différentes
+  btns.find((b) => b.dataset.el === "arthur").click();
+  await sleep(9000);
+  ok("réplique d'après pour Arthur", /coordonnées/.test(line.textContent), line.textContent);
+
+  // --- retour arrière
+  d.querySelector("[data-rewind]").click();
+  await sleep(3000);
+  ok("retour à l'état avant", scene.dataset.state === "avant", scene.dataset.state);
+  unfreeze = freeze();
+  ok("Arthur revient", parseFloat(getComputedStyle(arthurBtn).opacity) > 0.8, getComputedStyle(arthurBtn).opacity);
+  ok("le titre du film repart", parseFloat(getComputedStyle(d.querySelector(".pj-filmtitle")).opacity) < 0.2);
+  unfreeze();
+
+  // --- le film en trois lignes
+  d.querySelector("[data-info]").click();
+  await sleep(600);
+  const panel = d.querySelector(".pj-panel");
+  ok("panneau synopsis ouvert", !panel.hidden && panel.classList.contains("is-open"));
+  ok("focus dans le panneau", panel.contains(d.activeElement), d.activeElement && d.activeElement.className);
+  d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  await sleep(700);
+  ok("panneau fermé par Échap", panel.hidden);
+
+  // --- navigation sans rechargement
+  const before = w.performance.getEntriesByType("navigation").length;
+  d.querySelector(".scene--projet .scene-back").click();
+  await sleep(1200);
+  ok("passage au ciel sans rechargement", d.body.dataset.scene === "ciel" && w.location.pathname === "/", d.body.dataset.scene + " " + w.location.pathname);
+  w.history.back();
+  await sleep(1200);
+  ok("bouton Précédent revient au Projet", d.body.dataset.scene === "le-projet", d.body.dataset.scene);
+  ok("une seule entrée de navigation (aucun rechargement)", w.performance.getEntriesByType("navigation").length === before);
+
+  // --- le compteur de temps tourne
+  const tc1 = d.querySelector(".pj-tc").textContent;
+  await sleep(2500);
+  ok("timecode qui avance", d.querySelector(".pj-tc").textContent !== tc1, tc1 + " → " + d.querySelector(".pj-tc").textContent);
+}
+</script>

@@ -1,0 +1,552 @@
+/* ============================================================
+ Cosmic Review — la scène « L'Équipe », monde à la craie.
+
+ Le décor reprend Présentation projet/Photos/team.jpg : tableau noir,
+ doodles cosmiques, montagnes et cactus tracés à la craie, huit figures
+ en bâton qui se tiennent la main, tête découpée en photo.
+
+ Tout le tracé est animable : chaque trait porte pathLength="1", donc
+ stroke-dashoffset passe de 1 à 0 quel que soit sa longueur réelle. Le
+ monde se dessine ainsi tout seul à l'arrivée depuis le ciel — c'est la
+ transition, pas une décoration.
+
+ État par défaut = état final. Sans JavaScript (ou en mouvement réduit),
+ la scène est simplement là, déjà dessinée.
+ ============================================================ */
+
+/* La fiche d'une personne est rendue en dehors de la scène (elle se pose
+   par-dessus tout le site) : la palette de craie doit donc vivre à la
+   racine, pas sur `.scene--equipe`. */
+:root {
+  --chalk: #efe7d8;
+  --chalk-violet: #b98cd8;
+  --chalk-rose: #e88ab0;
+  --chalk-or: #e8c07a;
+  --chalk-bleu: #86b6e0;
+  --chalk-vert: #8fc7a2;
+  --cw: 1; /* épaisseur de craie, augmentée sur petit écran */
+}
+
+.scene--equipe {
+  background:
+    radial-gradient(ellipse 80% 65% at 50% 42%, #101019 0%, #08080e 55%, #050508 100%);
+}
+
+/* ---------- cadrage : la scène garde toujours son rapport 1440/900 ---------- */
+
+.chalk-viewport {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.chalk-stage {
+  position: relative;
+  width: min(100%, calc(100vh * 1.6));
+  aspect-ratio: 1440 / 900;
+  flex: none;
+}
+
+@supports (height: 100dvh) {
+  .chalk-stage { width: min(100%, calc(100dvh * 1.6)); }
+}
+
+.chalk-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* grain de tableau noir : une seule passe de bruit, statique */
+.chalk-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- le trait de craie ---------- */
+
+.ch {
+  fill: none;
+  stroke: var(--chalk);
+  stroke-width: calc(2.4 * var(--cw));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.72;
+}
+
+.ch-violet { stroke: var(--chalk-violet); }
+.ch-rose   { stroke: var(--chalk-rose); }
+.ch-or     { stroke: var(--chalk-or); }
+.ch-bleu   { stroke: var(--chalk-bleu); }
+.ch-vert   { stroke: var(--chalk-vert); }
+.ch-faint  { opacity: 0.3; }
+
+.ch-ridge  { stroke-width: calc(2.3 * var(--cw)); opacity: 0.5; }
+.ch-hatch  { stroke-width: calc(1.4 * var(--cw)); opacity: 0.26; }
+.ch-ground { stroke-width: calc(2.2 * var(--cw)); opacity: 0.55; }
+.ch-cactus { stroke-width: calc(2.4 * var(--cw)); opacity: 0.62; }
+.ch-tuft   { stroke-width: calc(1.5 * var(--cw)); opacity: 0.34; }
+.ch-doodle { stroke-width: calc(1.8 * var(--cw)); opacity: 0.46; }
+.ch-star   { stroke-width: calc(1.2 * var(--cw)); opacity: 0.55; fill: rgba(239, 231, 216, 0.1); }
+.ch-limb   { stroke-width: calc(2.6 * var(--cw)); opacity: 0.8; }
+.ch-hand   { stroke-width: calc(2.3 * var(--cw)); opacity: 0.78; }
+.ch-tick   { stroke-width: calc(1.5 * var(--cw)); opacity: 0.42; }
+
+.ch-wordmark {
+  opacity: 0.92;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ---------- titre et repères ---------- */
+
+.chalk-title {
+  position: absolute;
+  left: 50%;
+  top: 30.5%;
+  transform: translateX(-50%) rotate(-0.6deg);
+  margin: 0;
+  font-size: clamp(0.62rem, 1.1vw, 0.86rem);
+  font-weight: 300;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(239, 231, 216, 0.5);
+  white-space: nowrap;
+}
+
+.chalk-hint .hint-swipe { display: none; }
+
+.chalk-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  margin: 0;
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: 300;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(236, 230, 218, 0.4);
+  pointer-events: none;
+}
+
+/* ---------- les huit colonnes ---------- */
+
+.chalk-people {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 38.889%;   /* y = 350 sur 900 */
+  height: 46.667%; /* 420 sur 900 */
+  display: flex;
+  align-items: stretch;
+}
+
+.cm {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cm[data-chalk="violet"] { --c: var(--chalk-violet); }
+.cm[data-chalk="rose"]   { --c: var(--chalk-rose); }
+.cm[data-chalk="or"]     { --c: var(--chalk-or); }
+.cm[data-chalk="bleu"]   { --c: var(--chalk-bleu); }
+
+.cm-figure {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible; /* les mains dépassent : elles rejoignent la colonne voisine */
+  pointer-events: none;
+}
+
+.cm-name {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 150%;
+  transform: translateX(-50%) rotate(var(--rot, 0deg));
+  font-size: clamp(0.66rem, 1.24vw, 1.02rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--c, var(--chalk));
+  text-shadow: 0 0 16px color-mix(in srgb, var(--c, var(--chalk)) 45%, transparent);
+  white-space: nowrap;
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+.cm-arrow {
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  width: 12%;
+  height: 7.15%;
+  transform: translateX(-50%);
+}
+
+.cm-arrow svg { display: block; width: 100%; height: 100%; }
+
+.cm-arrow .ch-arrow {
+  stroke: var(--c, var(--chalk));
+  stroke-width: 2;
+  opacity: 0.72;
+  vector-effect: non-scaling-stroke;
+}
+
+.cm-face {
+  position: absolute;
+  left: 50%;
+  top: 17.62%;    /* y = 74 sur 420 */
+  height: 23.81%; /* 100 sur 420 */
+  width: auto;
+  max-width: none;
+  transform: translateX(-50%);
+  transform-origin: 50% 90%;
+  transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1), filter 0.28s ease;
+  pointer-events: none;
+}
+
+/* Sous la ligne d'horizon : les pieds s'arrêtent à 83 %, le sol est tracé
+   juste après, et la bande qui suit est réservée aux intitulés. */
+.cm-role {
+  position: absolute;
+  left: 50%;
+  top: 88.6%;
+  /* À peine plus large que la colonne : les intitulés longs passent donc à
+     la ligne au lieu de déborder sur le voisin. */
+  width: 106%;
+  transform: translateX(-50%);
+  font-size: clamp(0.44rem, 0.74vw, 0.62rem);
+  font-weight: 300;
+  line-height: 1.4;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: rgba(236, 230, 218, 0.46);
+  transition: color 0.25s ease;
+}
+
+/* ---------- survol, focus ---------- */
+/* La géométrie ne bouge pas : les mains restent jointes. C'est la craie qui
+   est appuyée plus fort, et le visage qui se soulève d'un cheveu. */
+
+.cm:hover .ch-limb,
+.cm:hover .ch-hand,
+.cm:focus-visible .ch-limb,
+.cm:focus-visible .ch-hand {
+  opacity: 1;
+  stroke: #fff8ea;
+}
+
+.cm:hover .ch-tick,
+.cm:focus-visible .ch-tick { opacity: 0.68; }
+
+.cm:hover .cm-face,
+.cm:focus-visible .cm-face {
+  transform: translateX(-50%) translateY(-4%) scale(1.07);
+  filter: drop-shadow(0 0 16px rgba(246, 227, 182, 0.5));
+}
+
+.cm:hover .cm-name,
+.cm:focus-visible .cm-name {
+  color: #fffaf0;
+  text-shadow: 0 0 22px color-mix(in srgb, var(--c, var(--chalk)) 85%, transparent);
+}
+
+.cm:hover .cm-role,
+.cm:focus-visible .cm-role { color: rgba(236, 230, 218, 0.75); }
+
+.cm:focus-visible {
+  outline: 1px solid rgba(246, 227, 182, 0.6);
+  outline-offset: -4px;
+  border-radius: 6px;
+}
+
+.cm:focus:not(:focus-visible) { outline: none; }
+
+/* ============================================================
+ Le tracé : le monde se dessine en arrivant du ciel
+ ============================================================ */
+
+@keyframes ch-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes ch-appear {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes ch-rise {
+  from { opacity: 0; transform: translateX(-50%) translateY(7px) rotate(var(--rot, 0deg)); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0) rotate(var(--rot, 0deg)); }
+}
+
+@keyframes ch-face-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(9%) scale(0.9); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+.scene--equipe.is-drawing .ch-draw {
+  stroke-dasharray: 1;
+  animation: ch-draw 0.7s ease-out var(--d, 0s) both;
+}
+
+.scene--equipe.is-drawing .ch-tick {
+  animation: ch-appear 0.42s ease-out var(--d, 0s) both;
+}
+
+.scene--equipe.is-drawing .ch-wordmark {
+  animation: ch-appear 0.55s ease-out var(--d, 0s) both;
+}
+
+.scene--equipe.is-drawing .chalk-title {
+  animation: ch-appear 0.5s ease-out 0.6s both;
+}
+
+/* dans une colonne, tout se cale sur son rang --i */
+.scene--equipe.is-drawing .cm-face {
+  animation: ch-face-in 0.48s cubic-bezier(0.22, 0.61, 0.36, 1) calc(0.58s + var(--i) * 0.055s) both;
+}
+
+.scene--equipe.is-drawing .cm-name {
+  animation: ch-rise 0.42s ease-out calc(0.7s + var(--i) * 0.05s) both;
+}
+
+.scene--equipe.is-drawing .cm-arrow .ch-arrow {
+  stroke-dasharray: 1;
+  animation: ch-draw 0.34s ease-out calc(0.78s + var(--i) * 0.05s) both;
+}
+
+.scene--equipe.is-drawing .cm-role {
+  animation: ch-rise 0.42s ease-out calc(0.86s + var(--i) * 0.045s) both;
+}
+
+.scene--equipe.is-drawing .chalk-hint,
+.scene--equipe.is-drawing .scene-back {
+  animation: ch-appear 0.5s ease-out 1.25s both;
+}
+
+/* ============================================================
+ La fiche d'une personne
+ ============================================================ */
+
+.cm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.cm-modal[hidden] { display: none; }
+
+.cm-modal-veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 3, 8, 0.82);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cm-modal-card {
+  position: relative;
+  width: min(30rem, 100%);
+  max-height: min(85vh, 40rem);
+  overflow-y: auto;
+  padding: 2.4rem 2rem 2.2rem;
+  background: rgba(6, 7, 13, 0.97);
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.94) translateY(10px);
+  transition: opacity 0.32s ease, transform 0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.cm-modal.is-open .cm-modal-veil { opacity: 1; }
+
+.cm-modal.is-open .cm-modal-card {
+  opacity: 1;
+  transform: none;
+}
+
+.cm-modal-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.cm-modal-frame .ch {
+  stroke: var(--c, #efe7d8);
+  stroke-width: 1.6;
+  opacity: 0.5;
+}
+
+/* Le cadre est étiré à la taille de la fiche (viewBox 100×100,
+   preserveAspectRatio="none"), donc `vector-effect: non-scaling-stroke` est
+   nécessaire pour que le trait garde une épaisseur régulière — mais cette
+   combinaison rend `stroke-dasharray` incohérent d'un côté à l'autre, et le
+   tracé progressif s'y casse. Le cadre apparaît donc simplement, et le
+   tracé reste la signature de la scène elle-même. */
+.cm-modal.is-open .cm-modal-frame .ch {
+  animation: ch-appear 0.5s ease-out 0.14s both;
+}
+
+.cm-modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0.42rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+.cm-modal-close svg { display: block; width: 100%; height: 100%; }
+.cm-modal-close .ch { stroke: var(--chalk, #efe7d8); stroke-width: 2; opacity: 1; }
+
+.cm-modal-close:hover,
+.cm-modal-close:focus-visible { opacity: 1; }
+
+.cm-modal-close:focus-visible {
+  outline: 1px solid rgba(246, 227, 182, 0.7);
+  outline-offset: 2px;
+}
+
+.cm-modal-face {
+  height: 8.5rem;
+  width: auto;
+  max-width: 80%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.7));
+}
+
+.cm-modal-name {
+  margin: 1.1rem 0 0.3rem;
+  font-size: clamp(1.2rem, 3.4vw, 1.55rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--c, #efe7d8);
+}
+
+.cm-modal-role {
+  margin: 0 0 1.4rem;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(236, 230, 218, 0.55);
+}
+
+.cm-modal-bio {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 1.72;
+  color: rgba(236, 230, 218, 0.8);
+  text-align: left;
+  text-wrap: pretty;
+}
+
+/* ============================================================
+ Petits écrans : on ne réorganise pas le dessin, on le fait défiler.
+ La rangée reste intacte, on se déplace le long du désert.
+ ============================================================ */
+
+/* Au-dessus de ce seuil, la rangée entière tient à l'écran : chaque colonne
+   fait au moins ~80 px, on voit les huit personnes d'un coup. En dessous, on
+   agrandit le dessin et on le parcourt du doigt plutôt que de le casser. */
+@media (max-width: 780px) {
+  .scene--equipe { --cw: 1.5; }
+
+  .chalk-viewport {
+    place-items: center start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .chalk-viewport::-webkit-scrollbar { display: none; }
+
+  /* On ne réorganise pas le dessin : on l'agrandit pour qu'il remplisse la
+     hauteur, et la rangée déborde — on la parcourt du doigt. */
+  .chalk-stage {
+    width: clamp(980px, 141dvh, 1500px);
+    min-width: clamp(980px, 141dvh, 1500px);
+  }
+
+  .chalk-hint {
+    bottom: 42px;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+  }
+
+  .chalk-hint .hint-tap { display: none; }
+  .chalk-hint .hint-swipe { display: inline; }
+
+  .scene-back { bottom: 16px; }
+}
+
+@media (max-width: 780px) and (orientation: landscape) {
+  .chalk-stage {
+    width: calc(100dvh * 1.6);
+    min-width: calc(100dvh * 1.6);
+  }
+}
+
+/* ============================================================
+ Mouvement réduit : la scène est déjà dessinée, rien ne se trace.
+ ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .scene--equipe.is-drawing .ch-draw,
+  .scene--equipe.is-drawing .ch-tick,
+  .scene--equipe.is-drawing .ch-wordmark,
+  .scene--equipe.is-drawing .chalk-title,
+  .scene--equipe.is-drawing .cm-face,
+  .scene--equipe.is-drawing .cm-name,
+  .scene--equipe.is-drawing .cm-arrow .ch-arrow,
+  .scene--equipe.is-drawing .cm-role,
+  .scene--equipe.is-drawing .chalk-hint,
+  .scene--equipe.is-drawing .scene-back,
+  .cm-modal.is-open .cm-modal-frame .ch {
+    animation: none;
+    stroke-dasharray: none;
+  }
+
+  .cm-modal-card,
+  .cm-modal-veil { transition-duration: 0.01ms; }
+  .cm-face { transition: none; }
+}
