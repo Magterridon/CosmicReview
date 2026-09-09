@@ -1,0 +1,41 @@
+<!doctype html><meta charset="utf-8"><title>carnet & cassette — cadrage</title>
+<style>body{font:12px monospace;background:#111;color:#eee;margin:0}iframe{border:0;position:absolute;left:-9999px;top:0}</style>
+<pre id="out">…</pre>
+<script>
+const q = new URLSearchParams(location.search);
+const W = +q.get("w") || 1440, H = +q.get("h") || 900, K = q.get("k") || "carnet";
+document.write('<iframe id="f" src="/le-projet/" width="' + W + '" height="' + H + '"></iframe>');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+document.getElementById("f").addEventListener("load", async () => {
+  const d = document.getElementById("f").contentDocument;
+  const cible = K === "cassette" ? ".pj-el--camera" : ".pj-el--carnet";
+  d.querySelector(cible).click(); await sleep(260);
+  d.querySelector(cible).click(); await sleep(900);
+  const st = d.createElement("style");
+  st.textContent = "*{transition:none!important;animation:none!important}";
+  d.head.appendChild(st);
+  await sleep(120);
+
+  const vw = d.documentElement.clientWidth, vh = d.documentElement.clientHeight;
+  const o = [], noms = K === "cassette"
+    ? [".cs-frame", ".cs-tape", ".cs-help"]
+    : [".cn-frame", ".cn-book", ".cn-edge", ".cn-bar", ".cn-close"];
+  let bad = 0;
+  for (const s of noms) {
+    const e = d.querySelector(s);
+    if (!e) { o.push(s + " absent"); bad++; continue; }
+    const r = e.getBoundingClientRect();
+    const ok = r.left >= -1 && r.right <= vw + 1 && r.top >= -1 && r.bottom <= vh + 1 && r.width > 8 && r.height > 8;
+    if (!ok) bad++;
+    o.push("  " + s.padEnd(11) + (ok ? "entier " : "DÉBORDE ") +
+      Math.round(r.width) + "x" + Math.round(r.height) +
+      " @ l" + Math.round(r.left) + " t" + Math.round(r.top) + " r" + Math.round(r.right) + " b" + Math.round(r.bottom));
+  }
+  // le document ne doit jamais défiler latéralement
+  const scroll = d.documentElement.scrollWidth > vw + 1;
+  if (scroll) bad++;
+  o.unshift(vw + "x" + vh + " · " + K + (bad ? "  => " + bad + " PROBLÈME(S)" : "  => tient") + (scroll ? " (défilement latéral !)" : ""));
+  document.getElementById("out").textContent = o.join("\n");
+});
+</script>

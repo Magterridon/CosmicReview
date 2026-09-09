@@ -21,7 +21,8 @@ const HORIZON = 668;
 
 /* ---------------------------------------------------------------- outils */
 
-import { rng, n, esc, circle, path, wobble, ticks } from "./draw.js";
+import { rng, n, esc, circle, path, wobble, ticks, ch, pen } from "./draw.js";
+import { calquesCarnet } from "./carnet.js";
 
 export { esc };
 const pc = (v, total) => n((v / total) * 100) + "%";
@@ -237,72 +238,6 @@ function cour(mode = "full") {
  Chaque trait porte `pathLength="1"` et un délai `--d` : le dessin se fait —
  et se défait — trait après trait, à vitesse constante.
  --------------------------------------------------------------------------- */
-
-/** Un trait de craie traçable. */
-function ch(d, cls, delay) {
-  return `<path class="ch ${cls}" d="${d}" pathLength="1" style="--d:${n(delay)}s" />`;
-}
-
-/**
- * Un « stylo » : il garde la graine, avance le délai à chaque trait, et
- * mémorise les chemins tracés pour pouvoir en tirer une zone de visée.
- *
- * Sans elle, une figure en bâton serait quasi impossible à cliquer : il
- * faudrait viser un trait de deux pixels. `hit()` rejoue tous les chemins de
- * l'objet avec un trait large et transparent — on clique donc « le long du
- * dessin », sans pour autant s'approprier tout le vide autour.
- */
-function pen(seed, step = 0.11) {
-  const r = rng(seed);
-  let t = 0;
-  const drawn = [];
-  return {
-    r,
-    /** La zone de visée : tous les traits de l'objet, en large et invisible. */
-    hit() {
-      return `<path class="ch-hit" d="${drawn.join(" ")}" />`;
-    },
-    /** Segment droit tremblé. */
-    seg(x1, y1, x2, y2, { cls = "ch-limb ch-draw", amp = 1.6, segs = 5 } = {}) {
-      const d = wobble(x1, y1, x2, y2, amp, segs, r);
-      drawn.push(d);
-      const out = ch(d, cls, t);
-      t += step;
-      return out;
-    },
-    /** Ligne brisée tremblée. */
-    line(pts, { cls = "ch-doodle ch-draw", close = false, amp = 1.3, segs = 4 } = {}) {
-      const d = path(pts, r, amp, segs, close);
-      drawn.push(d);
-      const out = ch(d, cls, t);
-      t += step;
-      return out;
-    },
-    /** Cercle bancal. */
-    round(cx, cy, rad, { cls = "ch-doodle ch-draw", wob = 0.07 } = {}) {
-      const d = circle(cx, cy, rad, r, wob);
-      drawn.push(d);
-      const out = ch(d, cls, t);
-      t += step;
-      return out;
-    },
-    /** La texture perlée, posée une fois le trait principal tracé. */
-    grain(segs) {
-      const out = `<path class="ch ch-tick" d="${ticks(segs, r)}" style="--d:${n(t)}s" />`;
-      t += step;
-      return out;
-    },
-    /** Une surface pleine — la lumière, le papier, un feu : elle apparaît. */
-    fill(d, cls) {
-      drawn.push(d);
-      const out = `<path class="chf ${cls}" d="${d}" style="--d:${n(t)}s" />`;
-      t += step;
-      return out;
-    },
-    get at() { return t; },
-    set at(v) { t = v; },
-  };
-}
 
 /* ----------------------------------------------------------- les personnes */
 
@@ -575,7 +510,7 @@ const SYNOPSIS = [
   `Le désert y est traité comme un personnage à part entière : plans-séquences, lumière naturelle, mise en scène discrète, et une bascule progressive de l'énergie du vlog vers l'horreur brute.`,
 ];
 
-export function sceneProjet(data) {
+export function sceneProjet(data, carnet) {
   const { elements, slate, hint } = data;
 
   return `<section class="scene scene--projet" id="scene-le-projet" data-scene="le-projet" data-state="cour"
@@ -645,6 +580,10 @@ export function sceneProjet(data) {
   </div>
 
   <a class="scene-back" href="/" data-goto="ciel">Retour au ciel</a>
+
+  <!-- Ce qu'on trouve en insistant : le carnet d'Arthur et la cassette
+       vierge. Les deux restent masquées jusqu'au second clic. -->
+  ${carnet ? calquesCarnet(carnet) : ""}
 
 ${transcriptSource(elements)}
 </section>`;

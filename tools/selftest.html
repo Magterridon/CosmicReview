@@ -66,6 +66,11 @@ async function run() {
   ok("« fin de l'enregistrement » proposé", !d.querySelector("[data-end]").hidden);
   ok("aucun bouton de retour n'existe", !d.querySelector("[data-rewind]"));
 
+  /* --- ce qui se cache derrière les objets ne gêne pas la scène --- */
+  ok("le carnet dort", d.querySelector(".cn").hidden && getComputedStyle(d.querySelector(".cn")).display === "none");
+  ok("la cassette dort", d.querySelector(".cs").hidden && getComputedStyle(d.querySelector(".cs")).display === "none");
+  hitTest(cour);
+
   /* --- les six ont parlé : l'éclair part tout seul --- */
   for (const id of ["camera", "fenetre", "carnet"]) { byId(id).click(); await sleep(9000); }
   // le fondu dure une dizaine de secondes : c'est le sujet, on l'attend

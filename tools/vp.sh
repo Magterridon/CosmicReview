@@ -34,3 +34,28 @@ addEventListener('load',()=>{setTimeout(()=>{
 },1800)});
 </script>
 HTMLEOF
+cat > preview/__shot.html <<'HTMLEOF'
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#000}iframe{border:0;display:block}</style>
+<script>
+// Ouvre le carnet (ou la cassette) et fige tout, pour capture d'écran.
+//   __shot.html?w=1440&h=900&p=51        une page du carnet
+//   __shot.html?w=1440&h=900&k=cassette  la cassette
+const q=new URLSearchParams(location.search);
+const W=+q.get('w')||1440,H=+q.get('h')||900,P=+q.get('p')||1,K=q.get('k')||'carnet';
+document.write('<iframe id="f" src="/le-projet/" width="'+W+'" height="'+H+'"></iframe>');
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+document.getElementById('f').addEventListener('load',async()=>{
+  const d=document.getElementById('f').contentDocument;
+  const cible = K==='cassette' ? '.pj-el--camera' : '.pj-el--carnet';
+  d.querySelector(cible).click(); await sleep(260);
+  d.querySelector(cible).click(); await sleep(900);
+  const st=d.createElement('style');
+  st.textContent='*{transition:none!important;animation:none!important}.cn-leaf,.cn-sketch{opacity:1!important}';
+  d.head.appendChild(st);
+  if(K!=='cassette') d.querySelectorAll('.cn-tab')[P-1].click();
+  await sleep(300);
+  document.title='pret';
+});
+</script>
+HTMLEOF

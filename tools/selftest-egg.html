@@ -1,0 +1,161 @@
+<!doctype html><meta charset="utf-8"><title>selftest — carnet & cassette</title>
+<style>body{font:13px monospace;background:#111;color:#eee;margin:0}iframe{border:0;position:absolute;left:-9999px;top:0}</style>
+<pre id="out">running…</pre>
+<iframe id="f" src="/le-projet/" width="1440" height="900"></iframe>
+<script>
+const log = [];
+const ok = (name, cond, extra) => log.push((cond ? "PASS " : "FAIL ") + name + (extra !== undefined && !cond ? "  << " + extra : ""));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const f = document.getElementById("f");
+
+f.addEventListener("load", async () => {
+  try { await run(); } catch (e) { log.push("ERROR " + e.message + "\n" + e.stack); }
+  document.getElementById("out").textContent = log.join("\n");
+});
+
+async function run() {
+  const d = f.contentDocument, w = f.contentWindow;
+  const scene = d.querySelector(".scene--projet");
+  const count = d.querySelector("[data-count]");
+  const cn = d.querySelector(".cn");
+  const cs = d.querySelector(".cs");
+  const byId = (id) => d.querySelector(".pj-el--" + id);
+  const esc = () => d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  const key = (k) => d.dispatchEvent(new w.KeyboardEvent("keydown", { key: k, bubbles: true }));
+
+  /* --- au repos, les deux calques dorment --- */
+  ok("le calque carnet existe", !!cn);
+  ok("le calque cassette existe", !!cs);
+  ok("le carnet est masqué au chargement", cn.hidden);
+  ok("la cassette est masquée au chargement", cs.hidden);
+  ok("un calque masqué ne s'affiche pas", getComputedStyle(cn).display === "none", getComputedStyle(cn).display);
+  ok("la banque de croquis est masquée", getComputedStyle(d.querySelector(".cn-bank")).display === "none");
+  ok("les données des 51 pages sont dans la page", !!d.querySelector("#cn-data"));
+  ok("51 signets sur la tranche", d.querySelectorAll(".cn-tab").length === 51, d.querySelectorAll(".cn-tab").length);
+  ok("10 croquis dessinés au build", d.querySelectorAll(".cn-bank [data-croquis]").length === 10, d.querySelectorAll(".cn-bank [data-croquis]").length);
+
+  /* --- un calque masqué ne vole pas les clics de la scène --- */
+  {
+    const b = byId("carnet"), r = b.getBoundingClientRect();
+    const hit = d.elementFromPoint(r.left + r.width * 0.5, r.top + r.height * 0.5);
+    const owner = hit && hit.closest ? hit.closest(".pj-el, .cn, .cs") : null;
+    ok("les calques n'interceptent rien", owner === b, owner && owner.className);
+  }
+
+  /* --- premier clic : la réplique, comme avant --- */
+  byId("carnet").click();
+  await sleep(400);
+  ok("le premier clic ne l'ouvre pas", cn.hidden);
+  ok("le premier clic écrit la réplique", d.querySelector(".pj-line").textContent.length > 0);
+  await sleep(9000);
+  ok("compteur 1/6 après le premier clic", count.textContent === "1/6", count.textContent);
+
+  /* --- second clic : le carnet s'ouvre --- */
+  byId("carnet").click();
+  await sleep(900);
+  ok("le second clic ouvre le carnet", !cn.hidden && cn.classList.contains("is-open"));
+  ok("le compteur n'a pas bougé", count.textContent === "1/6", count.textContent);
+  ok("focus piégé dans le carnet", cn.contains(d.activeElement), d.activeElement && d.activeElement.className);
+
+  /* --- la première page est écrite à la main --- */
+  const num = () => d.querySelector("[data-num]").textContent;
+  const droite = d.querySelector('[data-leaf="droite"]');
+  const gauche = d.querySelector('[data-leaf="gauche"]');
+  ok("on ouvre page 1", num() === "1", num());
+  ok("la page a un titre", /Première lumière/.test(droite.textContent), droite.textContent.slice(0, 60));
+  ok("la date est sur le feuillet de gauche", /14\.09/.test(gauche.textContent), gauche.textContent.slice(0, 40));
+  ok("un croquis est posé", !!d.querySelector(".cn-sketch svg"));
+  ok("chaque ligne est de travers",
+     [...d.querySelectorAll(".cn-line")].every((el) => el.style.getPropertyValue("--r") !== ""),
+     d.querySelectorAll(".cn-line").length);
+  ok("écriture manuscrite", /Caveat|cursive|Script|Hand/i.test(getComputedStyle(droite).fontFamily),
+     getComputedStyle(droite).fontFamily);
+  ok("« page précédente » désactivé sur la première", d.querySelector("[data-prev]").disabled);
+
+  /* --- on tourne les pages --- */
+  d.querySelector("[data-next]").click();
+  await sleep(150);
+  ok("page suivante", num() === "2", num());
+  ok("le contenu a changé", /Vlog 03/.test(droite.textContent), droite.textContent.slice(0, 60));
+  d.querySelector("[data-prev]").click();
+  await sleep(150);
+  ok("page précédente", num() === "1", num());
+
+  key("ArrowRight"); await sleep(150);
+  ok("flèche droite tourne la page", num() === "2", num());
+  key("ArrowLeft"); await sleep(150);
+  ok("flèche gauche revient", num() === "1", num());
+  key("End"); await sleep(200);
+  ok("fin du carnet", num() === "51", num());
+
+  /* --- les pages qui déraillent --- */
+  ok("page 51 : les coordonnées", /36°28'51/.test(gauche.textContent), gauche.textContent.slice(0, 60));
+  ok("page 51 : la cassette est nommée", /cassette/i.test(droite.textContent));
+  ok("page 51 : le numéro à écrire est suggéré", /num[ée]ro/i.test(droite.textContent));
+  ok("signet 51 marqué comme courant",
+     d.querySelectorAll(".cn-tab")[50].getAttribute("aria-current") === "true");
+
+  d.querySelectorAll(".cn-tab")[35].click();
+  await sleep(200);
+  ok("un signet amène à sa page", num() === "36", num());
+  ok("page 36 : ce n'est pas la même main",
+     d.querySelector('[data-leaf="droite"]').classList.contains("cn-leaf--autre"));
+  ok("page 36 : des coordonnées, rien d'autre", /115°51'02/.test(gauche.textContent), gauche.textContent.slice(0, 60));
+
+  d.querySelectorAll(".cn-tab")[36].click();
+  await sleep(200);
+  ok("page 37 : Arthur ne reconnaît pas l'écriture", /pas mon écriture/i.test(droite.textContent));
+  ok("page 37 : la main est redevenue la sienne",
+     !d.querySelector('[data-leaf="droite"]').classList.contains("cn-leaf--autre"));
+
+  d.querySelectorAll(".cn-tab")[27].click();
+  await sleep(200);
+  ok("page 28 : barrée", d.querySelector(".cn-book").dataset.raye === "oui");
+
+  d.querySelectorAll(".cn-tab")[49].click();
+  await sleep(200);
+  ok("page 50 : une date qui ne peut pas exister", /07\.11/.test(gauche.textContent), gauche.textContent.slice(0, 40));
+  ok("page 50 : plus barrée", d.querySelector(".cn-book").dataset.raye === "non");
+
+  /* --- on referme --- */
+  esc();
+  await sleep(800);
+  ok("Échap referme le carnet", cn.hidden);
+  ok("le fondu ne s'est pas déclenché", scene.dataset.state === "cour", scene.dataset.state);
+
+  /* --- la cassette, avec un seul élément visité --- */
+  byId("camera").click();
+  await sleep(9200);
+  ok("compteur 2/6", count.textContent === "2/6", count.textContent);
+  byId("camera").click();
+  await sleep(900);
+  ok("le second clic sur la caméra sort la cassette", !cs.hidden && cs.classList.contains("is-open"));
+  ok("le curseur est dans l'étiquette", d.activeElement === d.querySelector(".cs-input"),
+     d.activeElement && d.activeElement.className);
+  ok("l'étiquette est vierge", d.querySelector(".cs-input").value === "");
+  ok("on le dit", /vierge/i.test(d.querySelector(".cs-help").textContent), d.querySelector(".cs-help").textContent);
+
+  /* --- un mauvais mot ne fait rien --- */
+  const input = d.querySelector(".cs-input");
+  input.value = "50";
+  input.dispatchEvent(new w.Event("input", { bubbles: true }));
+  await sleep(600);
+  ok("un autre numéro ne déclenche rien", !cs.classList.contains("is-armed") && scene.dataset.state === "cour");
+
+  /* --- 51 : le fondu part, sans avoir cliqué les six --- */
+  input.value = "51";
+  input.dispatchEvent(new w.Event("input", { bubbles: true }));
+  await sleep(500);
+  ok("la cassette se met en route", cs.classList.contains("is-armed"));
+  ok("elle est étiquetée", /51/.test(d.querySelector(".cs-help").textContent), d.querySelector(".cs-help").textContent);
+  await sleep(2200);
+  ok("la cassette se range", cs.hidden);
+  ok("le fondu est parti", scene.classList.contains("is-melting") || scene.dataset.state === "desert");
+  await sleep(13000);
+  ok("on arrive dans le désert avec 2 éléments visités seulement",
+     scene.dataset.state === "desert", scene.dataset.state);
+  ok("le compteur repart à 0/3", count.textContent === "0/3", count.textContent);
+  ok("la caméra n'existe plus", !byId("camera") || byId("camera").offsetParent === null);
+  ok("plus de carnet à ouvrir dans le désert", cn.hidden && cs.hidden);
+}
+</script>

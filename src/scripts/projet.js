@@ -10,6 +10,8 @@
  * chercher. Une seule source, et la page reste lisible sans JavaScript.
  */
 
+import { initCarnet } from "./carnet.js";
+
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 export function initProjet() {
@@ -48,6 +50,11 @@ export function initProjet() {
   let ticker = 0;
   let active = false;
   let panelOpener = null;
+  // Un calque ouvert (le carnet, la cassette) retient le fondu automatique :
+  // il ne doit pas se déclencher pendant qu'on lit une page.
+  let eggOpen = false;
+  let pendingStrike = false;
+  let melting = false;
 
   /* ------------------------------------------------------- le compte-rendu */
 
@@ -131,6 +138,15 @@ export function initProjet() {
 
   function select(button) {
     const id = button.dataset.el;
+
+    // Second clic sur un objet déjà visité : il s'ouvre. Le carnet montre ses
+    // cinquante et une pages, la caméra sort sa cassette. Le premier clic,
+    // lui, garde son rôle — la réplique s'écrit dans le bandeau.
+    if (seen.has(id) && egg.ouvrir(id)) {
+      if (step) step();
+      return;
+    }
+
     if (current === button && step) { step(); return; }  // relancer = accélérer
 
     current_set().forEach((b) => b.classList.toggle("is-on", b === button));
@@ -139,6 +155,12 @@ export function initProjet() {
     if (!seen.has(id)) {
       seen.add(id);
       button.classList.add("is-seen");
+      if (id === "carnet" || id === "camera") {
+        // Rien ne le dit à l'écran — mais le lecteur d'écran, lui, le dit.
+        button.dataset.egg = "1";
+        const nom = button.querySelector(".sr-only");
+        if (nom) nom.textContent = nom.textContent.replace(" — afficher sa réplique", " — l'ouvrir");
+      }
       updateCount();
     }
     say(id);
@@ -164,7 +186,10 @@ export function initProjet() {
    * le vlog 50.
    */
   function strike() {
-    if (scene.dataset.state !== "cour") return;
+    if (melting || scene.dataset.state !== "cour") return;
+    // Un calque est ouvert : le fondu attend qu'on ait refermé.
+    if (eggOpen) { pendingStrike = true; return; }
+    melting = true;
     token += 1;
     step = null;
     scene.classList.remove("is-drawing");
@@ -227,6 +252,23 @@ export function initProjet() {
       pad(Math.floor(seconds / 3600)) + ":" + pad(Math.floor(seconds / 60) % 60) + ":" + pad(seconds % 60);
   }
 
+  /* ------------------------------------------------- le carnet, la cassette
+
+   Deux calques qui vivent dans `carnet.js`. Ils empruntent le fondu à la
+   scène (la cassette le déclenche) et lui rendent la politesse : tant qu'un
+   calque est ouvert, le fondu automatique attend. */
+
+  const egg = initCarnet(scene, {
+    strike: () => strike(),
+    busy(open) {
+      eggOpen = open;
+      if (!open && pendingStrike) {
+        pendingStrike = false;
+        window.setTimeout(strike, reduce.matches ? 60 : 500);
+      }
+    },
+  });
+
   /* --------------------------------------------------- le film en trois lignes */
 
   function openPanel() {
@@ -258,6 +300,10 @@ export function initProjet() {
   /* ---------------------------------------------------------------- écoutes */
 
   scene.addEventListener("click", (event) => {
+    // Le carnet et la cassette gèrent leurs propres clics : la scène ne doit
+    // surtout pas les interpréter comme un clic sur un objet du décor.
+    if (event.target.closest(".cn, .cs, .cn-bank")) return;
+
     if (event.target.closest(".pj-panel")) {
       if (event.target.closest("[data-close]")) closePanel();
       else if (event.target.closest("[data-goto]")) closePanel();
@@ -367,6 +413,7 @@ export function initProjet() {
       window.clearInterval(ticker);
       ticker = 0;
       closePanel();
+      egg.fermer();
     },
   };
 }

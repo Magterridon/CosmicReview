@@ -3,6 +3,7 @@ import "../styles/global.css";
 import "../styles/chalk.css";
 import "../styles/projet.css";
 import "../styles/partenaires.css";
+import "../styles/carnet.css";
 
 interface Props {
   title: string;
@@ -26,8 +27,11 @@ const { title, description, scene } = Astro.props;
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Jost pour le site, Caveat pour l'écriture d'Arthur dans le carnet.
+         `display=swap` : si Caveat n'arrive pas, la pile de repli manuscrite
+         de `carnet.css` prend le relais sans faire attendre la page. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Caveat:wght@400;600&display=swap"
       rel="stylesheet"
     />
 

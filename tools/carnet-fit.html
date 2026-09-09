@@ -1,0 +1,55 @@
+<!doctype html><meta charset="utf-8"><title>carnet — tenue des 51 pages</title>
+<style>body{font:12px monospace;background:#111;color:#eee;margin:0}iframe{border:0;position:absolute;left:-9999px;top:0}</style>
+<pre id="out">…</pre>
+<iframe id="f" src="/le-projet/" width="1440" height="900"></iframe>
+<script>
+const q = new URLSearchParams(location.search);
+const f = document.getElementById("f");
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+f.addEventListener("load", async () => {
+  const d = f.contentDocument, o = [];
+  const el = (s) => d.querySelector(s);
+  // on ouvre le carnet sans passer par les deux clics
+  el(".pj-el--carnet").click(); await sleep(300);
+  el(".pj-el--carnet").click(); await sleep(600);
+
+  const st = d.createElement("style");
+  st.textContent = "*{transition:none!important;animation:none!important}.cn-leaf,.cn-sketch{opacity:1!important}"
+    + ".cn-notes{height:auto!important;overflow:visible!important}";  // on laisse déborder pour pouvoir le voir
+  d.head.appendChild(st);
+
+  const book = el(".cn-book");
+  const tabs = [...d.querySelectorAll(".cn-tab")];
+  let pires = [];
+
+  for (let i = 0; i < tabs.length; i++) {
+    tabs[i].click();
+    await sleep(24);
+    const bb = book.getBoundingClientRect();
+    const u = bb.width / 1200;                       // une unité du dessin, en px
+    // Un bloc à hauteur bornée peut rogner sans le dire : on compare la
+    // hauteur du contenu à celle de la boîte, pas seulement sa position.
+    const mesure = (sel, borneU) => {
+      const e = el(sel);
+      if (!e) return null;
+      const r = e.getBoundingClientRect();
+      const bas = (r.top - bb.top + e.scrollHeight) / u;
+      return { bas, borne: borneU, ok: bas <= borneU + 1 };
+    };
+    // le texte doit rester au-dessus du bas du feuillet (y = 734)
+    const notes = mesure(".cn-notes", 726);
+    const meta = mesure(".cn-meta", 424);
+    const titre = mesure(".cn-title", 152);
+    const n = d.querySelector("[data-num]").textContent;
+    const pb = [];
+    if (notes && !notes.ok) pb.push("notes " + Math.round(notes.bas) + ">" + notes.borne);
+    if (meta && !meta.ok) pb.push("meta " + Math.round(meta.bas) + ">" + meta.borne);
+    if (titre && !titre.ok) pb.push("titre " + Math.round(titre.bas) + ">" + titre.borne);
+    if (pb.length) pires.push("p" + n + " : " + pb.join(", "));
+    if (notes) o.push("p" + String(n).padStart(2) + "  notes bas=" + String(Math.round(notes.bas)).padStart(3) + (pb.length ? "  <<< " + pb.join(", ") : ""));
+  }
+  o.unshift(pires.length ? "=> " + pires.length + " PAGE(S) QUI DÉBORDENT" : "=> les 51 pages tiennent sur le papier");
+  document.getElementById("out").textContent = o.join("\n");
+});
+</script>

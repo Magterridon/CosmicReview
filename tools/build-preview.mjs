@@ -29,6 +29,7 @@ const projet = JSON.parse(fs.readFileSync(path.join(ROOT, "src/data/projet.json"
 const partenaires = JSON.parse(
   fs.readFileSync(path.join(ROOT, "src/data/partenaires.json"), "utf8")
 );
+const carnet = JSON.parse(fs.readFileSync(path.join(ROOT, "src/data/carnet.json"), "utf8"));
 
 function page(scene) {
   return `<!doctype html>
@@ -42,16 +43,17 @@ function page(scene) {
 <meta name="theme-color" content="#04050c" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Caveat:wght@400;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/styles/global.css" />
 <link rel="stylesheet" href="/styles/chalk.css" />
 <link rel="stylesheet" href="/styles/projet.css" />
 <link rel="stylesheet" href="/styles/partenaires.css" />
+<link rel="stylesheet" href="/styles/carnet.css" />
 <link rel="preload" as="image" href="/sky.webp" />
 <link rel="preload" as="image" href="/cosmic-logo.webp" />
 </head>
 <body data-scene="${scene}">
-${siteMarkup(team.members, projet, partenaires, scene)}
+${siteMarkup(team.members, projet, partenaires, carnet, scene)}
 <script type="module" src="/scripts/main.js"></script>
 </body>
 </html>
@@ -69,7 +71,10 @@ copy("public", ".");
 copy("src/styles", "styles");
 copy("src/scripts", "scripts");
 fs.mkdirSync(path.join(OUT, "lib"), { recursive: true });
+// `routes.js` et `draw.js` sont importés par les scripts du navigateur :
+// Astro les empaquette, l'aperçu doit les servir tels quels.
 copy("src/lib/routes.js", "lib/routes.js");
+copy("src/lib/draw.js", "lib/draw.js");
 
 for (const [scene, url] of Object.entries({
   ciel: "index.html",

@@ -62,8 +62,7 @@ export function wobbleTo(x1, y1, x2, y2, amp, segs, r) {
 }
 
 /** Cercle un peu bancal, comme tracé d'un geste. */
-export function circle(cx, cy, rad, r, wob = 0.05) {
-  const steps = 26;
+export function circle(cx, cy, rad, r, wob = 0.05, steps = 26) {
   let d = "";
   for (let i = 0; i <= steps; i++) {
     const a = (i / steps) * Math.PI * 2;
@@ -115,4 +114,70 @@ export function ticks(segs, r) {
     }
   }
   return out.join(" ");
+}
+
+/** Un trait de craie traçable. */
+export function ch(d, cls, delay) {
+  return `<path class="ch ${cls}" d="${d}" pathLength="1" style="--d:${n(delay)}s" />`;
+}
+
+/**
+ * Un « stylo » : il garde la graine, avance le délai à chaque trait, et
+ * mémorise les chemins tracés pour pouvoir en tirer une zone de visée.
+ *
+ * Sans elle, une figure en bâton serait quasi impossible à cliquer : il
+ * faudrait viser un trait de deux pixels. `hit()` rejoue tous les chemins de
+ * l'objet avec un trait large et transparent — on clique donc « le long du
+ * dessin », sans pour autant s'approprier tout le vide autour.
+ */
+export function pen(seed, step = 0.11) {
+  const r = rng(seed);
+  let t = 0;
+  const drawn = [];
+  return {
+    r,
+    /** La zone de visée : tous les traits de l'objet, en large et invisible. */
+    hit() {
+      return `<path class="ch-hit" d="${drawn.join(" ")}" />`;
+    },
+    /** Segment droit tremblé. */
+    seg(x1, y1, x2, y2, { cls = "ch-limb ch-draw", amp = 1.6, segs = 5 } = {}) {
+      const d = wobble(x1, y1, x2, y2, amp, segs, r);
+      drawn.push(d);
+      const out = ch(d, cls, t);
+      t += step;
+      return out;
+    },
+    /** Ligne brisée tremblée. */
+    line(pts, { cls = "ch-doodle ch-draw", close = false, amp = 1.3, segs = 4 } = {}) {
+      const d = path(pts, r, amp, segs, close);
+      drawn.push(d);
+      const out = ch(d, cls, t);
+      t += step;
+      return out;
+    },
+    /** Cercle bancal. */
+    round(cx, cy, rad, { cls = "ch-doodle ch-draw", wob = 0.07, steps = 26 } = {}) {
+      const d = circle(cx, cy, rad, r, wob, steps);
+      drawn.push(d);
+      const out = ch(d, cls, t);
+      t += step;
+      return out;
+    },
+    /** La texture perlée, posée une fois le trait principal tracé. */
+    grain(segs) {
+      const out = `<path class="ch ch-tick" d="${ticks(segs, r)}" style="--d:${n(t)}s" />`;
+      t += step;
+      return out;
+    },
+    /** Une surface pleine — la lumière, le papier, un feu : elle apparaît. */
+    fill(d, cls) {
+      drawn.push(d);
+      const out = `<path class="chf ${cls}" d="${d}" style="--d:${n(t)}s" />`;
+      t += step;
+      return out;
+    },
+    get at() { return t; },
+    set at(v) { t = v; },
+  };
 }
