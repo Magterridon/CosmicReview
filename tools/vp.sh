@@ -13,15 +13,17 @@ cat > preview/__fit.html <<'HTMLEOF'
 <!doctype html><meta charset="utf-8"><pre id="out" style="font:12px monospace;color:#eee;background:#111">…</pre>
 <script>
 const q=new URLSearchParams(location.search);
-const W=+q.get('w')||1440, H=+q.get('h')||900, R=q.get('r')||'/le-projet/';
+const W=+q.get('w')||1440, H=+q.get('h')||900, R=q.get('r')||'/le-projet/', S=q.get('s');
 document.write('<iframe id="f" src="'+R+'" width="'+W+'" height="'+H+'" style="position:absolute;left:0;top:1600px;border:0"></iframe>');
 addEventListener('load',()=>{setTimeout(()=>{
   const d=document.getElementById('f').contentDocument,o=[];
+  if(S) d.querySelector('.scene--projet').dataset.state=S;
   const tr=d.querySelector('.pj-transcript').getBoundingClientRect();
   const vw=d.documentElement.clientWidth, vh=d.documentElement.clientHeight;
-  o.push('écran '+vw+'x'+vh+' | bandeau '+Math.round(tr.height)+'px (haut à '+Math.round(tr.top)+')');
+  o.push('écran '+vw+'x'+vh+' · '+d.querySelector('.scene--projet').dataset.state+' | bandeau '+Math.round(tr.height)+'px');
   let bad=0;
-  [...d.querySelectorAll('.pj-el')].forEach(e=>{
+  const vis=[...d.querySelectorAll('.pj-el')].filter(e=>e.offsetParent!==null);
+  vis.forEach(e=>{
     const b=e.getBoundingClientRect();
     const ok = b.left>=-1 && b.right<=vw+1 && b.top>=-1 && b.bottom<=tr.top+1;
     if(!ok) bad++;

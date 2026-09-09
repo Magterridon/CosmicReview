@@ -25,16 +25,20 @@ export function initProjet() {
   const liveEl = scene.querySelector("#pj-live");
   const countEl = scene.querySelector("[data-count]");
   const endBtn = scene.querySelector("[data-end]");
-  const rewindBtn = scene.querySelector("[data-rewind]");
   const infoBtn = scene.querySelector("[data-info]");
   const panel = scene.querySelector(".pj-panel");
   const panelCard = panel && panel.querySelector(".pj-panel-card");
-  const buttons = [...scene.querySelectorAll(".pj-el")];
-  const total = buttons.length;
+  const sets = {
+    cour: [...scene.querySelectorAll(".pj-elements--cour .pj-el")],
+    desert: [...scene.querySelectorAll(".pj-elements--desert .pj-el")],
+  };
+  const buttons = [...sets.cour, ...sets.desert];
+  const current_set = () => sets[scene.dataset.state] || sets.cour;
+  const total = () => current_set().length;
 
   const HINTS = JSON.parse(scene.dataset.hints || "null") || {
-    avant: cueEl ? cueEl.textContent : "",
-    apres: "",
+    cour: cueEl ? cueEl.textContent : "",
+    desert: "",
   };
 
   const seen = new Set();
@@ -51,11 +55,9 @@ export function initProjet() {
   function script(id) {
     const src = document.getElementById("pj-src-" + id);
     if (!src) return null;
-    const block = src.querySelector(`[data-state="${scene.dataset.state}"]`);
-    if (!block) return null;
     return {
-      lines: [...block.querySelectorAll(".pj-say")].map((p) => p.textContent.trim()),
-      credit: (block.querySelector(".pj-cred") || {}).textContent || "",
+      lines: [...src.querySelectorAll(".pj-say")].map((p) => p.textContent.trim()),
+      credit: (src.querySelector(".pj-cred") || {}).textContent || "",
     };
   }
 
@@ -118,10 +120,10 @@ export function initProjet() {
     creditEl.classList.add("is-on");
     step = null;
 
-    // Dernier élément de l'état « avant » : la nuit bascule d'elle-même.
-    if (scene.dataset.state === "avant" && seen.size >= total) {
-      await wait(reduce.matches ? 600 : 2200, my);
-      if (my === token && scene.dataset.state === "avant") shift("apres");
+    // Le sixième élément de la cour a parlé : l'éclair part de lui-même.
+    if (scene.dataset.state === "cour" && seen.size >= total()) {
+      await wait(reduce.matches ? 600 : 1800, my);
+      if (my === token && scene.dataset.state === "cour") strike();
     }
   }
 
@@ -131,7 +133,7 @@ export function initProjet() {
     const id = button.dataset.el;
     if (current === button && step) { step(); return; }  // relancer = accélérer
 
-    buttons.forEach((b) => b.classList.toggle("is-on", b === button));
+    current_set().forEach((b) => b.classList.toggle("is-on", b === button));
     current = button;
 
     if (!seen.has(id)) {
@@ -143,37 +145,51 @@ export function initProjet() {
   }
 
   function updateCount() {
-    if (countEl) countEl.textContent = seen.size + "/" + total;
-    if (endBtn) endBtn.hidden = !(scene.dataset.state === "avant" && seen.size >= 3 && seen.size < total);
+    if (countEl) countEl.textContent = seen.size + "/" + total();
+    // Personne ne doit rester coincé faute d'avoir tout cliqué — mais c'est
+    // une porte à sens unique, alors on ne la propose qu'à mi-parcours.
+    if (endBtn) {
+      endBtn.hidden = !(scene.dataset.state === "cour" && seen.size >= 3 && seen.size < total());
+    }
   }
 
   /* ------------------------------------------------------------ la bascule */
 
-  function shift(to) {
+  /**
+   * L'éclair. Le monde ne se fond pas dans l'autre : il est remplacé pendant
+   * que l'écran est blanc. Quand l'image revient, la cour n'existe plus, il
+   * n'y a plus qu'un homme, une jeep et un panneau — et rien ne ramène en
+   * arrière : recharger la page est le seul moyen de revoir le vlog 50.
+   */
+  function strike() {
+    if (scene.dataset.state !== "cour") return;
     token += 1;
     step = null;
-    scene.classList.add("is-shifting");
+    scene.classList.add("is-striking");
 
-    const half = reduce.matches ? 60 : 640;
+    // au sommet de la première décharge : l'écran est blanc, on échange tout
+    const swap = reduce.matches ? 90 : 150;
     window.setTimeout(() => {
-      scene.dataset.state = to;
-      setSlate(to);
+      scene.dataset.state = "desert";
+      setSlate("desert");
       seen.clear();
       buttons.forEach((b) => b.classList.remove("is-seen", "is-on"));
       current = null;
       lineEl.textContent = "";
       lineEl.classList.remove("is-typing");
       creditEl.classList.remove("is-on");
-      if (cueEl) cueEl.textContent = HINTS[to];
+      if (cueEl) cueEl.textContent = HINTS.desert;
       if (cueWrap) cueWrap.classList.remove("is-off");
-      if (liveEl) liveEl.textContent = to === "apres"
-        ? "Sept mois plus tard. La scène a changé : Arthur n'est plus là."
-        : "Retour au vlog 50.";
-      if (rewindBtn) rewindBtn.hidden = to !== "apres";
+      if (liveEl) {
+        liveEl.textContent =
+          "La scène a changé. Le désert du Nevada, la nuit. Il ne reste qu'une personne, une jeep et un panneau.";
+      }
       updateCount();
-    }, half);
+      centre();
+    }, swap);
 
-    window.setTimeout(() => scene.classList.remove("is-shifting"), reduce.matches ? 120 : 2150);
+    window.setTimeout(() => scene.classList.remove("is-striking"),
+                      reduce.matches ? 460 : 940);
   }
 
   /* ------------------------------------------------------- l'ardoise / le TC */
@@ -195,6 +211,7 @@ export function initProjet() {
     seconds = parseTc(SLATE[state].tc);
     if (slate.vlog) slate.vlog.textContent = SLATE[state].vlog;
     if (slate.date) slate.date.textContent = SLATE[state].date;
+    if (slate.lieu) slate.lieu.textContent = SLATE[state].lieu;
     paintTc();
   }
 
@@ -212,7 +229,12 @@ export function initProjet() {
     panel.hidden = false;
     document.body.classList.add("is-modal-open");
     infoBtn.setAttribute("aria-expanded", "true");
-    requestAnimationFrame(() => panel.classList.add("is-open"));
+    // Un cadre plein écran a besoin d'un tick pour que la transition parte.
+    // `requestAnimationFrame` ne tourne pas dans un onglet en arrière-plan :
+    // le minuteur de secours garantit que le panneau finit par s'ouvrir.
+    const reveal = () => panel.classList.add("is-open");
+    requestAnimationFrame(reveal);
+    window.setTimeout(reveal, 40);
     const close = panel.querySelector(".pj-panel-close");
     if (close) close.focus({ preventScroll: true });
   }
@@ -240,8 +262,7 @@ export function initProjet() {
     const el = event.target.closest(".pj-el");
     if (el) { select(el); return; }
 
-    if (event.target.closest("[data-end]")) { shift("apres"); return; }
-    if (event.target.closest("[data-rewind]")) { shift("avant"); return; }
+    if (event.target.closest("[data-end]")) { strike(); return; }
     if (event.target.closest("[data-info]")) { openPanel(); return; }
 
     // Ailleurs dans le bandeau : on presse la réplique en cours.
@@ -300,7 +321,7 @@ export function initProjet() {
     if (extra > 0) viewport.scrollLeft = extra * 0.5;
   }
 
-  setSlate(scene.dataset.state || "avant");
+  setSlate(scene.dataset.state || "cour");
   updateCount();
 
   return {

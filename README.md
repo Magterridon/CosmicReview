@@ -52,7 +52,8 @@ dans `src/pages/`, et l'état de repos de la scène dans `global.css`.
   ciel, désert du Nevada stylisé, navigation par trois étoiles qui révèlent leur
   nom au survol, et météores occasionnels (toutes les 7-18 s). Au clic,
   l'étoile s'embrase avant le départ.
-- **Le Projet** — voir ci-dessous.
+- **Le Projet** — deux lieux séparés par un éclair : la cour dans le nord de la
+  France, puis le désert du Nevada. Voir ci-dessous.
 - **L'Équipe** — voir ci-dessous.
 - **Les Partenaires** — texte rédigé à partir de
   `Présentation projet/Présentation.md`. Contenu à relire et compléter, et
@@ -60,40 +61,75 @@ dans `src/pages/`, et l'état de repos de la scène dans `global.css`.
 
 ## La scène « Le Projet »
 
-Le registre de la clé d'affiche, pas celui de la craie : le ciel
-photographique de l'accueil, le désert de Jean Dry Lake, et des **silhouettes
-noires à contre-jour**. Deux amis assis regardent les étoiles, la caméra tourne
-sur son trépied, le pickup attend en bas à droite, feux arrière allumés.
+Deux lieux, séparés par un éclair. C'est le seul endroit du site où l'on
+change de monde.
 
-**Sept éléments cliquables** : Arthur, Axel, la caméra, le pickup, le panneau
-routier, l'étoile filante, le logotype. Au clic, la réplique de l'élément
-s'écrit dans un **bandeau de transcription** — timecode, témoin
-d'enregistrement, lettrage net : le found footage comme langage, pas comme
-décor. Sous la réplique, une ligne de crédit minuscule, façon incrustation de
-sous-titre (« Axel — rôle principal, joué par Benjamin Cléry ») : c'est ce qui
-permet à la page de rester narrative tout en restant lisible pour quelqu'un qui
-découvre le projet.
+### Avant — la cour, nord de la France
+
+Un bâtiment long et bas, deux fenêtres allumées, une haie, un champ. Aucun
+signe de ferme : c'est une maison, on ne dit pas laquelle. Les deux amis dans
+la cour avec le télescope, la caméra sur pied qui tourne. Les fenêtres sont la
+seule source chaude de l'image — ce sont elles qui détourent les silhouettes,
+et c'est leur absence qui rendra le désert froid.
+
+Le ciel y est **volontairement pauvre** : la même photographie que l'accueil,
+mais désaturée, assombrie, avec le halo orange des lampadaires bas sur
+l'horizon. On ne voit rien d'ici. C'est pour ça qu'ils veulent partir.
+
+**Six éléments** : Arthur (penché sur l'oculaire), Axel (qui parle à la
+caméra), le télescope, la caméra, la fenêtre allumée, et le carnet d'Arthur —
+celui où sont notées les coordonnées. C'est ce carnet qui enverra Axel dans le
+désert, et sa réplique le dit sans le dire : « Il y a une page qu'il ne me
+montre pas. »
+
+### L'éclair
+
+Quand les six ont parlé — ou via « Fin de l'enregistrement », proposé dès le
+troisième pour que personne ne reste coincé — une décharge blanche part.
+**Le monde n'est pas fondu dans l'autre : il est remplacé pendant que l'écran
+est blanc.** Le basculement de `data-state` se fait à 150 ms, au sommet de la
+première décharge. Quand l'image revient, la cour n'existe plus.
+
+Deux décharges seulement, espacées de plus de 200 ms : on reste sous les trois
+flashs par seconde des seuils photosensibles. En `prefers-reduced-motion`,
+l'éclair devient un voile bref, sans à-coup de cadre ni seconde décharge — il
+reste, parce qu'il est le pivot du récit.
+
+### Après — Jean Dry Lake, Nevada
+
+Le ciel s'ouvre en grand : la Voie lactée pleine, celle de l'identité Cosmic
+Review. L'éclair fait donc deux choses à la fois — il enlève Arthur, et il
+donne les étoiles.
+
+**Trois éléments** : Axel seul, la jeep, le panneau. Rien là où il y avait
+quelque chose. **Le compteur passe de six à trois**, et c'est lui qui dit ce
+qui manque : le visiteur a cliqué six fois dans la cour, il n'a plus que trois
+choses à toucher.
+
+**Aucun retour.** L'éclair ne se rejoue pas ; recharger la page est le seul
+moyen de revoir le vlog 50, comme on rembobine une cassette. Axel non plus ne
+revient pas en arrière.
+
+### Ce qu'on ne dit jamais
+
+Le mot « suicide » n'apparaît nulle part, ni dans la cour ni dans le désert, et
+il ne doit pas y apparaître. Ce qui le porte, c'est la mécanique : le vlog 50
+se tourne à deux et parle d'un voyage en avril, le vlog 51 se tourne seul au
+même point du ciel. Entre les deux, un éclair. Personne n'a besoin qu'on lui
+explique.
+
+### Le bandeau
+
+Au clic, la réplique s'écrit dans un bandeau de transcription — timecode qui
+avance en temps réel, témoin d'enregistrement, compteur : le found footage
+comme langage, pas comme décor. Sous la réplique, une ligne de crédit
+minuscule, façon incrustation de sous-titre (« Axel — rôle principal, joué par
+Benjamin Cléry ») : c'est ce qui permet à la page de rester narrative tout en
+restant lisible pour quelqu'un qui découvre le projet. « Le film en trois
+lignes » complète, avec le synopsis et le lien vers Les Partenaires.
 
 **Règle d'écriture** : chaque élément parle au présent, à la première personne,
-dans l'instant. Jamais de notice. L'information sur le film passe par ce que le
-personnage dit.
-
-### La bascule
-
-Quand les sept éléments ont été visités — ou via « Fin de l'enregistrement »,
-proposé dès le troisième — la scène **se rejoue sept mois plus tard**. Même
-cadre, même nuit : le ciel se désature, le grain monte, les feux du pickup
-brûlent plus fort, le bras d'Axel retombe avec la caméra, le titre du film
-apparaît, et **Arthur n'est plus là**. Son bouton reste, à 9 % d'opacité avec
-une respiration très lente : l'absence est encore touchable, et donne à
-entendre l'enregistrement du vlog 50. Les sept répliques changent toutes.
-
-« Revoir le vlog 50 » rejoue le geste à l'envers. L'état ne survit pas à un
-rechargement : chaque visite recommence au vlog 50.
-
-La bascule tient en trois paliers lents (pas de scintillement rapide : on reste
-largement sous les seuils photosensibles) et se réduit à un fondu court en
-`prefers-reduced-motion`.
+dans l'instant. Jamais de notice.
 
 ### Comment c'est dessiné
 
@@ -103,27 +139,28 @@ masse noire — plus simple à régler qu'un contour, et c'est la technique qui
 convient à une silhouette. Un liseré chaud (`drop-shadow` vers le haut) détache
 chaque silhouette du sol ; sans lui, du noir sur du noir.
 
-**Géométrie.** Repère 1440 × 900, horizon à y = 668. `place()` convertit le
-point d'appui au sol de chaque élément en pourcentages, donc tout reste
-solidaire du décor à n'importe quelle taille. Le cadre tient toujours entier à
-l'écran et le sol se prolonge jusqu'aux bords — voir « Cadrage » plus bas.
+**Géométrie.** Repère 1440 × 900, horizon à y = 668 pour les deux mondes — ce
+qui permet aux bandes de sol étirées de servir dans les deux cas. `place()`
+convertit le point d'appui au sol de chaque élément en pourcentages, donc tout
+reste solidaire du décor à n'importe quelle taille. Le cadre tient toujours
+entier à l'écran et le sol se prolonge jusqu'aux bords — voir « Cadrage ».
 
 **Zones cliquables.** Les boutons sont en `pointer-events: none` et seule la
-silhouette peinte reçoit le clic — sinon les boîtes d'Arthur et d'Axel, qui se
-chevauchent, s'attraperaient les clics l'une l'autre. L'étoile filante, trop
-fine, a un trait de visée transparent plus large.
+silhouette peinte reçoit le clic — sinon les boîtes d'Arthur et du télescope,
+qui se chevauchent, s'attraperaient les clics l'une l'autre.
 
 **Les répliques ne sont pas dupliquées dans le script** : elles sont dans la
-page, dans un bloc réservé aux lecteurs d'écran (`.pj-source`), et le bandeau va
-les y chercher. Une seule source, et les 28 répliques restent lisibles et
+page, dans un bloc réservé aux lecteurs d'écran (`.pj-source`), et le bandeau
+va les y chercher. Une seule source, et les 18 répliques restent lisibles et
 indexables sans JavaScript.
 
 **Petits écrans** (< 700 px de large, ou < 520 px de haut) : on ne réorganise
 pas la scène, on l'agrandit pour qu'elle remplisse la hauteur et on la parcourt
 du doigt — même choix que le désert de la page Équipe.
 
-Modifier les répliques : `src/data/projet.json`. Les positions et les dessins
-sont dans `src/lib/projet.js` (table `ART`).
+Modifier les répliques : `src/data/projet.json`, où les deux mondes sont
+séparés. Les positions et les dessins sont dans `src/lib/projet.js` (table
+`ART`, elle aussi en deux moitiés).
 
 ## La scène « L'Équipe »
 
@@ -275,10 +312,11 @@ Cadrage vérifié sur 3440×1440, 2560×1080, 1920×1080, 1512×982, 1440×900,
 
 ### Interactions de la scène Le Projet
 
-`tools/selftest.html` pilote la scène dans une iframe et vérifie 39 points :
-zones réellement cliquables, écriture des répliques, crédits, compteur,
-bascule automatique et manuelle, retour arrière, panneau synopsis (focus piégé,
-Échap), navigation sans rechargement, timecode. À copier dans `preview/` puis
+`tools/selftest.html` pilote la scène dans une iframe et vérifie 46 points :
+zones réellement cliquables dans les deux mondes, écriture des répliques,
+crédits, compteur qui tombe de six à trois, éclair automatique et manuel,
+absence de retour, ouverture du ciel, panneau synopsis (focus piégé, Échap),
+navigation sans rechargement, timecode. À copier dans `preview/` puis
 à ouvrir dans un navigateur :
 
 ```bash

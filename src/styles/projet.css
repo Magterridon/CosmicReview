@@ -77,14 +77,35 @@
 
 /* ---------- le ciel ---------- */
 
+/* Le ciel du nord ne montre presque rien : c'est pour ça qu'ils veulent
+   partir. L'éclair ne fait pas qu'enlever Arthur — il donne les étoiles. */
 .pj-sky {
   position: absolute;
   inset: 0;
   background-image: url("/sky.webp");
   background-size: cover;
   background-position: center 32%;
-  transition: filter 1.6s ease;
+  transition: filter 900ms ease, transform 900ms ease;
 }
+
+.scene--projet[data-state="cour"] .pj-sky {
+  filter: saturate(0.22) brightness(0.42) contrast(0.78);
+  transform: scale(1.02);
+}
+
+/* voile bas et halo orange des lampadaires : la pollution lumineuse */
+.pj-haze {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 900ms ease;
+  background:
+    linear-gradient(to top, rgba(196, 120, 58, 0.3) 0%, rgba(140, 96, 66, 0.14) 16%, rgba(90, 80, 82, 0.08) 34%, rgba(70, 72, 82, 0) 58%),
+    linear-gradient(to bottom, rgba(30, 32, 42, 0.5) 0%, rgba(30, 32, 42, 0.22) 40%, rgba(30, 32, 42, 0) 70%);
+}
+
+.scene--projet[data-state="cour"] .pj-haze { opacity: 1; }
 
 .pj-sky::after {
   content: "";
@@ -123,7 +144,8 @@
   transition: opacity 1.6s ease, filter 1.6s ease;
 }
 
-.pj-terrain {
+.pj-terrain,
+.pj-decor {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -169,6 +191,126 @@
     rgba(4, 5, 12, 0.85) 100%);
 }
 
+/* ---------- les deux mondes ----------
+
+ La cour et le désert vivent dans le même cadre, l'un par-dessus l'autre.
+ L'éclair ne les fond pas : il en éteint un et allume l'autre pendant que
+ l'écran est blanc. Quand l'image revient, le monde a changé. */
+
+.pj-decor--cour,
+.pj-bands--cour,
+.pj-elements--cour { display: none; }
+
+.scene--projet[data-state="cour"] .pj-decor--cour,
+.scene--projet[data-state="cour"] .pj-bands--cour { display: block; }
+
+.scene--projet[data-state="cour"] .pj-elements--cour { display: block; }
+
+.scene--projet[data-state="cour"] .pj-terrain,
+.scene--projet[data-state="cour"] .pj-bands:not(.pj-bands--cour),
+.scene--projet[data-state="cour"] .pj-elements--desert,
+.scene--projet[data-state="cour"] .pj-lightspill { display: none; }
+
+/* la cour n'a pas de lueur d'horizon chaude : sa seule chaleur est aux fenêtres */
+.scene--projet[data-state="cour"] .pj-horizonglow,
+.scene--projet[data-state="cour"] .pj-groundlight { opacity: 0; }
+
+/* ---------- la fenêtre allumée ---------- */
+
+.pj-window { pointer-events: auto; }
+
+.pj-pane {
+  fill: #f6b25c;
+  filter: drop-shadow(0 0 22px rgba(246, 178, 92, 0.55)) drop-shadow(0 0 60px rgba(214, 132, 52, 0.3));
+}
+
+.pj-mullion { stroke: #1a1208; stroke-width: 5; fill: none; }
+.pj-frame { fill: none; stroke: #0a0a0d; stroke-width: 7; }
+
+.pj-el--fenetre:hover .pj-pane,
+.pj-el--fenetre:focus-visible .pj-pane,
+.pj-el--fenetre.is-on .pj-pane {
+  fill: #ffcf8a;
+  filter: drop-shadow(0 0 30px rgba(255, 207, 138, 0.8)) drop-shadow(0 0 80px rgba(214, 132, 52, 0.45));
+}
+
+/* ---------- le carnet ---------- */
+
+.pj-paper { fill: #cfc4ad; stroke: none; opacity: 0.72; }
+.pj-scribble { stroke: #4a4237; stroke-width: 1.6; fill: none; opacity: 0.6; }
+
+/* ---------- la jeep ---------- */
+
+.pj-glass { fill: #0d1016; stroke: rgba(226, 168, 104, 0.26); stroke-width: 1.6; }
+
+/* La roue de secours sur le hayon : sans liseré elle disparaît dans la masse,
+   et c'est elle qui dit « jeep » plutôt que « camionnette ». */
+.pj-tyre { fill: #08070a; stroke: rgba(226, 168, 104, 0.34); stroke-width: 2.6; }
+.pj-rim { fill: #131015; stroke: rgba(226, 168, 104, 0.2); stroke-width: 2; }
+.pj-lamps circle {
+  fill: var(--pj-lamp);
+  stroke: none;
+  filter: drop-shadow(0 0 8px rgba(212, 52, 42, 0.9));
+  transition: filter 1.2s ease;
+}
+
+/* ---------- le logotype dans le ciel ---------- */
+
+.pj-wordmark {
+  position: absolute;
+  display: block;
+  left: 50%;
+  top: 9%;
+  width: 20%;
+  height: auto;
+  transform: translateX(-50%);
+  pointer-events: none;
+  filter: drop-shadow(0 0 30px rgba(232, 192, 122, 0.26));
+  transition: opacity 900ms ease, filter 900ms ease;
+}
+
+.scene--projet[data-state="cour"] .pj-wordmark {
+  opacity: 0.34;
+  filter: none;
+}
+
+/* ---------- l'éclair ---------- */
+
+/* Deux décharges seulement, espacées de plus de 200 ms : on reste sous les
+   trois flashs par seconde des seuils photosensibles, et une décharge unique
+   très blanche fait de toute façon plus mal à l'œil qu'un stroboscope. */
+.pj-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 14;
+  pointer-events: none;
+  background: #fff;
+  opacity: 0;
+}
+
+.scene--projet.is-striking .pj-flash { animation: pj-strike 900ms linear both; }
+
+@keyframes pj-strike {
+  0%   { opacity: 0; }
+  4%   { opacity: 1; }
+  16%  { opacity: 0.06; }
+  30%  { opacity: 0.94; }
+  46%  { opacity: 0.02; }
+  100% { opacity: 0; }
+}
+
+/* la scène encaisse le coup */
+.scene--projet.is-striking .pj-stage { animation: pj-jolt 900ms ease-out both; }
+
+@keyframes pj-jolt {
+  0%   { transform: none; }
+  6%   { transform: scale(1.03); }
+  32%  { transform: scale(1.012) translateX(4px); }
+  100% { transform: none; }
+}
+
+.scene--projet.is-striking .pj-grain { opacity: 0.34; }
+
 /* grain photo, une seule passe statique */
 .pj-grain {
   position: absolute;
@@ -213,9 +355,9 @@
 }
 
 .pj-art .pj-body,
-.pj-art .pj-meteor-art,
-.pj-wordmark {
+.pj-art .pj-window {
   pointer-events: auto;
+  cursor: pointer;
 }
 
 .pj-art .pj-body {
@@ -305,14 +447,6 @@
   100% { opacity: 0; }
 }
 
-.pj-wordmark {
-  display: block;
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 0 30px rgba(232, 192, 122, 0.26));
-  transition: filter 0.35s ease;
-}
-
 /* ---------- survol, focus, sélection ---------- */
 
 .pj-el:hover .pj-body,
@@ -324,12 +458,6 @@
     drop-shadow(0 0 40px rgba(232, 192, 122, 0.22));
 }
 
-.pj-el:hover .pj-wordmark,
-.pj-el:focus-visible .pj-wordmark,
-.pj-el.is-on .pj-wordmark {
-  filter: drop-shadow(0 0 40px rgba(246, 227, 182, 0.6));
-}
-
 .pj-el:hover .pj-head,
 .pj-el:focus-visible .pj-head,
 .pj-el.is-on .pj-head { filter: drop-shadow(0 0 16px rgba(255, 250, 238, 1)); }
@@ -338,8 +466,7 @@
   outline: none;
 }
 
-.pj-el:focus-visible .pj-art,
-.pj-el:focus-visible .pj-wordmark {
+.pj-el:focus-visible .pj-art {
   outline: 1px solid rgba(246, 227, 182, 0.75);
   outline-offset: 8px;
   border-radius: 3px;
@@ -347,7 +474,6 @@
 
 /* respiration très légère, pour signaler qu'il y a quelque chose à toucher */
 .pj-el:not(.is-seen) .pj-body { animation: pj-breathe 5.2s ease-in-out infinite; }
-.pj-el--logo:not(.is-seen) .pj-wordmark { animation: pj-breathe 5.2s ease-in-out infinite; }
 
 @keyframes pj-breathe {
   0%, 100% { filter: drop-shadow(0 -1.6px 0 var(--pj-rim)) drop-shadow(0 0 9px rgba(232, 192, 122, 0.12)); }
@@ -358,43 +484,6 @@
 .pj-el.is-seen .pj-body { animation: none; }
 
 /* ---------- les deux états ---------- */
-
-.pj-apres { opacity: 0; transition: opacity 1.2s ease; }
-.pj-avant { opacity: 1; transition: opacity 1.2s ease; }
-
-.scene--projet[data-state="apres"] .pj-avant { opacity: 0; }
-.scene--projet[data-state="apres"] .pj-apres { opacity: 1; }
-
-/* Arthur s'efface — mais son bouton reste là, et s'éclaire si on le cherche.
-   L'effacement porte sur le bouton entier : seul Axel a deux versions
-   dessinées, les autres éléments n'ont pas de groupe `pj-avant`. */
-.scene--projet[data-state="apres"] .pj-el--arthur {
-  opacity: 0.09;
-  filter: blur(1.4px);
-}
-
-/* À 9 % d'opacité, rien n'indiquerait qu'il reste quelque chose à toucher :
-   une respiration très lente laisse une présence, sans le faire revenir. */
-.scene--projet[data-state="apres"] .pj-el--arthur:not(.is-seen) {
-  animation: pj-absence 7s ease-in-out infinite;
-}
-
-@keyframes pj-absence {
-  0%, 100% { opacity: 0.07; }
-  50% { opacity: 0.2; }
-}
-
-.scene--projet[data-state="apres"] .pj-el--arthur:hover,
-.scene--projet[data-state="apres"] .pj-el--arthur:focus-visible,
-.scene--projet[data-state="apres"] .pj-el--arthur.is-on { opacity: 0.34; filter: blur(0.8px); }
-
-.scene--projet[data-state="apres"] .pj-sky { filter: saturate(0.68) brightness(0.84); }
-.scene--projet[data-state="apres"] .pj-horizonglow { opacity: 0.42; filter: hue-rotate(-12deg); }
-.scene--projet[data-state="apres"] .pj-lightspill { opacity: 1; }
-.scene--projet[data-state="apres"] .pj-grain { opacity: 0.085; }
-.scene--projet[data-state="apres"] .pj-lamps rect {
-  filter: drop-shadow(0 0 12px rgba(212, 52, 42, 1)) drop-shadow(0 0 34px rgba(212, 52, 42, 0.6));
-}
 
 .pj-filmtitle {
   position: absolute;
@@ -415,23 +504,7 @@
   transition: opacity 1.4s ease 0.5s, letter-spacing 1.8s ease 0.5s;
 }
 
-.scene--projet[data-state="apres"] .pj-filmtitle { opacity: 1; letter-spacing: 0.52em; }
-
-/* ---------- la bascule ---------- */
-
-/* Trois paliers lents, pas de scintillement rapide : on reste largement
-   sous les seuils photosensibles. */
-.scene--projet.is-shifting .pj-stage { animation: pj-shift 2.1s ease-in-out both; }
-.scene--projet.is-shifting .pj-grain { opacity: 0.3; }
-
-@keyframes pj-shift {
-  0% { transform: none; filter: none; }
-  18% { transform: scale(1.012); filter: brightness(1.5) contrast(1.15); }
-  30% { transform: none; filter: brightness(0.35); }
-  46% { transform: scale(1.008) translateX(3px); filter: brightness(1.25) saturate(0.4); }
-  62% { transform: none; filter: brightness(0.5); }
-  100% { transform: none; filter: none; }
-}
+.scene--projet[data-state="desert"] .pj-filmtitle { opacity: 1; letter-spacing: 0.52em; }
 
 /* ---------- le bandeau de transcription ---------- */
 
@@ -446,9 +519,24 @@
   right: 0;
   bottom: 0;
   z-index: 12;
-  padding: 3.4rem clamp(1.1rem, 4vw, 3.2rem) clamp(0.9rem, 2.2vh, 1.4rem);
-  background: linear-gradient(to top, #060404 0%, #060404 52%, rgba(6, 4, 4, 0.82) 72%, rgba(6, 4, 4, 0.4) 88%, rgba(6, 4, 4, 0) 100%);
+  padding: 2.6rem clamp(1.1rem, 4vw, 3.2rem) clamp(0.9rem, 2.2vh, 1.4rem);
+  /* Opaque : au-delà du cadre il n'y a plus d'image, seulement le ciel, et
+     un bandeau translucide y laisserait passer les étoiles. */
+  background: #060404;
   pointer-events: none;
+}
+
+/* Le fondu, lui, remonte *sur* l'image — sur le premier plan vide du désert
+   ou de la cour, là où il ne masque rien. */
+.pj-transcript::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: clamp(48px, 9vh, 96px);
+  pointer-events: none;
+  background: linear-gradient(to top, #060404 0%, rgba(6, 4, 4, 0.72) 38%, rgba(6, 4, 4, 0.22) 72%, rgba(6, 4, 4, 0) 100%);
 }
 
 .pj-transcript > * { pointer-events: auto; }
@@ -720,12 +808,20 @@
 @media (prefers-reduced-motion: reduce) {
   .pj-trail { animation: none; stroke-dashoffset: 0; }
   .pj-head { animation: none; opacity: 1; }
-  .pj-el .pj-body,
-  .pj-el--logo .pj-wordmark,
-  .scene--projet[data-state="apres"] .pj-el--arthur { animation: none !important; }
+  .pj-el .pj-body { animation: none !important; }
   .pj-rec-dot { animation: none; }
   .pj-line.is-typing::after { animation: none; }
-  .scene--projet.is-shifting .pj-stage { animation: none; }
-  .pj-avant, .pj-apres, .pj-sky, .pj-horizonglow, .pj-lightspill,
-  .pj-filmtitle, .pj-el { transition-duration: 0.25s; }
+  /* L'éclair reste — c'est le pivot du récit — mais réduit à un voile bref,
+     sans à-coup de cadre ni double décharge. */
+  .scene--projet.is-striking .pj-stage { animation: none; }
+  .scene--projet.is-striking .pj-flash { animation: pj-strike-calme 420ms ease-out both; }
+
+  @keyframes pj-strike-calme {
+    0% { opacity: 0; }
+    30% { opacity: 0.55; }
+    100% { opacity: 0; }
+  }
+
+  .pj-sky, .pj-haze, .pj-horizonglow, .pj-lightspill,
+  .pj-filmtitle, .pj-el, .pj-wordmark { transition-duration: 0.25s; }
 }
