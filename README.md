@@ -105,8 +105,8 @@ chaque silhouette du sol ; sans lui, du noir sur du noir.
 
 **Géométrie.** Repère 1440 × 900, horizon à y = 668. `place()` convertit le
 point d'appui au sol de chaque élément en pourcentages, donc tout reste
-solidaire du décor à n'importe quelle taille. La scène se comporte comme une
-image en `cover` : jamais de bande vide, on rogne sur les bords.
+solidaire du décor à n'importe quelle taille. Le cadre tient toujours entier à
+l'écran et le sol se prolonge jusqu'aux bords — voir « Cadrage » plus bas.
 
 **Zones cliquables.** Les boutons sont en `pointer-events: none` et seule la
 silhouette peinte reçoit le clic — sinon les boîtes d'Arthur et d'Axel, qui se
@@ -118,9 +118,9 @@ page, dans un bloc réservé aux lecteurs d'écran (`.pj-source`), et le bandeau
 les y chercher. Une seule source, et les 28 répliques restent lisibles et
 indexables sans JavaScript.
 
-**Petits écrans** (< 860 px) : on ne réorganise pas la scène, on l'agrandit
-pour qu'elle remplisse la hauteur et on la parcourt du doigt — même choix que
-le désert de la page Équipe.
+**Petits écrans** (< 700 px de large, ou < 520 px de haut) : on ne réorganise
+pas la scène, on l'agrandit pour qu'elle remplisse la hauteur et on la parcourt
+du doigt — même choix que le désert de la page Équipe.
 
 Modifier les répliques : `src/data/projet.json`. Les positions et les dessins
 sont dans `src/lib/projet.js` (table `ART`).
@@ -158,7 +158,8 @@ page, dans un bloc réservé aux lecteurs d'écran (`.team-bios`), et la fiche v
 les y chercher. Une seule source, et le contenu reste lisible et indexable même
 sans JavaScript.
 
-**Petits écrans** (< 780 px) : on ne réorganise pas le dessin en grille, on
+**Petits écrans** (< 780 px de large, ou < 520 px de haut — ce qui attrape
+aussi le téléphone couché) : on ne réorganise pas le dessin en grille, on
 l'agrandit et on le parcourt du doigt. Au-dessus, les huit tiennent à l'écran.
 
 Modifier l'équipe : `src/data/team.json` (ordre, noms courts, couleurs de
@@ -193,6 +194,53 @@ Régénérer : `tools/extract-assets.py` pour le ciel et le logotype doré,
 `tools/extract-portraits.py` pour les visages et le logotype à la craie
 (tous deux nécessitent Pillow, numpy et scipy).
 
+## Cadrage : ce qui se rogne et ce qui ne se rogne pas
+
+Une règle, valable pour tout le site :
+
+> **Le décor peut être rogné. Ce qui porte du sens, jamais.**
+
+Le ciel photographique est du décor : il couvre l'écran quelle qu'en soit la
+forme, et un bout d'étoile en moins ne coûte rien. Le logotype, les étoiles de
+navigation, les sept éléments de la scène Le Projet, les huit figures de
+L'Équipe : eux tiennent toujours entiers.
+
+D'où trois couches indépendantes plutôt qu'une image unique mise à l'échelle :
+
+1. **le ciel** couvre l'écran (`cover`) ;
+2. **la composition** s'inscrit *entière* dans la place disponible — elle
+   rétrécit, elle ne se coupe pas — et se pose en bas, comme un sol ;
+3. **le sol** déborde de part et d'autre de la composition pour rejoindre les
+   bords de l'écran, de sorte qu'aucun ciel n'apparaisse sous l'horizon.
+
+Trois pièges rencontrés, qui expliquent la forme du code :
+
+- **Ne jamais faire dépendre une hauteur d'une largeur.** Le désert de
+  l'accueil grandissait avec la largeur de la fenêtre pendant que sa position
+  suivait la hauteur : il débordait par le bas sur les écrans panoramiques et
+  se réduisait à un trait sur les écrans étroits. Il est maintenant ancré en
+  bas et dimensionné en `dvh` — l'horizon tombe aux quatre cinquièmes de la
+  hauteur, d'un téléphone à un 21/9.
+- **Un voile de bord appartient à l'écran, pas au cadre.** Tant que la
+  composition touchait les bords, les deux revenaient au même ; dès que le sol
+  s'est mis à continuer au-delà, le voile dessinait une arête verticale en
+  plein désert.
+- **`overflow: hidden` crée une zone défilable ; `overflow: clip` non.** Les
+  bandes de sol dépassent volontairement de plusieurs écrans : avec `hidden`,
+  le recentrage tactile de la scène Le Projet déplaçait l'image sur *tous* les
+  écrans, pas seulement sur les petits.
+
+Sur petit écran — moins de 700 px de large, ou moins de 520 px de haut, ce qui
+attrape aussi le téléphone couché — on renonce à tout montrer d'un coup :
+la scène remplit la hauteur, déborde en largeur, et se parcourt au doigt.
+C'est le seul cas où quelque chose sort du cadre, et on peut aller le chercher.
+
+La scène Le Projet a une contrainte de plus : le bandeau de transcription ne
+doit rien masquer. Sa hauteur dépend de son contenu, donc `projet.js` la mesure
+(`ResizeObserver`) et la publie dans `--pj-bar`, que le CSS retire de la place
+disponible. Sans JavaScript, une valeur par défaut volontairement large prend
+le relais : l'image est un peu plus petite, rien n'est caché.
+
 ## Prévisualiser sans npm
 
 `npm run dev` reste la bonne façon de travailler. Si le registre npm n'est pas
@@ -204,7 +252,28 @@ node tools/build-preview.mjs
 python3 -m http.server 8080 --directory preview
 ```
 
-## Vérifier la scène Le Projet
+## Vérifier
+
+Deux outils, à copier dans `preview/` après un build (`sh tools/vp.sh` s'en
+charge) :
+
+- `tools/vp.sh` écrit `__vp.html` (rend une route à une taille d'écran exacte,
+  via une iframe — indispensable, le navigateur sans tête refusant les fenêtres
+  de moins de 500 px) et `__fit.html` (vérifie que les sept éléments de la
+  scène Le Projet tiennent entiers, bandeau compris).
+- `tools/shoot.sh <route> <préfixe>` capture la route à sept tailles et en
+  assemble une planche-contact.
+
+```bash
+node tools/build-preview.mjs && sh tools/vp.sh
+sh tools/shoot.sh /le-projet/ pj      # planche-contact
+```
+
+Cadrage vérifié sur 3440×1440, 2560×1080, 1920×1080, 1512×982, 1440×900,
+1440×620, 1366×768, 1280×800, 1180×820, 1024×768, 1000×1300, 912×1368,
+800×1280, 768×1024, et en téléphone debout comme couché.
+
+### Interactions de la scène Le Projet
 
 `tools/selftest.html` pilote la scène dans une iframe et vérifie 39 points :
 zones réellement cliquables, écriture des répliques, crédits, compteur,

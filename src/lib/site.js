@@ -14,6 +14,7 @@
 
 import { chalkBackdrop, chalkPeople, memberDialog, esc } from "./chalk.js";
 import { sceneProjet } from "./projet.js";
+import { scenePartenaires } from "./partenaires.js";
 
 export { SCENES, TITLES, DESCRIPTIONS } from "./routes.js";
 
@@ -25,9 +26,9 @@ function sceneCiel() {
 
   <div class="sky" id="sky"></div>
   <canvas id="fx" aria-hidden="true"></canvas>
-  <div class="glow" aria-hidden="true"></div>
 
   <div class="terrain" id="terrain" aria-hidden="true">
+    <div class="glow"></div>
     <svg viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax meet" role="presentation">
       <defs>
         <linearGradient id="gPlain" gradientUnits="userSpaceOnUse" x1="0" y1="204" x2="0" y2="300">
@@ -40,12 +41,6 @@ function sceneCiel() {
           <stop offset="0" stop-color="#0a0708" />
           <stop offset="0.6" stop-color="#120c09" />
           <stop offset="1" stop-color="#1d130c" />
-        </linearGradient>
-        <linearGradient id="gEdge" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#05030a" stop-opacity="0.8" />
-          <stop offset="0.28" stop-color="#05030a" stop-opacity="0" />
-          <stop offset="0.72" stop-color="#05030a" stop-opacity="0" />
-          <stop offset="1" stop-color="#05030a" stop-opacity="0.8" />
         </linearGradient>
         <linearGradient id="gFar" gradientUnits="userSpaceOnUse" x1="0" y1="182" x2="0" y2="210">
           <stop offset="0" stop-color="#3a2416" />
@@ -75,13 +70,11 @@ function sceneCiel() {
         <path d="M0,14 L3,6 L6,10 L8,2 L11,9 L14,0 L17,9 L20,3 L23,10 L26,14 Z" transform="translate(1298,230) scale(1)" />
       </g>
 
-      <rect x="0" y="186" width="1440" height="80" fill="url(#gEdge)" />
-
       <!-- premier plan, presque noir -->
       <path fill="#0c0806" d="M0,252 L120,246 L260,255 L400,248 L520,258 L660,250 L800,260 L940,252 L1080,262 L1220,253 L1340,261 L1440,255 L1440,300 L0,300 Z" />
     </svg>
-    <div class="plain"></div>
   </div>
+  <div class="edge-veil" aria-hidden="true"></div>
 
   <img class="wordmark" src="/cosmic-logo.webp" alt="Cosmic Review" width="900" height="339" />
 
@@ -145,36 +138,15 @@ function teamBios(members) {
   </div>`;
 }
 
-/* ---------------------------------------------------------- scènes texte */
-
-function sceneTexte(id, eyebrow, title, paragraphs) {
-  return `<section class="scene scene--texte" id="scene-${esc(id)}" data-scene="${esc(id)}" aria-labelledby="${esc(id)}-title">
-  <div class="content-page">
-    <div class="content-wrap">
-      <p class="eyebrow">${esc(eyebrow)}</p>
-      <h1 id="${esc(id)}-title">${esc(title)}</h1>
-      ${paragraphs.map((p) => `<p>${p}</p>`).join("\n      ")}
-      <a class="back" href="/" data-goto="ciel">Retour au ciel</a>
-    </div>
-  </div>
-</section>`;
-}
-
-const PARTENAIRES = [
-  `Le film est financé par une campagne de financement participatif portée par l'association <strong>Film 97</strong>, qui perçoit et gère les fonds : tournage en France et aux États-Unis, matériel, logements, post-production.`,
-  `Les paliers : 15 000 € pour que le film se fasse, 18 000 € pour l'arrivée d'un étalonneur professionnel, 20 000 € pour une bande originale composée sur mesure, 22 000 € pour multiplier les projections et avant-premières en France — à Paris, Dijon et dans le Nord.`,
-  `Celles et ceux qui soutiennent le projet rejoignent la communauté des <em>CosmicReviewers</em>.`,
-];
-
 /* ------------------------------------------------------------------ tout */
 
 /** La pile complète, identique sur les quatre routes. */
-export function siteMarkup(members, projet, initial = "ciel") {
+export function siteMarkup(members, projet, partenaires, initial = "ciel") {
   const stack = [
     sceneCiel(),
     sceneProjet(projet),
     sceneEquipe(members),
-    sceneTexte("partenaires", "Soutenir le film", "Les Partenaires", PARTENAIRES),
+    scenePartenaires(partenaires),
   ]
     // La scène de départ est marquée dès le HTML : sans JavaScript, la bonne
     // scène s'affiche quand même et les liens redeviennent de vrais liens.

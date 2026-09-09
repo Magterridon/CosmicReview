@@ -1,0 +1,650 @@
+/* ============================================================
+ Cosmic Review — la scène « Les Partenaires »
+
+ Registre photographique (accueil, Le Projet), pas la craie de L'Équipe :
+ même ciel `sky.webp`, poussé vers le bleu profond et mis en rotation lente
+ pour faire une galaxie. Les partenaires sont en orbite autour du titre.
+
+ Le dossier est un objet de fiction — chemise kraft, fiche tapée à la
+ machine — volontairement générique : aucun sigle, aucune administration
+ réelle. Il sert la mise en page, il n'imite pas un document officiel.
+ ============================================================ */
+
+.scene--partenaires {
+  /* On arrive de loin : la scène se rapproche au lieu de monter du bas. */
+  transform: scale(1.22);
+  background: radial-gradient(circle at 50% 45%, #0a1024 0%, #05060f 58%, var(--void) 100%);
+}
+
+.pa-scene-inner {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 6;
+}
+
+/* ------------------------------------------------------------ la galaxie */
+
+.pa-galaxie {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Le ciel de l'accueil, réutilisé : c'est le même univers. */
+.pa-fond {
+  position: absolute;
+  inset: -20%;
+  background-image: url("/sky.webp");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  filter: saturate(0.7) hue-rotate(-12deg) brightness(0.72);
+  animation: pa-tourne 240s linear infinite;
+}
+
+/* Les bras : deux voiles très étirés qui tournent moins vite que le fond. */
+.pa-bras {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150vmax;
+  height: 150vmax;
+  translate: -50% -50%;
+  background:
+    radial-gradient(ellipse 42% 12% at 50% 50%, rgba(143, 184, 216, 0.16) 0%, transparent 62%),
+    radial-gradient(ellipse 34% 9% at 50% 50%, rgba(232, 192, 122, 0.13) 0%, transparent 58%);
+  animation: pa-tourne 180s linear infinite reverse;
+}
+
+.pa-coeur {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46vmin;
+  height: 46vmin;
+  translate: -50% -50%;
+  background: radial-gradient(circle, rgba(246, 227, 182, 0.2) 0%, rgba(232, 192, 122, 0.07) 34%, transparent 68%);
+  filter: blur(6px);
+}
+
+@keyframes pa-tourne {
+  from { rotate: 0deg; }
+  to { rotate: 360deg; }
+}
+
+/* --------------------------------------------------------- l'hyperespace */
+
+.pa-warp {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+/* Pendant le saut, la galaxie et les orbites attendent hors champ. */
+.scene--partenaires.is-warping .pa-galaxie { opacity: 0.25; }
+.scene--partenaires.is-warping .pa-scene-inner,
+.scene--partenaires.is-warping .pa-hint,
+.scene--partenaires.is-warping .scene-back { opacity: 0; }
+
+.pa-galaxie,
+.pa-scene-inner,
+.pa-hint,
+.scene-back { transition: opacity 0.5s ease; }
+
+/* -------------------------------------------------------------- le titre
+
+ « Cosmic » reprend le doré du logotype et reste discret ; c'est
+ « Partenaires » qui s'écrit à l'arrivée. Le logotype image de l'accueil
+ n'est pas repris ici : il ne doit jamais être redessiné ni recomposé en
+ texte (voir CLAUDE.md). Ce titre est un titre de scène, pas un logo. */
+
+.pa-titre {
+  position: relative;
+  z-index: 8;
+  margin: 0;
+  text-align: center;
+  line-height: 1.06;
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity 0.7s ease 0.1s, transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) 0.1s;
+}
+
+.scene--partenaires.is-landed .pa-titre {
+  opacity: 1;
+  transform: none;
+}
+
+.pa-titre-cosmic,
+.pa-titre-mot { display: block; }
+
+.pa-titre-cosmic {
+  font-size: clamp(1.1rem, 2.6vw, 1.7rem);
+  font-weight: 300;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.9;
+}
+
+.pa-titre-mot {
+  margin-top: 0.18em;
+  font-size: clamp(2rem, 7vw, 4.4rem);
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  text-shadow: 0 0 38px rgba(232, 192, 122, 0.4);
+}
+
+/* ------------------------------------------------------------ les orbites */
+
+.pa-orbites {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.pa-orb {
+  position: absolute;
+  translate: -50% -50%;
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 0;
+  scale: 0.7;
+  transition: opacity 0.6s ease, scale 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.scene--partenaires.is-landed .pa-orb {
+  opacity: calc(0.55 + var(--z) * 0.45);
+  scale: var(--z);
+  /* Les logos apparaissent l'un après l'autre, dans l'ordre de l'orbite. */
+  transition-delay: calc(var(--d) * 0.12s);
+}
+
+.scene--partenaires.is-landed .pa-orb:hover,
+.scene--partenaires.is-landed .pa-orb:focus-visible {
+  opacity: 1;
+  scale: calc(var(--z) * 1.1);
+  transition-delay: 0s;
+}
+
+.pa-orb:focus-visible {
+  outline: 1px solid rgba(246, 227, 182, 0.75);
+  outline-offset: 4px;
+}
+
+.pa-orb-halo {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 8.4rem;
+  height: 8.4rem;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--c) 26%, transparent) 0%, transparent 68%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.pa-orb:hover .pa-orb-halo,
+.pa-orb:focus-visible .pa-orb-halo { opacity: 1; }
+
+.pa-orb-logo {
+  position: relative;
+  width: clamp(3.4rem, 7vw, 5rem);
+  height: auto;
+  filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.6));
+  /* Les logos flottent doucement : une orbite, pas une grille. */
+  animation: pa-flotte 9s ease-in-out infinite;
+  animation-delay: calc(var(--d) * -1s);
+}
+
+@keyframes pa-flotte {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -7px; }
+}
+
+.pa-orb-nom {
+  position: relative;
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  white-space: nowrap;
+  transition: color 0.25s ease;
+}
+
+.pa-orb:hover .pa-orb-nom,
+.pa-orb:focus-visible .pa-orb-nom { color: var(--text); }
+
+/* ------------------------------------------------------- notes de la scène */
+
+.pa-demo-note {
+  position: absolute;
+  left: 50%;
+  bottom: 5.4rem;
+  translate: -50% 0;
+  margin: 0;
+  max-width: min(30rem, 84vw);
+  line-height: 1.7;
+  text-align: center;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(236, 230, 218, 0.42);
+}
+
+.pa-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 9.4rem;
+  translate: -50% 0;
+  z-index: 9;
+  margin: 0;
+  font-size: 0.66rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.6s ease 0.9s;
+}
+
+.scene--partenaires.is-landed .pa-hint { opacity: 1; }
+.pa-hint .hint-swipe { display: none; }
+
+/* ================================================================
+ Le dossier
+
+ Chemise kraft posée sur le noir, fiche dactylographiée à l'intérieur.
+ ================================================================ */
+
+.pa-dossier {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.pa-dossier[hidden] { display: none; }
+
+.pa-dossier-fond {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 3, 8, 0.86);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pa-dossier.is-open .pa-dossier-fond { opacity: 1; }
+
+.pa-dossier-carte {
+  position: relative;
+  width: min(46rem, 100%);
+  max-height: min(88vh, 46rem);
+  opacity: 0;
+  /* Le dossier se pose sur la table : il arrive de dessous, légèrement de biais. */
+  transform: translateY(22px) rotate(-0.6deg) scale(0.96);
+  transition: opacity 0.32s ease, transform 0.46s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.pa-dossier.is-open .pa-dossier-carte {
+  opacity: 1;
+  transform: none;
+}
+
+/* ------------------------------------------------------------- la chemise */
+
+.pa-chemise {
+  position: relative;
+  max-height: min(88vh, 46rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2.4rem 1rem 1rem;
+  background: linear-gradient(168deg, #b99a6e 0%, #a8875d 42%, #977751 100%);
+  border-radius: 3px 3px 2px 2px;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.72),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+/* L'onglet de la chemise, avec le nom du partenaire écrit dessus. */
+.pa-onglet {
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  max-width: calc(100% - 6rem);
+  padding: 0.34rem 1.1rem 0.3rem;
+  background: linear-gradient(180deg, #c9ab7e 0%, #b39469 100%);
+  border-radius: 0 0 3px 3px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #3a2c1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pa-dossier-fermer {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.7rem;
+  z-index: 3;
+  width: 2.1rem;
+  height: 2.1rem;
+  background: none;
+  border: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: rgba(74, 56, 33, 0.6);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.pa-dossier-fermer:hover,
+.pa-dossier-fermer:focus-visible { color: rgba(40, 30, 16, 0.95); }
+
+.pa-dossier-fermer:focus-visible {
+  outline: 1px solid rgba(58, 44, 26, 0.7);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------- la feuille */
+
+.pa-feuille {
+  position: relative;
+  padding: 1.9rem 1.7rem 1.7rem;
+  background: #efe7d6;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+  color: #2a2419;
+  /* La fiche est tapée à la machine : chasse fixe, pas la Jost du site. */
+  font-family: "Courier New", "Courier", ui-monospace, monospace;
+  font-size: 0.86rem;
+  line-height: 1.62;
+}
+
+/* Le tampon : une fiche de démonstration le dit franchement. */
+.pa-specimen {
+  position: absolute;
+  top: 6.5rem;
+  right: 1.4rem;
+  margin: 0;
+  padding: 0.3rem 1rem;
+  rotate: -13deg;
+  border: 2.5px solid rgba(150, 44, 38, 0.5);
+  border-radius: 3px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-indent: 0.28em;
+  text-transform: uppercase;
+  color: rgba(150, 44, 38, 0.5);
+  pointer-events: none;
+}
+
+.pa-entete {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.3rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid rgba(42, 36, 25, 0.22);
+}
+
+/* La photo agrafée au dossier. */
+.pa-photo {
+  position: relative;
+  width: 6.4rem;
+  height: 7.4rem;
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+  background: #17181f;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+  rotate: -1.4deg;
+}
+
+.pa-photo img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.pa-trombone {
+  position: absolute;
+  top: -0.55rem;
+  left: 50%;
+  translate: -50% 0;
+  width: 1.5rem;
+  height: 1.15rem;
+  border: 2px solid rgba(120, 122, 130, 0.9);
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+}
+
+.pa-identite { min-width: 0; }
+
+.pa-identite h2 {
+  margin: 0.15rem 0 0.5rem;
+  font-family: var(--font);
+  font-size: clamp(1.3rem, 3.4vw, 1.85rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #201b12;
+}
+
+.pa-identite h2:focus-visible {
+  outline: 1px solid rgba(42, 36, 25, 0.5);
+  outline-offset: 3px;
+}
+
+.pa-champ {
+  margin: 0.1rem 0;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+}
+
+.pa-champ span {
+  display: inline-block;
+  min-width: 8.6rem;
+  text-transform: uppercase;
+  color: rgba(42, 36, 25, 0.55);
+}
+
+.pa-champ em {
+  font-style: normal;
+  color: #2a2419;
+}
+
+/* L'avis, en clair dans la fiche : on ne compte pas sur le seul tampon. */
+.pa-avis {
+  margin: 1rem 0 0;
+  padding: 0.7rem 0.85rem;
+  background: rgba(150, 44, 38, 0.07);
+  border-left: 3px solid rgba(150, 44, 38, 0.45);
+  font-size: 0.74rem;
+  line-height: 1.55;
+  color: #5d3a30;
+}
+
+.pa-bloc { margin-top: 1.35rem; }
+
+.pa-bloc h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(42, 36, 25, 0.62);
+}
+
+.pa-bloc p { margin: 0; }
+
+.pa-bloc ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  list-style: none;
+}
+
+.pa-bloc li { position: relative; }
+
+.pa-bloc li::before {
+  content: "—";
+  position: absolute;
+  left: -1.1rem;
+  color: rgba(42, 36, 25, 0.45);
+}
+
+.pa-bloc--mot blockquote {
+  margin: 0;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--c, rgba(42, 36, 25, 0.4));
+  font-style: italic;
+}
+
+.pa-signature {
+  margin: 0.45rem 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: rgba(42, 36, 25, 0.6);
+}
+
+/* ================================================================
+ Petits écrans
+ ================================================================ */
+
+@media (max-width: 860px) {
+  .pa-hint .hint-tap { display: none; }
+  .pa-hint .hint-swipe { display: inline; }
+
+  .pa-orb-nom { font-size: 0.54rem; letter-spacing: 0.14em; }
+
+  .pa-entete {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .pa-champ span { min-width: 0; margin-right: 0.5rem; }
+
+  .pa-specimen {
+    top: 0.7rem;
+    right: 0.7rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-indent: 0.18em;
+    padding: 0.22rem 0.6rem;
+    rotate: -9deg;
+  }
+
+  .pa-feuille { padding: 1.5rem 1.1rem 1.3rem; }
+}
+
+@media (max-width: 560px) {
+  /* Sous cette largeur l'orbite tasse les logos les uns sur les autres :
+     on repasse en grille, qui reste lisible et se remplit toute seule. */
+  .pa-orbites {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.6rem 0.8rem;
+    width: min(22rem, 88vw);
+    margin-top: 2.4rem;
+  }
+
+  .pa-orb {
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    translate: none;
+  }
+
+  .scene--partenaires.is-landed .pa-orb { scale: 1; opacity: 1; }
+
+  .scene--partenaires.is-landed .pa-orb:hover,
+  .scene--partenaires.is-landed .pa-orb:focus-visible { scale: 1.06; }
+
+  .pa-scene-inner {
+    align-content: start;
+    padding: 4.5rem 1rem 9rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .pa-hint,
+  .pa-demo-note {
+    position: static;
+    translate: none;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .pa-hint { margin-top: 2.6rem; }
+  .pa-demo-note { margin-top: 0.9rem; font-size: 0.56rem; }
+
+  /* Le « Retour au ciel » reprend sa place dans le flux, sous les notes. */
+  .scene--partenaires .scene-back {
+    position: static;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    translate: none;
+    display: block;
+    width: fit-content;
+    margin: 1.8rem auto 0;
+  }
+}
+
+/* ================================================================
+ Mouvement réduit
+
+ Pas de saut en hyperespace, pas de rotation de galaxie, pas de logos qui
+ flottent : on arrive directement, tout est en place.
+ ================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-fond,
+  .pa-bras { animation: none; }
+
+  .pa-orb-logo { animation: none; }
+
+  .pa-warp { display: none; }
+
+  .pa-titre,
+  .pa-orb,
+  .pa-hint {
+    opacity: 1;
+    transform: none;
+    scale: 1;
+    transition: none;
+  }
+
+  .scene--partenaires.is-landed .pa-orb { transition-delay: 0s; }
+
+  .pa-dossier-carte { transition: opacity 0.2s ease; transform: none; }
+}

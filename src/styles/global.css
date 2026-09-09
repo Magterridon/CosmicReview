@@ -174,42 +174,76 @@ body.is-modal-open { overflow: hidden; }
 }
 
 /* ---------- Lueur d'horizon, très retenue ---------- */
+/* La lueur d'horizon est accrochée au sol : elle reste sur la ligne d'horizon
+   quelle que soit la hauteur de la fenêtre. */
 .glow {
   position: absolute;
   left: -10%;
   right: -10%;
-  top: 49%;
-  height: 29%;
+  bottom: 46.3%;   /* le bas de la lueur se pose sur l'horizon du dessin */
+  height: 96%;
   pointer-events: none;
-  background: radial-gradient(ellipse 60% 100% at 50% 100%, rgba(184, 104, 48, 0.34) 0%, rgba(120, 66, 36, 0.16) 42%, rgba(120, 66, 36, 0) 72%);
+  background: radial-gradient(ellipse 58% 100% at 50% 100%, rgba(184, 104, 48, 0.32) 0%, rgba(120, 66, 36, 0.14) 44%, rgba(120, 66, 36, 0) 74%);
 }
 
-/* ---------- Désert du Nevada, stylisé ---------- */
+/* ---------- Désert du Nevada, stylisé ----------
+
+ Le désert est ancré en bas de l'écran, jamais posé à un pourcentage de sa
+ hauteur : c'est un sol, il touche le bord inférieur quelle que soit la forme
+ de la fenêtre. Sa taille suit la HAUTEUR de l'écran et non sa largeur —
+ c'était le défaut d'origine : le dessin grandissait avec la largeur pendant
+ que sa position, elle, suivait la hauteur, si bien qu'il débordait sur les
+ écrans larges et se réduisait à un trait sur les écrans étroits.
+
+ Résultat : l'horizon tombe toujours aux quatre cinquièmes de la hauteur,
+ d'un téléphone à un écran panoramique. Le dessin garde ses proportions et se
+ centre ; la plaine, elle, court d'un bord à l'autre pour qu'aucun morceau de
+ ciel n'apparaisse sous l'horizon.
+ ------------------------------------------------------------------------ */
 .terrain {
   position: absolute;
   left: 0;
   right: 0;
-  top: 55%;
   bottom: 0;
+  height: clamp(250px, 42dvh, 540px);
   display: flex;
   flex-direction: column;
+  align-items: center;
   will-change: transform;
 }
 
+/* la plaine, d'un bord de l'écran à l'autre : elle prolonge le dessin quand
+   celui-ci, plus étroit que l'écran, ne va pas jusqu'aux bords */
+.terrain::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 53.7%;
+  bottom: 0;
+  background: linear-gradient(to bottom,
+    #482c19 0%, #33200f 12%, #150d08 34%, #080505 55%, #050303 100%);
+}
+
 .terrain svg {
+  position: relative;
+  z-index: 1;
   display: block;
-  width: 100%;
-  height: auto;
+  width: auto;
+  height: 79%;
+  aspect-ratio: 1440 / 300;
   flex: none;
 }
 
-.terrain .plain {
-  flex: 1 1 auto;
-  background: linear-gradient(to bottom, #0c0806 0%, #050303 100%);
-}
-
-@media (max-width: 760px) {
-  .terrain svg { width: 190%; margin-left: -45%; }
+/* voile latéral : il part des bords de l'ÉCRAN, pas de ceux du dessin */
+.scene--ciel .edge-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(to right,
+    rgba(4, 5, 12, 0.9) 0%, rgba(4, 5, 12, 0) 20%,
+    rgba(4, 5, 12, 0) 80%, rgba(4, 5, 12, 0.9) 100%);
 }
 
 /* ---------- Logotype Cosmic Review (fichier source, jamais retouché) ---------- */

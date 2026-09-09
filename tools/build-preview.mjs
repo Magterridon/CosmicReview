@@ -26,6 +26,9 @@ const { siteMarkup, TITLES, DESCRIPTIONS } = await import(
 );
 const team = JSON.parse(fs.readFileSync(path.join(ROOT, "src/data/team.json"), "utf8"));
 const projet = JSON.parse(fs.readFileSync(path.join(ROOT, "src/data/projet.json"), "utf8"));
+const partenaires = JSON.parse(
+  fs.readFileSync(path.join(ROOT, "src/data/partenaires.json"), "utf8")
+);
 
 function page(scene) {
   return `<!doctype html>
@@ -43,11 +46,12 @@ function page(scene) {
 <link rel="stylesheet" href="/styles/global.css" />
 <link rel="stylesheet" href="/styles/chalk.css" />
 <link rel="stylesheet" href="/styles/projet.css" />
+<link rel="stylesheet" href="/styles/partenaires.css" />
 <link rel="preload" as="image" href="/sky.webp" />
 <link rel="preload" as="image" href="/cosmic-logo.webp" />
 </head>
 <body data-scene="${scene}">
-${siteMarkup(team.members, projet, scene)}
+${siteMarkup(team.members, projet, partenaires, scene)}
 <script type="module" src="/scripts/main.js"></script>
 </body>
 </html>

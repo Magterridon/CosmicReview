@@ -486,7 +486,9 @@
 /* Au-dessus de ce seuil, la rangée entière tient à l'écran : chaque colonne
    fait au moins ~80 px, on voit les huit personnes d'un coup. En dessous, on
    agrandit le dessin et on le parcourt du doigt plutôt que de le casser. */
-@media (max-width: 780px) {
+/* Le mode « on parcourt au doigt » ne dépend pas que de la largeur : un
+   téléphone couché est large, mais n'a pas de hauteur. */
+@media (max-width: 780px), (max-height: 520px) {
   .scene--equipe { --cw: 1.5; }
 
   .chalk-viewport {
@@ -519,7 +521,7 @@
   .scene-back { bottom: 16px; }
 }
 
-@media (max-width: 780px) and (orientation: landscape) {
+@media (max-height: 560px) and (orientation: landscape) {
   .chalk-stage {
     width: calc(100dvh * 1.6);
     min-width: calc(100dvh * 1.6);

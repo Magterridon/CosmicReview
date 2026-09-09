@@ -1,0 +1,85 @@
+{
+  "_lisezmoi": [
+    "PARTENAIRES DU FILM — source unique de la scène « Les Partenaires ».",
+    "",
+    "AJOUTER UN PARTENAIRE :",
+    "  1. copier un bloc de `partenaires` et le remplir ;",
+    "  2. déposer le logo dans `public/partners/<logo>` (SVG de préférence) ;",
+    "  3. c'est tout. La galaxie recalcule les positions toute seule.",
+    "",
+    "IMPORTANT — les trois entrées actuelles sont des PLACEHOLDERS de démonstration.",
+    "Les noms, les descriptions et les citations sont INVENTÉS : aucune de ces",
+    "sociétés n'existe et aucune n'a soutenu le film. Elles servent uniquement à",
+    "montrer la mise en page en attendant de vrais partenaires.",
+    "",
+    "Tant qu'une entrée porte `\"placeholder\": true`, son dossier affiche un tampon",
+    "SPÉCIMEN dans la page. Ne passer une entrée à `false` que lorsqu'il s'agit",
+    "d'un vrai partenaire.",
+    "",
+    "RÈGLE POUR UN VRAI PARTENAIRE : le champ `mot` est une citation attribuée à",
+    "une personne réelle. N'y écrire que des propos réellement tenus et validés",
+    "par elle — jamais un texte rédigé à sa place, même « en attendant ». Idem",
+    "pour `contribution` : ce que le partenaire s'est effectivement engagé à faire.",
+    "En cas de doute, laisser le champ vide : la fiche s'affiche très bien sans."
+  ],
+
+  "partenaires": [
+    {
+      "id": "vela",
+      "placeholder": true,
+      "nom": "Atelier Vela",
+      "secteur": "Optiques et location caméra",
+      "ville": "Lyon, France",
+      "depuis": "2026",
+      "logo": "/partners/vela.svg",
+      "couleur": "#e8c07a",
+      "description": "Atelier de location et d'entretien d'optiques anciennes, spécialisé dans les focales fixes remises en état pour le cinéma indépendant. Une équipe de six personnes, un banc de collimation, et l'habitude des tournages qui partent loin avec peu de matériel.",
+      "produits": [
+        "Série de focales fixes remises en état",
+        "Entretien et collimation sur le tournage",
+        "Valises de transport pour tournage en extérieur"
+      ],
+      "contribution": "Prêt de la série d'optiques pour les six semaines de tournage, France et Nevada, et révision complète du matériel entre les deux blocs.",
+      "mot": "Les objectifs qu'on répare ont déjà vécu plusieurs films. Celui-ci se tourne surtout la nuit, en décor naturel — c'est exactement ce pour quoi ces verres ont été taillés.",
+      "motPar": "Direction de l'atelier"
+    },
+    {
+      "id": "coriolis",
+      "placeholder": true,
+      "nom": "Studio Coriolis",
+      "secteur": "Son et post-production",
+      "ville": "Bruxelles, Belgique",
+      "depuis": "2026",
+      "logo": "/partners/coriolis.svg",
+      "couleur": "#8fb8d8",
+      "description": "Studio de montage son et de mixage installé dans une ancienne imprimerie. Travaille principalement le documentaire et la fiction à petit budget, avec un goût affirmé pour les prises de son difficiles et les ambiances tenues.",
+      "produits": [
+        "Montage son et sound design",
+        "Mixage",
+        "Restauration de prises de son en extérieur"
+      ],
+      "contribution": "Accueil de la post-production son en résidence, du montage au mixage final, et nettoyage des rushes enregistrés dans le désert.",
+      "mot": "Un found footage se joue entièrement au son : c'est lui qui décide de ce que le spectateur croit avoir vu. Il y a de quoi faire avec ce qui a été enregistré là-bas.",
+      "motPar": "Direction du studio"
+    },
+    {
+      "id": "quillon",
+      "placeholder": true,
+      "nom": "Quillon Field Services",
+      "secteur": "Logistique de tournage",
+      "ville": "Las Vegas, États-Unis",
+      "depuis": "2026",
+      "logo": "/partners/quillon.svg",
+      "couleur": "#c98a5e",
+      "description": "Petite structure d'accompagnement de tournages en zone désertique : repérages, autorisations, véhicules, points d'eau et sécurité. Connaît les lacs asséchés de la région et les conditions de tournage de nuit à quatre degrés.",
+      "produits": [
+        "Repérages et autorisations de tournage",
+        "Véhicules et transport d'équipe",
+        "Sécurité et assistance en zone isolée"
+      ],
+      "contribution": "Organisation des trois semaines de tournage sur le lac asséché : autorisations, véhicules, hébergement de l'équipe et veille météo quotidienne.",
+      "mot": "Le désert n'est pas un décor, c'est un lieu de travail avec ses règles. On s'occupe de ce qui rend le tournage possible pour que l'équipe pense au film.",
+      "motPar": "Coordination sur place"
+    }
+  ]
+}

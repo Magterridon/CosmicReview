@@ -263,11 +263,39 @@ export function initProjet() {
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
   });
 
+  /* ---------------------------------------------- la place que prend le bandeau
+
+   Le cadre doit tenir dans ce qui reste au-dessus du bandeau. La hauteur du
+   bandeau dépend de son contenu et de la largeur de l'écran : on la mesure
+   plutôt que de la deviner, et le CSS s'en sert pour dimensionner le cadre.
+   Sans JavaScript, la valeur par défaut du CSS prend le relais. */
+
+  const bar = scene.querySelector(".pj-transcript");
+
+  function measureBar() {
+    if (!bar) return;
+    const h = Math.round(bar.getBoundingClientRect().height);
+    if (h > 0) scene.style.setProperty("--pj-bar", h + "px");
+  }
+
+  if (bar && "ResizeObserver" in window) {
+    new ResizeObserver(measureBar).observe(bar);
+  } else {
+    window.addEventListener("resize", measureBar);
+  }
+  measureBar();
+
   /* ------------------------------------------------- arrivée sur la scène */
 
-  /** Sur petit écran la scène déborde : on arrive au milieu du désert. */
+  /**
+   * Sur petit écran seulement, la scène déborde et se parcourt au doigt : on
+   * arrive alors au milieu du désert. Ailleurs le cadre tient tout entier, et
+   * y toucher décalerait l'image — c'est ce que faisait la première version.
+   */
+  const pan = window.matchMedia("(max-width: 860px)");
+
   function centre() {
-    if (!viewport) return;
+    if (!viewport || !pan.matches) return;
     const extra = viewport.scrollWidth - viewport.clientWidth;
     if (extra > 0) viewport.scrollLeft = extra * 0.5;
   }
@@ -278,6 +306,7 @@ export function initProjet() {
   return {
     enter() {
       active = true;
+      measureBar();
       centre();
       window.clearInterval(ticker);
       ticker = window.setInterval(() => { if (active) { seconds += 1; paintTc(); } }, 1000);

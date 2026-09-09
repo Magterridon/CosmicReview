@@ -89,7 +89,40 @@ function bushes() {
     .join("")}</g>`;
 }
 
-function terrain() {
+/**
+ * Le décor du sol, en deux versions.
+ *
+ * `bands` ne garde que ce qui est invariant horizontalement — la crête
+ * lointaine et la plaine. Cette version-là est étirée sur toute la largeur de
+ * l'écran, derrière le cadre : c'est elle qui fait que le désert touche les
+ * bords même quand le cadre, lui, reste entier au milieu.
+ *
+ * La version complète (buttes, craquelures, buissons) reste dans le cadre, à
+ * son échelle : on n'étire jamais une forme reconnaissable.
+ */
+function terrain(mode = "full") {
+  const wide = mode === "bands";
+  const id = (name) => name + (wide ? "W" : "");
+  if (wide) return `<svg class="pj-bands" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="${id("pjPlain")}" gradientUnits="userSpaceOnUse" x1="0" y1="${HORIZON}" x2="0" y2="${H}">
+      <stop offset="0" stop-color="#77502f" />
+      <stop offset="0.1" stop-color="#5a3a20" />
+      <stop offset="0.3" stop-color="#2e1c10" />
+      <stop offset="0.62" stop-color="#120b06" />
+      <stop offset="1" stop-color="#060404" />
+    </linearGradient>
+    <linearGradient id="${id("pjFar")}" gradientUnits="userSpaceOnUse" x1="0" y1="${HORIZON - 40}" x2="0" y2="${HORIZON}">
+      <stop offset="0" stop-color="#4a3020" stop-opacity="0.55" />
+      <stop offset="1" stop-color="#3a2416" />
+    </linearGradient>
+  </defs>
+  <path fill="url(#${id("pjFar")})" d="M0,${HORIZON - 7} L120,${HORIZON - 10} L280,${HORIZON - 6} L420,${HORIZON - 12} L560,${HORIZON - 7} L700,${HORIZON - 11} L860,${HORIZON - 6} L1000,${HORIZON - 12} L1160,${HORIZON - 7} L1300,${HORIZON - 10} L1440,${HORIZON - 6} L1440,${HORIZON + 2} L0,${HORIZON + 2} Z" />
+  <path fill="url(#${id("pjPlain")})" d="M0,${HORIZON} L1440,${HORIZON - 2} L1440,${H} L0,${H} Z" />
+  <!-- premier plan presque noir : il court d'un bord de l'écran à l'autre -->
+  <path fill="#080605" d="M0,846 L180,840 L380,852 L560,844 L760,856 L960,846 L1160,858 L1340,848 L1440,855 L1440,${H} L0,${H} Z" />
+</svg>`;
+
   return `<svg class="pj-terrain" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true" focusable="false">
   <defs>
     <linearGradient id="pjPlain" gradientUnits="userSpaceOnUse" x1="0" y1="${HORIZON}" x2="0" y2="${H}">
@@ -106,12 +139,6 @@ function terrain() {
     <linearGradient id="pjButte" gradientUnits="userSpaceOnUse" x1="0" y1="580" x2="0" y2="${HORIZON}">
       <stop offset="0" stop-color="#0a0708" />
       <stop offset="1" stop-color="#1b110b" />
-    </linearGradient>
-    <linearGradient id="pjEdge" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#04050c" stop-opacity="0.82" />
-      <stop offset="0.26" stop-color="#04050c" stop-opacity="0" />
-      <stop offset="0.74" stop-color="#04050c" stop-opacity="0" />
-      <stop offset="1" stop-color="#04050c" stop-opacity="0.82" />
     </linearGradient>
   </defs>
 
@@ -132,10 +159,6 @@ function terrain() {
 
   ${bushes()}
 
-  <rect x="0" y="${HORIZON - 60}" width="${W}" height="200" fill="url(#pjEdge)" />
-
-  <!-- premier plan, presque noir -->
-  <path fill="#080605" d="M0,848 L150,842 L320,852 L470,845 L620,856 L780,848 L940,858 L1100,850 L1260,860 L1400,852 L1440,857 L1440,${H} L0,${H} Z" />
 </svg>`;
 }
 
@@ -377,9 +400,13 @@ export function sceneProjet(data) {
   aria-labelledby="projet-title">
   <h1 class="sr-only" id="projet-title">Le Projet</h1>
 
+  <!-- Le ciel couvre tout l'écran : c'est du décor, il peut être rogné.
+       Le cadre, lui, tient toujours entier — voir projet.css. -->
+  <div class="pj-sky" aria-hidden="true"></div>
+
   <div class="pj-viewport" tabindex="-1">
     <div class="pj-stage">
-      <div class="pj-sky" aria-hidden="true"></div>
+      ${terrain("bands")}
       <div class="pj-horizonglow" aria-hidden="true"></div>
       ${terrain()}
       <div class="pj-groundlight" aria-hidden="true"></div>
@@ -388,9 +415,11 @@ export function sceneProjet(data) {
         ${elements.map(element).join("\n        ")}
       </div>
       <p class="pj-filmtitle" aria-hidden="true">L'Incident d'Indian Springs</p>
-      <div class="pj-grain" aria-hidden="true"></div>
     </div>
   </div>
+
+  <div class="pj-vignette" aria-hidden="true"></div>
+  <div class="pj-grain" aria-hidden="true"></div>
 
   <div class="pj-transcript" id="pj-transcript">
     <div class="pj-slate" aria-hidden="true">

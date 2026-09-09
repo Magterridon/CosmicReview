@@ -18,27 +18,61 @@
   --pj-mono: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
 }
 
-/* ---------- le cadre ---------- */
+/* ---------- le cadre ----------
+
+ Principe, valable pour tout le site : ce qui est du décor (le ciel) peut être
+ rogné sans dommage ; ce qui porte du sens (les sept éléments) doit toujours
+ tenir entier à l'écran.
+
+ D'où trois couches indépendantes :
+   1. le ciel couvre l'écran, quelle que soit sa forme ;
+   2. le cadre 1440 × 900 tient *entier* dans la place restante — il rétrécit,
+      il ne se coupe jamais — et se pose en bas, comme un sol ;
+   3. les bandes de sol débordent de part et d'autre du cadre pour rejoindre
+      les bords de l'écran.
+
+ La place restante, c'est la scène moins le bandeau de transcription. Le
+ bandeau étant dans le flux (et non posé par-dessus), sa hauteur réelle est
+ retirée sans qu'aucune valeur n'ait à être devinée en CSS.
+ ------------------------------------------------------------------------ */
+
+.scene--projet {
+  /* Hauteur du bandeau. La valeur par défaut est volontairement large : sans
+     JavaScript, mieux vaut une image un peu plus petite qu'un pickup passé
+     sous les sous-titres. `projet.js` la remplace par la mesure exacte. */
+  --pj-bar: clamp(168px, 24dvh, 248px);
+  --pj-vh: max(520px, 100dvh);
+  --pj-fit: calc(var(--pj-vh) - var(--pj-bar));
+}
 
 .pj-viewport {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: var(--pj-bar);
   display: grid;
-  place-items: center;
+  /* La piste doit valoir la largeur du cadre, pas celle de son débordement :
+     les bandes de sol dépassent volontairement de plusieurs écrans, et sans
+     `minmax(0, auto)` la grille se dimensionne dessus et décentre tout. */
+  grid-template-columns: minmax(0, 1fr);
+  place-items: end center;
+  /* `clip` plutôt que `hidden` : les bandes de sol débordent volontairement,
+     et `hidden` en fait une zone défilable — que le recentrage tactile
+     déplaçait alors sur *tous* les écrans. `clip` coupe sans créer de
+     défilement. `hidden` reste en repli pour les navigateurs anciens. */
   overflow: hidden;
+  overflow: clip;
 }
 
-/* La scène se comporte comme une image en `cover` : jamais de bande vide,
-   on rogne sur les bords. */
+/* Le cadre entre entier dans la place disponible : sa largeur est celle que
+   sa hauteur lui permet, jamais davantage. C'est le « contain » d'une image,
+   écrit à la main parce qu'il faut connaître la hauteur restante. */
 .pj-stage {
   position: relative;
-  width: max(100%, calc(100vh * 1.6));
+  width: min(100%, calc(var(--pj-fit) * 1.6));
   aspect-ratio: 1440 / 900;
   flex: none;
-}
-
-@supports (height: 100dvh) {
-  .pj-stage { width: max(100%, calc(100dvh * 1.6)); }
 }
 
 /* ---------- le ciel ---------- */
@@ -48,7 +82,7 @@
   inset: 0;
   background-image: url("/sky.webp");
   background-size: cover;
-  background-position: center 30%;
+  background-position: center 32%;
   transition: filter 1.6s ease;
 }
 
@@ -57,19 +91,35 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to bottom, rgba(4,5,12,0.42) 0%, rgba(4,5,12,0) 20%, rgba(4,5,12,0) 48%, rgba(5,6,15,0.5) 66%, rgba(4,5,12,0.86) 76%),
+    linear-gradient(to bottom, rgba(4,5,12,0.42) 0%, rgba(4,5,12,0) 20%, rgba(4,5,12,0) 48%, rgba(5,6,15,0.5) 70%, rgba(4,5,12,0.8) 84%),
     radial-gradient(ellipse 120% 76% at 50% 42%, rgba(4,5,12,0) 42%, rgba(4,5,12,0.6) 100%);
+}
+
+/* ---------- le sol ---------- */
+
+/* Les bandes horizontales du désert, étirées jusqu'aux bords de l'écran.
+   Elles ne contiennent que ce qui est invariant horizontalement — crête
+   lointaine et plaine — donc l'étirement ne déforme aucune silhouette. */
+.pj-bands {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 320vw;
+  height: 100%;
+  transform: translateX(-50%);
+  display: block;
 }
 
 /* lueur d'horizon, très retenue */
 .pj-horizonglow {
   position: absolute;
-  left: -8%;
-  right: -8%;
+  left: 50%;
+  width: 320vw;
+  transform: translateX(-50%);
   top: 56%;
   height: 22%;
   pointer-events: none;
-  background: radial-gradient(ellipse 58% 100% at 46% 100%, rgba(184, 104, 48, 0.42) 0%, rgba(120, 66, 36, 0.18) 44%, rgba(120, 66, 36, 0) 74%);
+  background: radial-gradient(ellipse 30% 100% at 50% 100%, rgba(184, 104, 48, 0.4) 0%, rgba(120, 66, 36, 0.16) 46%, rgba(120, 66, 36, 0) 76%);
   transition: opacity 1.6s ease, filter 1.6s ease;
 }
 
@@ -81,7 +131,6 @@
   display: block;
 }
 
-/* la tache rouge que les feux jettent au sol — visible surtout après */
 /* halo au sol derrière les personnages : sans lui, les jambes disparaissent */
 .pj-groundlight {
   position: absolute;
@@ -93,6 +142,7 @@
   background: radial-gradient(ellipse 46% 100% at 42% 20%, rgba(198, 122, 62, 0.3) 0%, rgba(140, 80, 42, 0.1) 48%, rgba(140, 80, 42, 0) 78%);
 }
 
+/* la tache rouge que les feux jettent au sol — visible surtout après */
 .pj-lightspill {
   position: absolute;
   left: 62%;
@@ -105,11 +155,26 @@
   transition: opacity 1.4s ease;
 }
 
+/* Assombrissement des bords de l'écran — il remplace le voile qui était
+   dessiné dans le cadre : celui-ci traçait une arête verticale au milieu du
+   désert dès que le sol s'est mis à continuer au-delà du cadre. */
+.pj-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to right,
+    rgba(4, 5, 12, 0.85) 0%,
+    rgba(4, 5, 12, 0) 18%,
+    rgba(4, 5, 12, 0) 82%,
+    rgba(4, 5, 12, 0.85) 100%);
+}
+
 /* grain photo, une seule passe statique */
 .pj-grain {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 11;
   opacity: 0.05;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -370,14 +435,19 @@
 
 /* ---------- le bandeau de transcription ---------- */
 
+/* Le bandeau est dans le flux : c'est lui qui définit la place que le cadre
+   n'a pas. Sa marge négative le fait remonter sur les tout derniers
+   centimètres du désert — un sol vide — pour garder le fondu sur l'image
+   plutôt qu'une barre posée dessus. Le bas est opaque dans la couleur du
+   sol : le bandeau *est* le premier plan. */
 .pj-transcript {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 12;
-  padding: 3.2rem clamp(1.1rem, 4vw, 3.2rem) clamp(0.9rem, 2.2vh, 1.4rem);
-  background: linear-gradient(to top, rgba(3, 4, 10, 0.92) 0%, rgba(3, 4, 10, 0.8) 34%, rgba(3, 4, 10, 0.44) 66%, rgba(3, 4, 10, 0.12) 88%, rgba(3, 4, 10, 0) 100%);
+  padding: 3.4rem clamp(1.1rem, 4vw, 3.2rem) clamp(0.9rem, 2.2vh, 1.4rem);
+  background: linear-gradient(to top, #060404 0%, #060404 52%, rgba(6, 4, 4, 0.82) 72%, rgba(6, 4, 4, 0.4) 88%, rgba(6, 4, 4, 0) 100%);
   pointer-events: none;
 }
 
@@ -597,11 +667,12 @@
 
 /* ---------- petits écrans ---------- */
 
-@media (max-width: 860px) {
+@media (max-width: 700px), (max-height: 520px) {
   /* On ne réorganise pas la scène : on l'agrandit et on la parcourt du
      doigt, comme le désert de la page Équipe. */
   .pj-viewport {
-    place-items: center start;
+    place-items: end start;
+    overflow: visible;
     overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: none;
@@ -611,11 +682,12 @@
 
   .pj-viewport::-webkit-scrollbar { display: none; }
 
-  /* la scène doit remplir la hauteur : sinon deux bandes vides apparaissent
-     en haut et en bas, et le ciel photographique se décolle des bords */
+  /* Le cadre remplit la hauteur restante et déborde en largeur : c'est le
+     seul cas où l'on accepte de ne pas tout voir d'un coup, parce qu'on peut
+     aller chercher le reste au doigt. */
   .pj-stage {
-    width: max(900px, 160dvh);
-    min-width: max(900px, 160dvh);
+    width: max(620px, calc(var(--pj-fit) * 1.6));
+    min-width: max(620px, calc(var(--pj-fit) * 1.6));
   }
 
   .pj-line { font-size: 1rem; min-height: 4.4em; }
@@ -628,6 +700,19 @@
 
 @media (hover: none) {
   .pj-el:not(.is-seen) .pj-body { animation-duration: 4s; }
+}
+
+/* ---------- écrans bas : rendre de la hauteur à l'image ---------- */
+
+@media (max-height: 720px) {
+  .pj-transcript {
+    padding-top: 2.2rem;
+    padding-bottom: 0.7rem;
+  }
+
+  .pj-slate { margin-bottom: 0.45rem; }
+  .pj-line { min-height: 2.5em; font-size: clamp(0.92rem, 1.7vw, 1.1rem); }
+  .pj-actions { margin-top: 0.6rem; }
 }
 
 /* ---------- mouvement réduit ---------- */
