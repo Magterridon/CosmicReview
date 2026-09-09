@@ -22,66 +22,11 @@ export const BAND = { left: 144, right: 1296, columns: 8 };
 
 /* ---------------------------------------------------------------- outils */
 
-/** Générateur pseudo-aléatoire déterministe : le décor est le même à chaque build. */
-function rng(seed) {
-  let a = seed >>> 0;
-  return function () {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
+/* La main du site vit maintenant dans `draw.js` : le tableau noir de l'Équipe
+   et les objets du Projet doivent avoir exactement la même écriture. */
+import { rng, n, esc, wobble, wobbleTo, circle } from "./draw.js";
 
-const n = (v) => Math.round(v * 10) / 10;
-
-export function esc(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-/**
- * Trait « tracé à la main » : le segment est découpé et chaque point est
- * décalé perpendiculairement de quelques dixièmes. C'est ce qui empêche les
- * lignes de ressembler à du vectoriel propre.
- */
-function wobble(x1, y1, x2, y2, amp, segs, r) {
-  return `M${n(x1)},${n(y1)}` + wobbleTo(x1, y1, x2, y2, amp, segs, r);
-}
-
-/** Même trait, mais sans le `M` initial : pour enchaîner des segments. */
-function wobbleTo(x1, y1, x2, y2, amp, segs, r) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const len = Math.hypot(dx, dy) || 1;
-  const px = -dy / len;
-  const py = dx / len;
-  let d = "";
-  for (let i = 1; i <= segs; i++) {
-    const t = i / segs;
-    // l'écart s'annule aux extrémités : les traits se rejoignent proprement
-    const k = Math.sin(t * Math.PI) * amp * (r() * 2 - 1);
-    d += ` L${n(x1 + dx * t + px * k)},${n(y1 + dy * t + py * k)}`;
-  }
-  return d;
-}
-
-/** Cercle un peu bancal, comme tracé d'un geste. */
-function circle(cx, cy, rad, r, wob = 0.05) {
-  const steps = 26;
-  let d = "";
-  for (let i = 0; i <= steps; i++) {
-    const a = (i / steps) * Math.PI * 2;
-    const rr = rad * (1 + (r() * 2 - 1) * wob);
-    const x = cx + Math.cos(a) * rr;
-    const y = cy + Math.sin(a) * rr * 0.98;
-    d += (i ? " L" : "M") + n(x) + "," + n(y);
-  }
-  return d + " Z";
-}
+export { esc };
 
 /** Un trait de craie animable. `d` = délai de tracé, en secondes. */
 function line(d, cls, delay, extra = "") {

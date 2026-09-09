@@ -1,0 +1,491 @@
+/* ============================================================
+ Cosmic Review — le carnet d'Arthur, et la cassette.
+
+ Ce qu'on trouve en insistant. Dans la cour, un second clic sur le carnet
+ l'ouvre en grand ; un second clic sur la caméra sort une cassette vierge.
+
+ Le carnet est le petit dessin de la scène, agrandi : le même papier, le même
+ trait de craie, la même main. L'écriture, elle, est une vraie typo manuscrite
+ posée par-dessus le dessin — avec un tremblé propre à chaque ligne, calculé
+ sur une graine fixe, pour qu'aucune ligne ne soit parfaitement droite.
+
+ Tout se mesure en unités du dessin : `--u` vaut une unité du repère 1200×780,
+ et les blocs de texte se posent aux mêmes coordonnées que les réglures.
+ C'est ce qui fait que l'écriture tombe sur les lignes à n'importe quelle
+ taille d'écran.
+ ============================================================ */
+
+/* Caveat écrit petit dans son cadratin : posée à la même taille, n'importe
+   quelle autre fonte paraîtrait deux fois plus grosse et déborderait du
+   feuillet. `size-adjust` remet chaque repli à l'échelle de Caveat — la page
+   garde sa mise en page même si Google Fonts ne répond pas. */
+@font-face {
+  font-family: "Repli manuscrit";
+  src: local("Segoe Script"), local("Bradley Hand"), local("Chalkboard SE"),
+       local("Comic Sans MS"), local("Comic Neue");
+  size-adjust: 82%;
+}
+
+@font-face {
+  font-family: "Repli sobre";
+  src: local("DejaVu Sans"), local("Helvetica Neue"), local("Helvetica"), local("Arial");
+  size-adjust: 64%;
+}
+
+.cn,
+.cs {
+  --hand: "Caveat", "Repli manuscrit", "Repli sobre", cursive, sans-serif;
+  /* une unité du repère du dessin : le texte et le trait partagent la règle */
+  --u: 0.0833333cqw;
+  --ink: var(--chalk, #efe7d8);
+}
+
+/* `display: flex` l'emporterait sur l'attribut `hidden` — c'est exactement le
+   défaut qui rendait la scène incliquable avant. On le désamorce d'abord. */
+.cn[hidden],
+.cs[hidden],
+.cn-bank[hidden] { display: none !important; }
+
+/* `fixed` et non `absolute` : sur un téléphone couché, la scène est plus
+   haute que l'écran (elle a un plancher de 520 px), et un calque calé sur la
+   scène se retrouvait centré 65 px sous le bord visible, barre de navigation
+   comprise. Un calque appartient à l'écran, pas à la scène. */
+.cn,
+.cs {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.6rem, 2vw, 1.6rem);
+  background: rgba(2, 3, 8, 0.9);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.42s ease;
+}
+
+.cs { z-index: 42; }
+
+.cn.is-open,
+.cs.is-open { opacity: 1; }
+
+.cn-frame,
+.cs-frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  max-width: 1180px;
+  transform: translateY(14px) scale(0.985);
+  transition: transform 0.42s cubic-bezier(0.16, 0.8, 0.3, 1);
+}
+
+.cn.is-open .cn-frame,
+.cs.is-open .cs-frame { transform: none; }
+
+/* ---------- le carnet ouvert ---------- */
+
+/* Le carnet tient toujours entier : sa largeur est celle que la hauteur
+   disponible lui permet, jamais davantage. Même règle que le cadre de la
+   scène — ce qui porte du sens ne se rogne pas. */
+.cn-book {
+  position: relative;
+  width: min(100%, 1160px, calc((100dvh - 11rem) * 1.538));
+  aspect-ratio: 1200 / 780;
+  container-type: inline-size;
+}
+
+.cn-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cn-paper { fill: #6d6555; opacity: 0.94; }
+.cn-paper--lit { fill: #7d735d; }
+
+/* ---------- l'écriture ---------- */
+
+.cn-leaf {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: var(--hand);
+  color: var(--ink);
+  line-height: calc(44 * var(--u));
+  opacity: 0;
+  transition: opacity 0.5s ease 0.55s;
+}
+
+.cn.is-open .cn-leaf { opacity: 1; }
+
+/* Le tremblé : chaque ligne est posée à la main, jamais tout à fait droite.
+   `--r`, `--x` et `--y` sont écrits par le script à partir d'une graine fixe,
+   donc la page se retrouve identique à chaque ouverture. */
+.cn-line {
+  transform: rotate(var(--r, 0deg)) translate(var(--x, 0), var(--y, 0));
+  transform-origin: left center;
+}
+
+.cn-date,
+.cn-lieu,
+.cn-meta,
+.cn-type,
+.cn-title,
+.cn-notes,
+.cn-indice,
+.cn-page {
+  position: absolute;
+  margin: 0;
+}
+
+/* le feuillet de gauche : la date, le lieu, les relevés */
+.cn-date {
+  left: calc(68 * var(--u));
+  top: calc(56 * var(--u));
+  font-size: calc(58 * var(--u));
+  line-height: 1.1;
+  color: var(--chalk-or, #e8c07a);
+}
+
+.cn-lieu {
+  left: calc(70 * var(--u));
+  top: calc(146 * var(--u));
+  font-size: calc(34 * var(--u));
+  line-height: 1.15;
+  opacity: 0.72;
+}
+
+.cn-meta {
+  left: calc(70 * var(--u));
+  top: calc(238 * var(--u));
+  width: calc(468 * var(--u));
+  font-size: calc(32 * var(--u));
+  opacity: 0.82;
+}
+
+.cn-sketch {
+  position: absolute;
+  left: calc(112 * var(--u));
+  top: calc(440 * var(--u));
+  width: calc(384 * var(--u));
+  height: calc(280 * var(--u));
+  opacity: 0;
+  transition: opacity 0.6s ease 0.7s;
+}
+
+.cn.is-open .cn-sketch { opacity: 0.9; }
+.cn-sketch svg { width: 100%; height: 100%; overflow: visible; }
+.cn-sketch:empty { opacity: 0 !important; }
+
+/* le feuillet de droite : l'étiquette, le titre, les notes */
+.cn-type {
+  left: calc(692 * var(--u));
+  top: calc(44 * var(--u));
+  font-family: var(--font, inherit);
+  font-size: calc(17 * var(--u));
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.44;
+}
+
+.cn-title {
+  left: calc(690 * var(--u));
+  top: calc(82 * var(--u));
+  width: calc(468 * var(--u));
+  font-size: calc(38 * var(--u));
+  line-height: 1.05;
+  color: var(--chalk-or, #e8c07a);
+  opacity: 0.94;
+}
+
+.cn-notes {
+  left: calc(690 * var(--u));
+  top: calc(154 * var(--u));
+  width: calc(468 * var(--u));
+  height: calc(560 * var(--u));
+  font-size: calc(34 * var(--u));
+  overflow: hidden;
+}
+
+.cn-indice {
+  left: calc(690 * var(--u));
+  bottom: calc(78 * var(--u));
+  width: calc(468 * var(--u));
+  font-size: calc(34 * var(--u));
+  color: var(--chalk-or, #e8c07a);
+}
+
+.cn-indice:empty { display: none; }
+
+.cn-page {
+  left: calc(692 * var(--u));
+  bottom: calc(16 * var(--u));
+  font-size: calc(30 * var(--u));
+  color: var(--chalk-or, #e8c07a);
+  opacity: 0.66;
+}
+
+/* Une page dans une autre écriture. Plus froide, plus penchée, plus serrée —
+   on ne saurait pas dire pourquoi, mais on voit tout de suite que ce n'est
+   pas la même main. */
+.cn-leaf--autre .cn-title,
+.cn-leaf--autre .cn-notes,
+.cn-leaf--autre .cn-meta,
+.cn-leaf--autre .cn-date {
+  color: var(--chalk-bleu, #86b6e0);
+  transform: skewX(-9deg);
+  letter-spacing: -0.012em;
+  opacity: 0.78;
+}
+
+/* La page barrée : ce qui est écrit reste lisible, c'est la main qui l'a
+   refusé. */
+.cn-cross {
+  position: absolute;
+  left: calc(622 * var(--u));
+  top: calc(26 * var(--u));
+  width: calc(552 * var(--u));
+  height: calc(728 * var(--u));
+  opacity: 0;
+  transition: opacity 0.5s ease 0.8s;
+  pointer-events: none;
+}
+
+.cn-book[data-raye="oui"] .cn-cross { opacity: 1; }
+.cn-book[data-raye="oui"] .cn-leaf--d { opacity: 0.5; }
+.cn-cross svg { width: 100%; height: 100%; overflow: visible; }
+
+/* ---------- la tranche : cinquante et un signets ---------- */
+
+.cn-edge {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(1px, 0.34vw, 5px);
+  width: min(100%, 1080px);
+  height: 22px;
+  padding: 0 2px;
+}
+
+.cn-tab {
+  flex: 1 1 auto;
+  min-width: 2px;
+  max-width: 17px;
+  height: 11px;
+  padding: 0;
+  border: 0;
+  border-radius: 1px;
+  background: rgba(239, 231, 216, 0.22);
+  cursor: pointer;
+  transition: height 0.18s ease, background-color 0.18s ease;
+}
+
+.cn-tab:hover,
+.cn-tab:focus-visible { height: 18px; background: rgba(239, 231, 216, 0.55); }
+
+.cn-tab[aria-current="true"] {
+  height: 22px;
+  background: var(--chalk-or, #e8c07a);
+}
+
+/* ---------- la barre du bas ---------- */
+
+.cn-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.cn-nav {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(232, 192, 122, 0.24);
+  border-radius: 50%;
+  background: none;
+  color: rgba(236, 230, 218, 0.72);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.cn-nav:hover:not(:disabled),
+.cn-nav:focus-visible { color: var(--gold-bright, #f6e3b6); border-color: rgba(246, 227, 182, 0.7); }
+.cn-nav:disabled { opacity: 0.24; cursor: default; }
+
+.cn-num {
+  margin: 0;
+  min-width: 6.5ch;
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+  text-align: center;
+  color: rgba(236, 230, 218, 0.6);
+}
+
+.cn-close {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.2rem;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: none;
+  color: rgba(236, 230, 218, 0.6);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cn-close:hover,
+.cn-close:focus-visible { color: var(--gold-bright, #f6e3b6); }
+
+/* ---------- la cassette ---------- */
+
+.cs-frame { max-width: 860px; gap: 1.2rem; }
+
+.cs-tape {
+  position: relative;
+  width: min(100%, 840px, calc((100dvh - 12rem) * 1.6));
+  aspect-ratio: 640 / 400;
+  container-type: inline-size;
+}
+
+.cs-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cs-label { fill: #b9b1a0; opacity: 0.92; }
+
+/* L'étiquette est un vrai champ : on écrit dessus, à la main. */
+.cs-input {
+  position: absolute;
+  left: 10.6%;
+  top: 16.5%;
+  width: 78.7%;
+  height: 25%;
+  padding: 0 0.2em;
+  border: 0;
+  background: none;
+  color: #16171d;
+  font-family: var(--hand);
+  font-size: 12cqw;
+  line-height: 1;
+  text-align: center;
+  caret-color: #16171d;
+  outline: none;
+  transform: rotate(-0.5deg);
+}
+
+.cs-input::placeholder { color: rgba(22, 23, 29, 0.28); }
+.cs-input:focus-visible { outline: none; }
+
+.cs-help {
+  margin: 0;
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(236, 230, 218, 0.44);
+  transition: color 0.3s ease;
+}
+
+/* Le bon numéro : la cassette se met en route, et le fondu part de là. */
+.cs.is-armed .cs-help { color: var(--gold-bright, #f6e3b6); }
+.cs.is-armed .cs-art { animation: cs-run 0.5s ease-in-out 2; }
+.cs.is-armed .cs-input { color: #16171d; }
+
+@keyframes cs-run {
+  0%, 100% { transform: none; }
+  50% { transform: translateY(-0.7%) rotate(-0.25deg); }
+}
+
+/* ---------- le tracé à l'ouverture ---------- */
+
+.cn .ch-draw,
+.cs .ch-draw { stroke-dasharray: 1; stroke-dashoffset: 0; }
+
+.cn.is-drawing .ch-draw,
+.cs.is-drawing .ch-draw {
+  animation: ch-draw 0.62s ease-out both;
+  animation-delay: var(--d, 0s);
+}
+
+.cn.is-drawing .chf,
+.cn.is-drawing .ch-tick,
+.cs.is-drawing .chf,
+.cs.is-drawing .ch-tick {
+  animation: ch-appear 0.4s ease-out both;
+  animation-delay: var(--d, 0s);
+}
+
+/* ---------- petits écrans ---------- */
+
+@media (max-width: 860px), (max-height: 620px) {
+  .cn-book { width: min(100%, calc((100dvh - 8.5rem) * 1.538)); }
+  .cs-tape { width: min(100%, calc((100dvh - 9rem) * 1.6)); }
+  .cn-edge { height: 16px; gap: 1px; }
+  .cn-tab { height: 8px; max-width: 8px; }
+  .cn-tab[aria-current="true"] { height: 16px; }
+  .cn-nav { width: 38px; height: 38px; }
+  .cn-close { top: -0.6rem; right: -0.4rem; }
+}
+
+/* Sous cette taille, l'écriture deviendrait illisible : on ne montre plus que
+   le feuillet de droite, celui qui porte les notes. */
+@media (max-width: 620px) {
+  .cn-book { width: 100%; }
+  .cn-frame { gap: 0.5rem; }
+  .cn-num { font-size: 0.6rem; }
+}
+
+/* ---------- mouvement réduit ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .cn, .cs { transition-duration: 0.01s; }
+  .cn-frame, .cs-frame { transform: none; transition: none; }
+  .cn-leaf, .cn-sketch, .cn-cross { transition-delay: 0s; transition-duration: 0.01s; }
+  .cn.is-drawing .ch-draw, .cs.is-drawing .ch-draw,
+  .cn.is-drawing .chf, .cs.is-drawing .chf,
+  .cn.is-drawing .ch-tick, .cs.is-drawing .ch-tick { animation: none; }
+  .cs.is-armed .cs-art { animation: none; }
+}
+
+/* ---------- le clin d'œil ----------
+
+ Une fois le carnet et la caméra visités, ils s'ouvrent au clic suivant. Rien
+ ne l'annonce : le survol vire simplement à l'or, comme les coordonnées
+ entourées sur le carnet. Qui insiste trouve. */
+
+.pj-el[data-egg="1"]:hover .ch,
+.pj-el[data-egg="1"]:focus-visible .ch {
+  stroke: var(--chalk-or, #e8c07a);
+}
+
+.pj-el[data-egg="1"]:hover .ch-tick,
+.pj-el[data-egg="1"]:focus-visible .ch-tick { opacity: 0.6; }
+
+/* ---------- le focus, visible et de la maison ---------- */
+
+.cn-close:focus-visible,
+.cn-nav:focus-visible,
+.cn-tab:focus-visible {
+  outline: 2px solid var(--gold, #e8c07a);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Sur l'étiquette, l'or serait un cadre de trop : le repère se pose sur le
+   papier, en pointillé sombre, comme un trait de crayon. */
+.cs-input:focus-visible {
+  outline: 1px dashed rgba(22, 23, 29, 0.4);
+  outline-offset: 4px;
+}

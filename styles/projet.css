@@ -636,7 +636,10 @@
 .pj-panel[hidden] { display: none; }
 
 .pj-panel {
-  position: absolute;
+  /* Comme le carnet et la cassette : un calque appartient à l'écran. Calé sur
+     la scène, il débordait sur un téléphone couché, où la scène est plus
+     haute que l'écran. */
+  position: fixed;
   inset: 0;
   z-index: 20;
   display: grid;

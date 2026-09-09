@@ -24,8 +24,9 @@ le titre et le bouton Précédent en phase.
 ```
 src/lib/routes.js      table des scènes — le seul module de lib/ envoyé au client
 src/lib/site.js        la pile de scènes, assemblée au build
+src/lib/draw.js        le vocabulaire du trait, partagé par les deux scènes
 src/lib/chalk.js       le monde à la craie de la scène Équipe
-src/lib/projet.js      le désert en silhouettes de la scène Le Projet
+src/lib/projet.js      les deux mondes de la scène Le Projet, objets au trait
 src/data/team.json     l'équipe : ordre, couleurs de craie, présentations
 src/data/projet.json   les répliques de la scène Le Projet, avant et après
 src/scripts/router.js  déplace data-active, écrit l'URL, gère le focus
@@ -82,24 +83,34 @@ celui où sont notées les coordonnées. C'est ce carnet qui enverra Axel dans l
 désert, et sa réplique le dit sans le dire : « Il y a une page qu'il ne me
 montre pas. »
 
-### L'éclair
+### Le fondu
 
-Quand les six ont parlé — ou via « Fin de l'enregistrement », proposé dès le
-troisième pour que personne ne reste coincé — une décharge blanche part.
-**Le monde n'est pas fondu dans l'autre : il est remplacé pendant que l'écran
-est blanc.** Le basculement de `data-state` se fait à 150 ms, au sommet de la
-première décharge. Quand l'image revient, la cour n'existe plus.
+Il n'y a pas de coupe. Quand les six ont parlé — ou via « Fin de
+l'enregistrement », proposé dès le troisième pour que personne ne reste
+coincé — **tout fond, pendant neuf secondes** :
 
-Deux décharges seulement, espacées de plus de 200 ms : on reste sous les trois
-flashs par seconde des seuils photosensibles. En `prefers-reduced-motion`,
-l'éclair devient un voile bref, sans à-coup de cadre ni seconde décharge — il
-reste, parce qu'il est le pivot du récit.
+1. les traits de la cour **se dé-tracent**, dans l'ordre où on les avait posés
+   (`stroke-dashoffset` de 0 à 1, l'animation du tracé jouée à l'envers) ;
+2. l'image blanchit jusqu'au laiteux — un filtre qui monte le blanc et écrase
+   le contraste, plus un voile pâle ;
+3. à 3,6 s, au plus épais du lavis, `data-state` bascule : le monde est
+   échangé pendant qu'on n'y voit rien ;
+4. le désert émerge — et il émerge **délavé**, il ne redevient jamais net.
+
+Ce qui fait peur ici n'est pas un à-coup, c'est que ça ne s'arrête pas de
+fondre. En `prefers-reduced-motion` le fondu est raccourci à 2,4 s, sans
+animation de filtre — il reste, parce qu'il est le pivot du récit.
 
 ### Après — Jean Dry Lake, Nevada
 
-Le ciel s'ouvre en grand : la Voie lactée pleine, celle de l'identité Cosmic
-Review. L'éclair fait donc deux choses à la fois — il enlève Arthur, et il
-donne les étoiles.
+Le ciel s'ouvre — mais **délavé** : un filtre permanent sur le cadre
+(`contrast(0.62) brightness(1.2) saturate(0.34)`) et un voile laiteux. On voit
+enfin le ciel qu'ils voulaient, et il est blanchi, sans contraste, comme une
+bande abîmée.
+
+**Les traits du désert sont rompus** : `stroke-dasharray: 0.05 0.022` sur des
+chemins de `pathLength` 1, donc une quinzaine de coupures par trait. Le dessin
+ne s'y trace pas — il est déjà là, et déjà effacé par endroits.
 
 **Trois éléments** : Axel seul, la jeep, le panneau. Rien là où il y avait
 quelque chose. **Le compteur passe de six à trois**, et c'est lui qui dit ce
@@ -133,11 +144,32 @@ dans l'instant. Jamais de notice.
 
 ### Comment c'est dessiné
 
-Aucune image : tout est du SVG écrit à la main dans `src/lib/projet.js`. Les
-corps sont faits de traits épais à bouts ronds qui se fondent en une seule
-masse noire — plus simple à régler qu'un contour, et c'est la technique qui
-convient à une silhouette. Un liseré chaud (`drop-shadow` vers le haut) détache
-chaque silhouette du sol ; sans lui, du noir sur du noir.
+**Une règle : le monde est photographique, ce qui appartient à l'histoire est
+dessiné à la main par-dessus.** Le ciel et le sol sont du décor. Les neuf
+objets — les deux amis, le télescope, la caméra, la fenêtre, le carnet, la
+jeep, le panneau — sont des dessins au trait, jamais des aplats.
+
+C'est la même main que le tableau noir de l'Équipe, et ce n'est pas qu'une
+question de goût : une silhouette pleine est jugée comme une forme, donc la
+moindre erreur de proportion s'y lit comme une erreur ; un dessin au trait est
+jugé comme un dessin, et a le droit d'être schématique.
+
+Le vocabulaire vit dans **`src/lib/draw.js`**, partagé par les deux scènes :
+`wobble()` (le trait tremblé), `circle()` (le cercle bancal), `path()` (la
+ligne brisée). `projet.js` y ajoute un « stylo » (`pen()`) qui garde la graine
+aléatoire et le compteur de délai, pour que les traits d'un objet se tracent
+dans l'ordre où on les écrit.
+
+Chaque trait porte `pathLength="1"` : `stroke-dashoffset` va donc de 1 à 0 avec
+le même timing quelle que soit la longueur réelle. **L'état par défaut est le
+dessin fini** — sans JavaScript, ou en `prefers-reduced-motion`, la scène est
+simplement là, déjà tracée.
+
+Le tracé se rejoue à chaque arrivée sur la scène, objet après objet
+(`--o` porte le décalage de chacun, de 0 à 3,4 s).
+
+**Les contours se cliquent par l'intérieur** : `fill: transparent` et non
+`fill: none`. Sans ça il faudrait viser un trait de deux pixels.
 
 **Géométrie.** Repère 1440 × 900, horizon à y = 668 pour les deux mondes — ce
 qui permet aux bandes de sol étirées de servir dans les deux cas. `place()`
@@ -312,11 +344,11 @@ Cadrage vérifié sur 3440×1440, 2560×1080, 1920×1080, 1512×982, 1440×900,
 
 ### Interactions de la scène Le Projet
 
-`tools/selftest.html` pilote la scène dans une iframe et vérifie 46 points :
+`tools/selftest.html` pilote la scène dans une iframe et vérifie 48 points :
 zones réellement cliquables dans les deux mondes, écriture des répliques,
-crédits, compteur qui tombe de six à trois, éclair automatique et manuel,
-absence de retour, ouverture du ciel, panneau synopsis (focus piégé, Échap),
-navigation sans rechargement, timecode. À copier dans `preview/` puis
+crédits, compteur qui tombe de six à trois, fondu automatique et manuel,
+absence de retour, délavé du désert, traits rompus, panneau synopsis (focus
+piégé, Échap), navigation sans rechargement, timecode. À copier dans `preview/` puis
 à ouvrir dans un navigateur :
 
 ```bash

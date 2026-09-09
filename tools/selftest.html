@@ -38,7 +38,7 @@ async function run() {
   /* --- zones réellement cliquables, élément par élément --- */
   const probes = {
     arthur: [0.45, 0.55], axel: [0.5, 0.5], telescope: [0.5, 0.45],
-    camera: [0.5, 0.2], fenetre: [0.25, 0.5], carnet: [0.5, 0.78],
+    camera: [0.5, 0.2], fenetre: [0.25, 0.5], carnet: [0.5, 0.5],
     "axel-seul": [0.5, 0.5], jeep: [0.55, 0.55], panneau: [0.5, 0.15],
   };
   const hitTest = (list) => list.forEach((b) => {
@@ -68,8 +68,9 @@ async function run() {
 
   /* --- les six ont parlé : l'éclair part tout seul --- */
   for (const id of ["camera", "fenetre", "carnet"]) { byId(id).click(); await sleep(9000); }
-  await sleep(4000);
-  ok("l'éclair bascule vers le désert", scene.dataset.state === "desert", scene.dataset.state);
+  // le fondu dure une dizaine de secondes : c'est le sujet, on l'attend
+  await sleep(13000);
+  ok("le fondu mène au désert", scene.dataset.state === "desert", scene.dataset.state);
 
   const freeze = () => { const st = d.createElement("style"); st.id = "freeze";
     st.textContent = "*{transition:none!important;animation:none!important}"; d.head.appendChild(st);
@@ -78,8 +79,13 @@ async function run() {
   let unfreeze = freeze();
   ok("la cour a disparu", cour.every((b) => b.offsetParent === null));
   ok("le désert est là", dsr.every((b) => b.offsetParent !== null));
-  ok("le ciel s'ouvre", getComputedStyle(d.querySelector(".pj-sky")).filter === "none",
+  ok("le ciel n'est plus voilé", getComputedStyle(d.querySelector(".pj-sky")).filter === "none",
      getComputedStyle(d.querySelector(".pj-sky")).filter);
+  ok("le désert est délavé", getComputedStyle(d.querySelector(".pj-viewport")).filter !== "none",
+     getComputedStyle(d.querySelector(".pj-viewport")).filter);
+  ok("les traits du désert sont pâlis",
+     parseFloat(getComputedStyle(d.querySelector(".pj-el--jeep .ch")).opacity) < 0.5,
+     getComputedStyle(d.querySelector(".pj-el--jeep .ch")).opacity);
   ok("le titre du film apparaît", parseFloat(getComputedStyle(d.querySelector(".pj-filmtitle")).opacity) > 0.5,
      getComputedStyle(d.querySelector(".pj-filmtitle")).opacity);
   unfreeze();
