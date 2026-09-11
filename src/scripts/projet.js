@@ -24,7 +24,7 @@ export function initProjet(audio) {
   const scene = document.querySelector(".scene--projet");
   if (!scene) return { enter() {}, leave() {} };
 
-  const snd = audio || { playLoop() {}, stopLoops() {}, playFx() {} };
+  const snd = audio || { playLoop() {}, stopLoops() {}, playFx() {}, playTyping() {}, stopTyping() {} };
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   const viewport = scene.querySelector(".pj-viewport");
@@ -82,19 +82,28 @@ export function initProjet(audio) {
       step = () => { window.clearTimeout(t); if (my === token) resolve(); };
     });
 
-  /** Écrit un texte caractère par caractère ; un clic termine la ligne. */
+  /** Écrit un texte caractère par caractère ; un clic termine la ligne.
+   *  Le crépitement de la machine à écrire (`snd.playTyping`) accompagne
+   *  l'écriture et s'arrête avec elle — jamais pendant les silences entre
+   *  deux répliques, ni quand le mouvement réduit affiche le texte d'un coup. */
   function type(text, my) {
     return new Promise((resolve) => {
       if (reduce.matches) { lineEl.textContent = text; resolve(); return; }
       let i = 0;
       lineEl.textContent = "";
       lineEl.classList.add("is-typing");
+      snd.playTyping();
+
+      const finish = () => {
+        lineEl.classList.remove("is-typing");
+        snd.stopTyping();
+      };
 
       const tick = () => {
-        if (my !== token) return;
+        if (my !== token) { finish(); return; }
         i += 1;
         lineEl.textContent = text.slice(0, i);
-        if (i >= text.length) { lineEl.classList.remove("is-typing"); step = null; resolve(); return; }
+        if (i >= text.length) { finish(); step = null; resolve(); return; }
         // une virgule ou un point laisse le temps de respirer
         const c = text[i - 1];
         const pause = c === "." || c === "?" || c === "!" ? 260 : c === "," || c === ";" ? 130 : 18;
@@ -105,7 +114,7 @@ export function initProjet(audio) {
       step = () => {
         window.clearTimeout(timer);
         lineEl.textContent = text;
-        lineEl.classList.remove("is-typing");
+        finish();
         step = null;
         resolve();
       };

@@ -38,6 +38,16 @@ const LOOPS = {
  *  la musique de fin, elle, est ce qu'il reste à écouter — elle peut porter. */
 const NIVEAU = { cour: 0.5, desert: 0.5, fin: 0.68 };
 
+/** Le crépitement de la machine à écrire, posé sous le bandeau de « Le Projet »
+ *  pendant qu'une réplique s'écrit. Traité à part des trois ambiances
+ *  ci-dessus : il démarre et s'arrête bien plus souvent qu'elles (à chaque
+ *  ligne, parfois plusieurs fois par seconde si on enchaîne les clics), donc
+ *  un fondu très court plutôt que le `FADE` d'une seconde, et un volume
+ *  délibérément discret — un bruit de fond sous le texte, pas un effet. */
+const TYPING_SRC = "/audio/key-type.mp3";
+const TYPING_VOLUME = 0.22;
+const TYPING_FADE = 150;
+
 export function initAudio() {
   let muted = false;
   try {
@@ -71,8 +81,16 @@ export function initAudio() {
     }
     const t0 = performance.now();
     const step = (t) => {
-      const p = Math.min(1, (t - t0) / ms);
-      audio.volume = from + (to - from) * p;
+      // `t`, l'horodatage du rAF, peut arriver très légèrement avant `t0` —
+      // le navigateur date la frame à son début, pas à l'instant de l'appel.
+      // Sans le `Math.max(0, …)`, `p` passe une fraction de seconde sous
+      // zéro sur la toute première frame d'un fondu qui part de 0 (une
+      // musique qui démarre) : `audio.volume` reçoit alors une valeur hors
+      // de [0, 1], le navigateur lève une exception, et le fondu s'arrête
+      // net sur cette première frame — le son reste bloqué à volume nul,
+      // silencieux, sans qu'aucune erreur ne remonte jusqu'à la scène.
+      const p = Math.max(0, Math.min(1, (t - t0) / ms));
+      audio.volume = Math.max(0, Math.min(1, from + (to - from) * p));
       if (p < 1) requestAnimationFrame(step);
       else if (to === 0) audio.pause();
     };
@@ -118,6 +136,37 @@ export function initAudio() {
     else go();
   }
 
+  /* ---------------------------------------------- la machine à écrire */
+
+  let typingEl = null;
+
+  function typingAudio() {
+    if (typingEl) return typingEl;
+    const audio = new Audio(TYPING_SRC);
+    audio.loop = true;
+    audio.preload = "none";
+    audio.volume = 0;
+    typingEl = audio;
+    return audio;
+  }
+
+  /** Démarre (ou reprend) le crépitement. Sans effet si muet ou pas encore
+   *  débloqué : une réplique qui s'écrit avant le premier clic ne peut de
+   *  toute façon pas s'entendre, comme les autres sons de la scène. */
+  function playTyping() {
+    if (muted || !unlocked) return;
+    const audio = typingAudio();
+    if (audio.paused) audio.play().catch(() => {});
+    fade(audio, TYPING_VOLUME, TYPING_FADE);
+  }
+
+  /** Coupe le crépitement — entre deux lignes, ou quand un clic accélère
+   *  la réplique jusqu'à son terme. */
+  function stopTyping() {
+    if (!typingEl) return;
+    fade(typingEl, 0, TYPING_FADE);
+  }
+
   function unlock() {
     if (unlocked) return;
     unlocked = true;
@@ -152,6 +201,7 @@ export function initAudio() {
     }
     if (v) {
       Object.values(els).forEach((a) => fade(a, 0, 300));
+      if (typingEl) fade(typingEl, 0, 300);
     } else if (current) {
       const loop = current;
       current = null;
@@ -165,5 +215,5 @@ export function initAudio() {
     btn.addEventListener("click", () => setMuted(!muted));
   }
 
-  return { playLoop, stopLoops, playFx };
+  return { playLoop, stopLoops, playFx, playTyping, stopTyping };
 }

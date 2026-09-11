@@ -386,6 +386,7 @@ export function initGemeaux(scene, { dire, busy, amorce, carnet, montrerCarnet, 
     scene.setAttribute("data-acheve", "1");
     const live = scene.querySelector("#pj-live");
     if (live) live.textContent = G.lunchbox.fin.titre;
+    snd.playLoop("fin");
     generique();
   }
 
@@ -420,14 +421,13 @@ export function initGemeaux(scene, { dire, busy, amorce, carnet, montrerCarnet, 
     });
 
     // La dernière carte s'efface, mais la troupe reste : l'équipe entière
-    // sous le titre, c'est la dernière image du site. C'est là, sur cette
-    // dernière page du générique, que la musique de fin s'installe — en
-    // fondu depuis l'ambiance du désert, comme les autres transitions.
+    // sous le titre, c'est la dernière image du site. La musique de fin,
+    // elle, s'installe bien plus tôt — dès `blanchir()`, à l'instant même
+    // où l'écran blanc et le titre apparaissent, pas ici.
     minuteries.push(window.setTimeout(() => {
       cartes.forEach((c) => c.classList.remove("is-on"));
       figures.forEach((g) => { g.classList.remove("is-scene"); g.classList.add("is-rangee"); });
       caler(figures.length - 1);
-      snd.playLoop("fin");
     }, avant + cartes.length * duree));
 
     /**
