@@ -4,6 +4,7 @@ import "../styles/chalk.css";
 import "../styles/projet.css";
 import "../styles/partenaires.css";
 import "../styles/carnet.css";
+import "../styles/gemeaux.css";
 
 interface Props {
   title: string;
@@ -45,6 +46,23 @@ const { title, description, scene } = Astro.props;
        HTML, donc la bonne scène s'affiche même sans JavaScript. -->
   <body data-scene={scene}>
     <slot />
+
+    <!-- Le son est coupé par défaut dans tous les navigateurs tant qu'on n'a
+         rien cliqué ; ce bouton reste le seul endroit où le couper ensuite,
+         quelle que soit la scène. Son état (`aria-pressed`) est peint par
+         `audio.js`, qui retient aussi le choix d'une visite à l'autre. -->
+    <button type="button" class="son-toggle" data-son aria-pressed="true" aria-label="Couper le son d'ambiance">
+      <svg class="son-icon son-icon--on" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 9v6h4l5 5V4L8 9H4Z" />
+        <path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        <path d="M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
+      <svg class="son-icon son-icon--off" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 9v6h4l5 5V4L8 9H4Z" />
+        <path d="M16 9.5 21 14.5M21 9.5 16 14.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
+    </button>
+
     <script>
       import "../scripts/main.js";
     </script>

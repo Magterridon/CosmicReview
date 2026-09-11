@@ -1,0 +1,107 @@
+<!doctype html><meta charset="utf-8"><title>Gémeaux — cadrage</title>
+<style>body{font:12px monospace;background:#111;color:#eee;margin:0}iframe{border:0;position:absolute;left:-9999px;top:0}</style>
+<pre id="out">…</pre>
+<script>
+const q = new URLSearchParams(location.search);
+const W = +q.get("w") || 1440, H = +q.get("h") || 900, K = q.get("k") || "roue";
+document.write('<iframe id="f" src="/le-projet/" width="' + W + '" height="' + H + '"></iframe>');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+document.getElementById("f").addEventListener("load", async () => {
+  const d = document.getElementById("f").contentDocument, w = document.getElementById("f").contentWindow;
+  const el = (s) => d.querySelector(s);
+  // raccourci vers le désert
+  el(".pj-el--camera").click(); await sleep(200);
+  el(".pj-el--camera").click(); await sleep(700);
+  const i = el(".cs-input"); i.value = "51"; i.dispatchEvent(new w.Event("input", { bubbles: true }));
+  await sleep(16000);
+  el(".pj-el--axel-seul").click(); await sleep(250);
+  el(".pj-el--axel-seul").click(); await sleep(800);
+  if (K !== "roue") {
+    el('.gx-secteur[data-cons="gemeaux"]').click(); await sleep(3300);
+    if (K !== "gemini") {
+      for (let k = 0; k < 5; k++) { el(".gx-twin--castor").click(); await sleep(800); }
+      await sleep(9000);
+      if (K !== "fin") { el(".gx-boite").click(); await sleep(250); el(".gx-boite").click(); await sleep(800); }
+      if (K === "case") { el('.gx-case-btn[data-case="nombre"]').click(); await sleep(400); }
+      if (K === "blanc") {
+        el('.gx-case-btn[data-case="ciel"]').click(); await sleep(300);
+        el("[data-roue]").click(); await sleep(900);
+        el('.gx-secteur[data-cons="lion"]').click(); await sleep(2500);
+        const fo = el("[data-form]");
+        el('.gx-case-btn[data-case="nombre"]').click(); await sleep(300);
+        el("[data-input]").value = "11"; fo.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true })); await sleep(400);
+        el('.gx-case-btn[data-case="objet"]').click(); await sleep(300);
+        el("[data-input]").value = "telescope"; fo.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
+        await sleep(15000);
+      }
+    }
+  }
+  const st = d.createElement("style");
+  st.textContent = "*{transition:none!important;animation:none!important}";
+  d.head.appendChild(st);
+  await sleep(150);
+
+  const vw = d.documentElement.clientWidth, vh = d.documentElement.clientHeight;
+  const stage = el(".pj-stage").getBoundingClientRect();
+  const bar = el(".pj-transcript").getBoundingClientRect();
+  const o = [];
+  let bad = 0;
+
+  const cadre = (nom, sel, dans) => {
+    const e = el(sel);
+    if (!e || e.hidden) { o.push("  " + nom.padEnd(12) + "absent"); bad++; return; }
+    const r = e.getBoundingClientRect();
+    const b = dans === "stage"
+      ? { l: stage.left, r: stage.right, t: stage.top, b: Math.min(stage.bottom, bar.top) }
+      : { l: 0, r: vw, t: 0, b: vh };
+    const ok = r.left >= b.l - 1 && r.right <= b.r + 1 && r.top >= b.t - 1 && r.bottom <= b.b + 1 && r.width > 8;
+    if (!ok) bad++;
+    o.push("  " + nom.padEnd(12) + (ok ? "entier " : "DÉBORDE ") + Math.round(r.width) + "x" + Math.round(r.height) +
+      " @ l" + Math.round(r.left - b.l) + " t" + Math.round(r.top - b.t) + " r" + Math.round(b.r - r.right) + " b" + Math.round(b.b - r.bottom));
+  };
+
+  if (K === "roue") { cadre("carte", ".gx-frame", "ecran"); cadre("roue", ".gx-wheel", "ecran"); }
+  else if (K === "boite") { cadre("boîte", ".lb-frame", "ecran"); cadre("intérieur", ".lb-boite", "ecran"); cadre("le carnet", ".lb-pied", "ecran"); }
+  else if (K === "case") { cadre("boîte", ".lb-frame", "ecran"); cadre("fiche", ".lb-fiche", "ecran"); cadre("le carnet", ".lb-pied", "ecran"); }
+  else if (K === "blanc") {
+    cadre("titre", ".fin-titre", "ecran");
+    cadre("retour", ".fin-retour", "ecran");
+    // le générique : la carte la plus large, et le duo, doivent tenir
+    el(".fin").classList.add("is-credits");
+    [...el(".fin-credits").children].forEach((c) => c.classList.add("is-on"));
+    // la troupe au complet : c'est la dernière image, et la plus large
+    const figs = [...d.querySelectorAll(".fin-membre")];
+    figs.forEach((g) => g.classList.add("is-rangee"));
+    const rg = el("[data-rang]");
+    if (rg && figs.length > 1) {
+      const pas = (figs[figs.length - 1].offsetLeft - figs[0].offsetLeft) / (figs.length - 1);
+      rg.style.setProperty("--dx", "0px");
+    }
+    await sleep(80);
+    cadre("générique", ".fin-credits", "ecran");
+    {
+      const l = Math.min(...figs.map((g) => g.getBoundingClientRect().left));
+      const r = Math.max(...figs.map((g) => g.getBoundingClientRect().right));
+      const okk = l >= -1 && r <= vw + 1;
+      if (!okk) bad++;
+      o.push("  " + "la troupe".padEnd(12) + (okk ? "entière " : "DÉBORDE ") +
+        Math.round(r - l) + "px  @ l" + Math.round(l) + " r" + Math.round(vw - r));
+    }
+    // Le titre ne bouge plus : il doit donc laisser passer la troupe dessous.
+    {
+      const t = el(".fin-titre").getBoundingClientRect();
+      const g = el(".fin-troupe").getBoundingClientRect();
+      const libre = Math.round(g.top - t.bottom);
+      if (libre < 0) bad++;
+      o.push("  " + "titre/troupe".padEnd(12) + (libre < 0 ? "SE CHEVAUCHENT " : "dégagé ") + libre + "px");
+    }
+  }
+  else { cadre("Gémeaux", ".gx-gemini", "stage"); if (K === "fin") cadre("lunchbox", ".gx-boite", "stage"); }
+
+  const scroll = d.documentElement.scrollWidth > vw + 1;
+  if (scroll) bad++;
+  o.unshift(vw + "x" + vh + " · " + K + (bad ? "  => " + bad + " PROBLÈME(S)" : "  => tient") + (scroll ? " (défilement latéral !)" : ""));
+  document.getElementById("out").textContent = o.join("\n");
+});
+</script>

@@ -1,11 +1,22 @@
 {
   "slate": {
-    "cour": { "tc": "00:12:04", "date": "12.04", "vlog": "Vlog 50", "lieu": "NORD · FRANCE" },
-    "desert": { "tc": "00:00:07", "date": "07.11", "vlog": "Vlog 51", "lieu": "JEAN DRY LAKE · NV" }
+    "cour": {
+      "tc": "00:12:04",
+      "date": "12.04",
+      "vlog": "Vlog 50",
+      "lieu": "NORD · FRANCE"
+    },
+    "desert": {
+      "tc": "00:00:07",
+      "date": "07.11",
+      "vlog": "Vlog 51",
+      "lieu": "JEAN DRY LAKE · NV"
+    }
   },
   "hint": {
-    "cour": "Choisissez un élément de l'image",
-    "desert": "Il ne reste que trois choses."
+    "cour": "On a commencé ici Cosmic Review, aujourd'hui l'épisode 50. Un beau chemin parcouru.",
+    "desert": "Il ne reste que trois choses.",
+    "complet": "Cinquante vidéos, et une qui n'a jamais été tournée."
   },
   "elements": {
     "cour": [
@@ -24,7 +35,8 @@
         "credit": "Axel — rôle principal, joué par Benjamin Cléry",
         "lines": [
           "Vlog 50. On est dans la cour, il fait moins deux, et Arthur a encore oublié les gants.",
-          "En avril on part. Nevada, quinze jours, le ciel le plus noir des États-Unis."
+          "Il est tête en l'air ces derniers temps",
+          "En avril on part. Nevada, quinze jours, l'épisode 51 de Cosmic Review."
         ]
       },
       {

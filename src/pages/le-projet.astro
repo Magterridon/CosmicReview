@@ -12,11 +12,12 @@ import team from "../data/team.json";
 import projet from "../data/projet.json";
 import partenaires from "../data/partenaires.json";
 import carnet from "../data/carnet.json";
+import gemeaux from "../data/gemeaux.json";
 import { siteMarkup, TITLES, DESCRIPTIONS } from "../lib/site.js";
 
 const scene = "le-projet";
 ---
 
 <Layout title={TITLES[scene]} description={DESCRIPTIONS[scene]} scene={scene}>
-  <Fragment set:html={siteMarkup(team.members, projet, partenaires, carnet, scene)} />
+  <Fragment set:html={siteMarkup(team.members, projet, partenaires, { carnet, gemeaux }, scene)} />
 </Layout>

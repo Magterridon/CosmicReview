@@ -502,3 +502,59 @@ padding-bottom: 4px;
 color: var(--gold-bright);
 border-bottom-color: rgba(246, 227, 182, 0.8);
 }
+
+/* ============================================================
+ Le bouton du son
+
+ Posé une fois pour tout le site, hors de la pile de scènes : le silence
+ choisi doit survivre au changement de scène. Discret par principe — un
+ cercle, une icône — jamais un bandeau qui réclamerait de l'attention.
+ ============================================================ */
+.son-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 40;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(232, 192, 122, 0.32);
+  background: rgba(4, 5, 12, 0.55);
+  backdrop-filter: blur(6px);
+  color: rgba(232, 192, 122, 0.85);
+  cursor: pointer;
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease, transform 0.2s ease;
+}
+
+.son-toggle:hover,
+.son-toggle:focus-visible {
+  color: var(--gold-bright);
+  border-color: rgba(246, 227, 182, 0.7);
+  transform: scale(1.06);
+}
+
+.son-toggle:focus-visible {
+  outline: 1px solid rgba(246, 227, 182, 0.7);
+  outline-offset: 3px;
+}
+
+.son-icon {
+  width: 19px;
+  height: 19px;
+  fill: currentColor;
+}
+
+.son-icon--off { display: none; }
+
+.son-toggle[data-state="off"] .son-icon--on { display: none; }
+.son-toggle[data-state="off"] .son-icon--off { display: block; }
+
+/* Le panneau plein écran de la scène « Le Projet » passe devant : pas de
+   bouton flottant par-dessus un dialogue modal. */
+body.is-modal-open .son-toggle { opacity: 0; pointer-events: none; }
+
+@media (max-width: 520px) {
+  .son-toggle { right: 12px; bottom: 12px; }
+}

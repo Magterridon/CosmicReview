@@ -141,10 +141,10 @@ function teamBios(members) {
 /* ------------------------------------------------------------------ tout */
 
 /** La pile complète, identique sur les quatre routes. */
-export function siteMarkup(members, projet, partenaires, carnet, initial = "ciel") {
+export function siteMarkup(members, projet, partenaires, secrets, initial = "ciel") {
   const stack = [
     sceneCiel(),
-    sceneProjet(projet, carnet),
+    sceneProjet(projet, secrets, members),
     sceneEquipe(members),
     scenePartenaires(partenaires),
   ]

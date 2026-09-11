@@ -32,8 +32,15 @@ async function run() {
   ok("on démarre dans la cour", scene.dataset.state === "cour", scene.dataset.state);
   ok("le désert est caché", dsr.every((b) => b.offsetParent === null));
 
+  // Les répliques vivent dans le JSON : on ne fige pas leur nombre, on vérifie
+  // que chacun des neuf éléments a bien son texte et son crédit dans la page.
   const says = d.querySelectorAll(".pj-source .pj-say").length;
-  ok("les 18 répliques sont dans le HTML (sans JS)", says === 18, says);
+  ok("les répliques sont dans le HTML (sans JS)", says >= 18, says);
+  const orphelin = [...cour, ...dsr].find((b) => {
+    const a = d.getElementById("pj-src-" + b.dataset.el);
+    return !a || !a.querySelector(".pj-say") || !a.querySelector(".pj-cred");
+  });
+  ok("chaque élément a sa transcription et son crédit", !orphelin, orphelin && orphelin.dataset.el);
 
   /* --- zones réellement cliquables, élément par élément --- */
   const probes = {
@@ -60,22 +67,36 @@ async function run() {
   ok("compteur 1/6", count.textContent === "1/6", count.textContent);
   ok("l'amorce s'efface", d.querySelector(".pj-cue").classList.contains("is-off"));
 
-  /* --- la porte de secours apparaît à mi-parcours --- */
+  /* --- on avance dans la cour --- */
   for (const id of ["axel", "telescope"]) { byId(id).click(); await sleep(9000); }
   ok("compteur 3/6", count.textContent === "3/6", count.textContent);
-  ok("« fin de l'enregistrement » proposé", !d.querySelector("[data-end]").hidden);
   ok("aucun bouton de retour n'existe", !d.querySelector("[data-rewind]"));
+  ok("aucune porte de secours n'existe", !d.querySelector("[data-end]"));
 
   /* --- ce qui se cache derrière les objets ne gêne pas la scène --- */
   ok("le carnet dort", d.querySelector(".cn").hidden && getComputedStyle(d.querySelector(".cn")).display === "none");
   ok("la cassette dort", d.querySelector(".cs").hidden && getComputedStyle(d.querySelector(".cs")).display === "none");
   hitTest(cour);
 
-  /* --- les six ont parlé : l'éclair part tout seul --- */
+  /* --- les six ont parlé, et il ne se passe rien : c'est voulu --- */
   for (const id of ["camera", "fenetre", "carnet"]) { byId(id).click(); await sleep(9000); }
-  // le fondu dure une dizaine de secondes : c'est le sujet, on l'attend
-  await sleep(13000);
-  ok("le fondu mène au désert", scene.dataset.state === "desert", scene.dataset.state);
+  ok("compteur 6/6", count.textContent === "6/6", count.textContent);
+  await sleep(14000);
+  ok("tout visiter ne fait pas passer au désert", scene.dataset.state === "cour", scene.dataset.state);
+  ok("la scène n'est pas en train de fondre", !scene.classList.contains("is-melting"));
+  ok("l'amorce montre la sortie sans la dire",
+     /jamais été tournée/.test(d.querySelector("[data-hint]").textContent),
+     d.querySelector("[data-hint]").textContent);
+
+  /* --- le seul chemin : la cassette, étiquetée 51 --- */
+  byId("camera").click();
+  await sleep(900);
+  ok("la cassette s'ouvre au second clic sur la caméra", !d.querySelector(".cs").hidden);
+  const bande = d.querySelector(".cs-input");
+  bande.value = "51";
+  bande.dispatchEvent(new w.Event("input", { bubbles: true }));
+  await sleep(15000);
+  ok("la cassette mène au désert", scene.dataset.state === "desert", scene.dataset.state);
 
   const freeze = () => { const st = d.createElement("style"); st.id = "freeze";
     st.textContent = "*{transition:none!important;animation:none!important}"; d.head.appendChild(st);
@@ -91,14 +112,12 @@ async function run() {
   ok("les traits du désert sont pâlis",
      parseFloat(getComputedStyle(d.querySelector(".pj-el--jeep .ch")).opacity) < 0.5,
      getComputedStyle(d.querySelector(".pj-el--jeep .ch")).opacity);
-  ok("le titre du film apparaît", parseFloat(getComputedStyle(d.querySelector(".pj-filmtitle")).opacity) > 0.5,
-     getComputedStyle(d.querySelector(".pj-filmtitle")).opacity);
+  ok("le titre du film n'est plus dans le désert", !d.querySelector(".pj-filmtitle"));
   unfreeze();
 
   ok("le compteur tombe à 0/3", count.textContent === "0/3", count.textContent);
   ok("l'ardoise passe au vlog 51", /51/.test(d.querySelector(".pj-vlog").textContent), d.querySelector(".pj-vlog").textContent);
   ok("le lieu devient le Nevada", /NV/.test(d.querySelector(".pj-place").textContent), d.querySelector(".pj-place").textContent);
-  ok("la porte de secours est retirée", d.querySelector("[data-end]").hidden);
   ok("l'amorce annonce ce qui reste", /trois/i.test(d.querySelector("[data-hint]").textContent), d.querySelector("[data-hint]").textContent);
 
   hitTest(dsr);

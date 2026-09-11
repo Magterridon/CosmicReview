@@ -276,7 +276,7 @@ export function chalkBackdrop() {
  * Les mains sortent exactement sur x = 0 et x = 144 : deux colonnes voisines
  * se tiennent donc la main sans calcul supplémentaire.
  */
-function figure(index, r, isFirst, isLast) {
+function figure(index, r, isFirst, isLast, cls = "cm-figure") {
   const cx = 72;
   const HEAD = 174;   // bas de la découpe du visage
   const SHO = 194;    // épaules
@@ -340,7 +340,19 @@ function figure(index, r, isFirst, isLast) {
   seg(cx, HIP, 104, FOOT, 6);
   out.push(`<path class="ch ch-tick" d="${ticks.join(" ")}" style="--d:${(base + 0.34).toFixed(2)}s" />`);
 
-  return `<svg class="cm-figure" viewBox="0 0 144 420" preserveAspectRatio="none" aria-hidden="true" focusable="false">${out.join("")}</svg>`;
+  return `<svg class="${cls}" viewBox="0 0 144 420" preserveAspectRatio="none" aria-hidden="true" focusable="false">${out.join("")}</svg>`;
+}
+
+/**
+ * La même figure, mais seule — pour le générique de la fin, où personne ne
+ * tient la main de personne. Les deux bras sont levés : c'est le seul état
+ * du dessin qui se tienne hors de la rangée.
+ *
+ * Sa propre graine : elle ne consomme pas celle de la scène Équipe, dont le
+ * tracé ne bouge donc pas d'un pixel.
+ */
+export function figureSeule(index, cls = "fin-fig", seed = 4400) {
+  return figure(index, rng(seed + index * 97), true, true, cls);
 }
 
 /** Les huit colonnes cliquables : figure, visage, nom fléché, rôle. */

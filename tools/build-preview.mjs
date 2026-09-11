@@ -30,6 +30,7 @@ const partenaires = JSON.parse(
   fs.readFileSync(path.join(ROOT, "src/data/partenaires.json"), "utf8")
 );
 const carnet = JSON.parse(fs.readFileSync(path.join(ROOT, "src/data/carnet.json"), "utf8"));
+const gemeaux = JSON.parse(fs.readFileSync(path.join(ROOT, "src/data/gemeaux.json"), "utf8"));
 
 function page(scene) {
   return `<!doctype html>
@@ -49,11 +50,12 @@ function page(scene) {
 <link rel="stylesheet" href="/styles/projet.css" />
 <link rel="stylesheet" href="/styles/partenaires.css" />
 <link rel="stylesheet" href="/styles/carnet.css" />
+<link rel="stylesheet" href="/styles/gemeaux.css" />
 <link rel="preload" as="image" href="/sky.webp" />
 <link rel="preload" as="image" href="/cosmic-logo.webp" />
 </head>
 <body data-scene="${scene}">
-${siteMarkup(team.members, projet, partenaires, carnet, scene)}
+${siteMarkup(team.members, projet, partenaires, { carnet, gemeaux }, scene)}
 <script type="module" src="/scripts/main.js"></script>
 </body>
 </html>

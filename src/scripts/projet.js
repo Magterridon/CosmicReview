@@ -11,12 +11,20 @@
  */
 
 import { initCarnet } from "./carnet.js";
+import { initGemeaux } from "./gemeaux.js";
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-export function initProjet() {
+/**
+ * `audio` : la régie sonore de `audio.js`, prêtée par `main.js`. Absente (par
+ * exemple si le module a échoué à charger), elle est remplacée par un objet
+ * muet : rien dans cette scène ne doit dépendre du son pour fonctionner.
+ */
+export function initProjet(audio) {
   const scene = document.querySelector(".scene--projet");
   if (!scene) return { enter() {}, leave() {} };
+
+  const snd = audio || { playLoop() {}, stopLoops() {}, playFx() {} };
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   const viewport = scene.querySelector(".pj-viewport");
@@ -26,8 +34,8 @@ export function initProjet() {
   const cueWrap = scene.querySelector(".pj-cue");
   const liveEl = scene.querySelector("#pj-live");
   const countEl = scene.querySelector("[data-count]");
-  const endBtn = scene.querySelector("[data-end]");
   const infoBtn = scene.querySelector("[data-info]");
+  const carnetBtn = scene.querySelector(".pj-actions [data-consulter]");
   const panel = scene.querySelector(".pj-panel");
   const panelCard = panel && panel.querySelector(".pj-panel-card");
   const sets = {
@@ -52,7 +60,7 @@ export function initProjet() {
   let panelOpener = null;
   // Un calque ouvert (le carnet, la cassette) retient le fondu automatique :
   // il ne doit pas se déclencher pendant qu'on lit une page.
-  let eggOpen = false;
+  let eggOpen = 0;
   let pendingStrike = false;
   let melting = false;
 
@@ -108,11 +116,21 @@ export function initProjet() {
   async function say(id) {
     const data = script(id);
     if (!data) return;
+    return sayLines(data.lines, data.credit);
+  }
+
+  /**
+   * Écrit une réplique dans le bandeau. Les objets du décor y passent par
+   * `say()` ; les secrets (le carnet, les Gémeaux) apportent leurs propres
+   * lignes, qui ne vivent pas dans `.pj-source`.
+   */
+  async function sayLines(lines, credit) {
+    const data = { lines, credit: credit || "" };
     const my = ++token;
 
     creditEl.classList.remove("is-on");
     if (cueWrap) cueWrap.classList.add("is-off");
-    if (liveEl) liveEl.textContent = data.lines.join(" ") + " — " + data.credit;
+    if (liveEl) liveEl.textContent = data.lines.join(" ") + (data.credit ? " — " + data.credit : "");
 
     for (let i = 0; i < data.lines.length; i++) {
       await type(data.lines[i], my);
@@ -127,10 +145,12 @@ export function initProjet() {
     creditEl.classList.add("is-on");
     step = null;
 
-    // Le sixième élément de la cour a parlé : l'éclair part de lui-même.
-    if (scene.dataset.state === "cour" && seen.size >= total()) {
-      await wait(reduce.matches ? 600 : 1800, my);
-      if (my === token && scene.dataset.state === "cour") strike();
+    // Avoir tout visité ne fait plus rien passer : le seul chemin vers le
+    // désert est la cassette, étiquetée du bon numéro. Quand les six ont
+    // parlé, l'amorce le dit — sans dire comment.
+    if (scene.dataset.state === "cour" && seen.size >= total() && HINTS.complet) {
+      await wait(reduce.matches ? 400 : 1400, my);
+      if (my === token && scene.dataset.state === "cour") setAmorce(HINTS.complet);
     }
   }
 
@@ -142,12 +162,17 @@ export function initProjet() {
     // Second clic sur un objet déjà visité : il s'ouvre. Le carnet montre ses
     // cinquante et une pages, la caméra sort sa cassette. Le premier clic,
     // lui, garde son rôle — la réplique s'écrit dans le bandeau.
-    if (seen.has(id) && egg.ouvrir(id)) {
+    if (seen.has(id) && (egg.ouvrir(id) || gem.ouvrir(id))) {
       if (step) step();
+      majCarnet();
       return;
     }
 
     if (current === button && step) { step(); return; }  // relancer = accélérer
+
+    // Le moteur de la jeep se fait entendre à chaque fois qu'on la touche —
+    // « ici, on laisse toujours le moteur tourner. »
+    if (id === "jeep") snd.playFx("car-start");
 
     current_set().forEach((b) => b.classList.toggle("is-on", b === button));
     current = button;
@@ -155,7 +180,7 @@ export function initProjet() {
     if (!seen.has(id)) {
       seen.add(id);
       button.classList.add("is-seen");
-      if (id === "carnet" || id === "camera") {
+      if (id === "carnet" || id === "camera" || id === "axel-seul") {
         // Rien ne le dit à l'écran — mais le lecteur d'écran, lui, le dit.
         button.dataset.egg = "1";
         const nom = button.querySelector(".sr-only");
@@ -168,11 +193,6 @@ export function initProjet() {
 
   function updateCount() {
     if (countEl) countEl.textContent = seen.size + "/" + total();
-    // Personne ne doit rester coincé faute d'avoir tout cliqué — mais c'est
-    // une porte à sens unique, alors on ne la propose qu'à mi-parcours.
-    if (endBtn) {
-      endBtn.hidden = !(scene.dataset.state === "cour" && seen.size >= 3 && seen.size < total());
-    }
   }
 
   /* ------------------------------------------------------------ la bascule */
@@ -188,18 +208,24 @@ export function initProjet() {
   function strike() {
     if (melting || scene.dataset.state !== "cour") return;
     // Un calque est ouvert : le fondu attend qu'on ait refermé.
-    if (eggOpen) { pendingStrike = true; return; }
+    if (eggOpen > 0) { pendingStrike = true; return; }
     melting = true;
     token += 1;
     step = null;
     scene.classList.remove("is-drawing");
     scene.classList.add("is-melting");
 
+    // L'éclair part avec le fondu. Le moteur, lui, ne se déclenche plus ici :
+    // c'est maintenant un clic sur la jeep, dans le désert, qui le fait
+    // entendre (voir `select()`).
+    snd.playFx("lightning");
+
     // au plus épais du lavis, quand l'image est laiteuse, on échange tout
     const swap = reduce.matches ? 700 : 3600;
     window.setTimeout(() => {
       scene.dataset.state = "desert";
       setSlate("desert");
+      snd.playLoop("desert");
       seen.clear();
       buttons.forEach((b) => b.classList.remove("is-seen", "is-on"));
       current = null;
@@ -252,21 +278,46 @@ export function initProjet() {
       pad(Math.floor(seconds / 3600)) + ":" + pad(Math.floor(seconds / 60) % 60) + ":" + pad(seconds % 60);
   }
 
+  /** L'amorce sous le bandeau : ce qu'on suggère de faire, sans le dire. */
+  function setAmorce(texte) {
+    if (!cueEl) return;
+    cueEl.textContent = texte;
+    if (cueWrap) cueWrap.classList.remove("is-off");
+  }
+
   /* ------------------------------------------------- le carnet, la cassette
 
    Deux calques qui vivent dans `carnet.js`. Ils empruntent le fondu à la
    scène (la cassette le déclenche) et lui rendent la politesse : tant qu'un
    calque est ouvert, le fondu automatique attend. */
 
-  const egg = initCarnet(scene, {
-    strike: () => strike(),
-    busy(open) {
-      eggOpen = open;
-      if (!open && pendingStrike) {
-        pendingStrike = false;
-        window.setTimeout(strike, reduce.matches ? 60 : 500);
-      }
-    },
+  function eggBusy(open) {
+    eggOpen = Math.max(0, eggOpen + (open ? 1 : -1));
+    if (eggOpen === 0 && pendingStrike) {
+      pendingStrike = false;
+      window.setTimeout(strike, reduce.matches ? 60 : 500);
+    }
+  }
+
+  const egg = initCarnet(scene, { strike: () => strike(), busy: eggBusy, audio: snd });
+
+  /**
+   * Le carnet reste consultable. Le bouton apparaît dès qu'on l'a ouvert une
+   * fois — et de toute façon dès que l'énigme commence : ses réponses sont
+   * dedans, personne ne doit rester bloqué faute de l'avoir trouvé plus tôt.
+   */
+  function majCarnet(force) {
+    if (!carnetBtn) return;
+    if (force || egg.vu()) carnetBtn.hidden = false;
+  }
+
+  const gem = initGemeaux(scene, {
+    dire: (lignes, credit) => sayLines(lignes, credit),
+    busy: eggBusy,
+    amorce: setAmorce,
+    carnet: (retour) => egg.consulter(retour),
+    montrerCarnet: () => majCarnet(true),
+    audio: snd,
   });
 
   /* --------------------------------------------------- le film en trois lignes */
@@ -302,7 +353,7 @@ export function initProjet() {
   scene.addEventListener("click", (event) => {
     // Le carnet et la cassette gèrent leurs propres clics : la scène ne doit
     // surtout pas les interpréter comme un clic sur un objet du décor.
-    if (event.target.closest(".cn, .cs, .cn-bank")) return;
+    if (event.target.closest(".cn, .cs, .cn-bank, .gx, .lb, .fin, .gx-twin, .gx-boite")) return;
 
     if (event.target.closest(".pj-panel")) {
       if (event.target.closest("[data-close]")) closePanel();
@@ -314,7 +365,7 @@ export function initProjet() {
     const el = event.target.closest(".pj-el");
     if (el) { select(el); return; }
 
-    if (event.target.closest("[data-end]")) { strike(); return; }
+    if (event.target.closest(".pj-actions [data-consulter]")) { egg.consulter(); return; }
     if (event.target.closest("[data-info]")) { openPanel(); return; }
 
     // Ailleurs dans le bandeau : on presse la réplique en cours.
@@ -400,6 +451,9 @@ export function initProjet() {
       measureBar();
       centre();
       draw();
+      // L'ambiance de la cour reprend à chaque arrivée sur la scène ; si l'on
+      // revient après la bascule, c'est celle du désert qui doit jouer.
+      snd.playLoop(scene.dataset.state === "desert" ? "desert" : "cour");
       window.clearInterval(ticker);
       ticker = window.setInterval(() => { if (active) { seconds += 1; paintTc(); } }, 1000);
     },
@@ -412,8 +466,10 @@ export function initProjet() {
       scene.classList.remove("is-drawing");
       window.clearInterval(ticker);
       ticker = 0;
+      snd.stopLoops();
       closePanel();
       egg.fermer();
+      gem.fermer();
     },
   };
 }

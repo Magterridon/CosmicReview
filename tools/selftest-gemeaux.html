@@ -1,0 +1,416 @@
+<!doctype html><meta charset="utf-8"><title>selftest — les Gémeaux</title>
+<style>body{font:13px monospace;background:#111;color:#eee;margin:0}iframe{border:0;position:absolute;left:-9999px;top:0}</style>
+<pre id="out">running…</pre>
+<iframe id="f" src="/le-projet/" width="1440" height="900"></iframe>
+<script>
+const log = [];
+const ok = (name, cond, extra) => log.push((cond ? "PASS " : "FAIL ") + name + (extra !== undefined && !cond ? "  << " + extra : ""));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const f = document.getElementById("f");
+
+f.addEventListener("load", async () => {
+  try { await run(); } catch (e) { log.push("ERROR " + e.message + "\n" + e.stack); }
+  document.getElementById("out").textContent = log.join("\n");
+});
+
+async function run() {
+  let avantCredits = { top: 0, taille: "" };
+  const d = f.contentDocument, w = f.contentWindow;
+  const scene = d.querySelector(".scene--projet");
+  const line = d.querySelector(".pj-line");
+  const hint = d.querySelector("[data-hint]");
+  const count = d.querySelector("[data-count]");
+  const roue = d.querySelector(".gx");
+  const boite = d.querySelector(".lb");
+  const gemini = d.querySelector(".gx-gemini");
+  const posee = d.querySelector(".gx-boite");
+  const byId = (id) => d.querySelector(".pj-el--" + id);
+  const esc = () => d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+
+  /* --- au repos --- */
+  ok("la carte du ciel existe", !!roue);
+  ok("la boîte ouverte existe", !!boite);
+  ok("les Gémeaux existent", !!gemini);
+  ok("la boîte au sol existe", !!posee);
+  ok("la pellicule existe", !!d.querySelector(".gx-pellicule"));
+  ok("les 12 constellations sont là", d.querySelectorAll(".gx-secteur").length === 12, d.querySelectorAll(".gx-secteur").length);
+  ok("les données sont dans la page", !!d.querySelector("#gx-data"));
+  ok("la carte dort", roue.hidden && getComputedStyle(roue).display === "none");
+  ok("les Gémeaux dorment", gemini.hidden && getComputedStyle(gemini).display === "none");
+  ok("la boîte au sol dort", posee.hidden && getComputedStyle(posee).display === "none");
+  ok("aucune griffure au départ", !scene.hasAttribute("data-griffe"));
+
+  /* --- rien de tout ça ne gêne la cour --- */
+  {
+    const b = byId("carnet"), r = b.getBoundingClientRect();
+    const hit = d.elementFromPoint(r.left + r.width * 0.5, r.top + r.height * 0.5);
+    const owner = hit && hit.closest ? hit.closest(".pj-el, .gx, .lb, .gx-boite") : null;
+    ok("les calques n'interceptent rien dans la cour", owner === b, owner && owner.className);
+  }
+
+  /* --- raccourci : la cassette nous emmène dans le désert --- */
+  byId("camera").click(); await sleep(300);
+  byId("camera").click(); await sleep(900);
+  const input = d.querySelector(".cs-input");
+  input.value = "51";
+  input.dispatchEvent(new w.Event("input", { bubbles: true }));
+  await sleep(16000);
+  ok("on est dans le désert", scene.dataset.state === "desert", scene.dataset.state);
+
+  /* --- premier clic sur Axel : la réplique --- */
+  const axel = byId("axel-seul");
+  axel.click();
+  await sleep(9200);
+  ok("Axel a parlé", /Vlog 51|termine/.test(line.textContent), line.textContent);
+  ok("la carte ne s'est pas ouverte au premier clic", roue.hidden);
+
+  /* --- second clic : la carte du ciel --- */
+  axel.click();
+  await sleep(900);
+  ok("le second clic ouvre la carte", !roue.hidden && roue.classList.contains("is-open"));
+  ok("focus piégé dans la carte", roue.contains(d.activeElement), d.activeElement && d.activeElement.className);
+  const centre = d.querySelector(".gx-centre");
+  ok("le message est au centre", /ne se sentait plus seul/.test(centre.textContent), centre.textContent.slice(0, 50));
+  ok("et la seconde ligne aussi", /c'est moi qui la suis/.test(centre.textContent));
+  ok("les noms sont écrits", /GÉMEAUX/.test(d.querySelector(".gx-art").textContent), d.querySelector(".gx-art").textContent.slice(0, 60));
+
+  /* --- une autre constellation : elle s'allume et s'éteint --- */
+  d.querySelector('.gx-secteur[data-cons="lion"]').click();
+  await sleep(400);
+  ok("une autre constellation est refusée", d.querySelector(".gx-fig--lion").classList.contains("is-refusee"));
+  ok("et Axel dit pourquoi", /point d'interrogation/.test(d.querySelector("[data-amorce]").textContent),
+     d.querySelector("[data-amorce]").textContent);
+  ok("les Gémeaux ne sont pas encore trouvés", gemini.hidden);
+
+  /* --- les Gémeaux --- */
+  d.querySelector('.gx-secteur[data-cons="gemeaux"]').click();
+  await sleep(500);
+  ok("les Gémeaux sont reconnus", d.querySelector(".gx-fig--gemeaux").classList.contains("is-trouvee"));
+  ok("la constellation est nommée", /Castor et Pollux/.test(d.querySelector("[data-amorce]").textContent),
+     d.querySelector("[data-amorce]").textContent);
+  await sleep(3200);
+  ok("la carte se referme d'elle-même", roue.hidden);
+  ok("la constellation se pose en haut à droite", !gemini.hidden && scene.dataset.gemini === "1");
+  {
+    const g = gemini.getBoundingClientRect();
+    const st = d.querySelector(".pj-stage").getBoundingClientRect();
+    ok("elle est bien en haut à droite", g.left > st.left + st.width * 0.55 && g.top < st.top + st.height * 0.45,
+       Math.round(g.left - st.left) + "," + Math.round(g.top - st.top));
+    ok("elle tient dans le cadre", g.right <= st.right + 1 && g.top >= st.top - 1,
+       Math.round(g.right - st.right));
+  }
+  ok("deux jumeaux cliquables", d.querySelectorAll(".gx-twin").length === 2);
+  ok("la figure de gauche est bien à gauche",
+     d.querySelector(".gx-twin--castor").getBoundingClientRect().left <
+     d.querySelector(".gx-twin--pollux").getBoundingClientRect().left);
+  {
+    const noms = [...d.querySelectorAll(".gx-etoile-nom")].map((t) => t.textContent.trim());
+    ok("le ciel écrit leurs noms à eux", noms.join("|") === "ARTHUR|AXEL", noms.join("|"));
+    ok("Arthur est sur la figure de gauche — celle qu'on touche",
+       d.querySelector('[data-jumeau="castor"] .gx-etoile-nom').textContent.trim() === "ARTHUR",
+       d.querySelector('[data-jumeau="castor"] .gx-etoile-nom').textContent);
+  }
+
+  /* --- Pollux ne fait rien au ciel --- */
+  d.querySelector(".gx-twin--pollux").click();
+  await sleep(2600);
+  ok("toucher Pollux ne griffe rien", !scene.hasAttribute("data-griffe"));
+  ok("mais Axel répond", /c'est moi/.test(line.textContent), line.textContent);
+
+  /* --- Castor : cinq fois --- */
+  const castor = d.querySelector(".gx-twin--castor");
+  for (let i = 1; i <= 5; i++) {
+    castor.click();
+    await sleep(i < 5 ? 5200 : 1200);
+    if (i < 5) ok("griffure " + i, scene.dataset.griffe === String(i), scene.dataset.griffe);
+  }
+  ok("cinquième griffure", scene.dataset.griffe === "5", scene.dataset.griffe);
+
+  /* --- un clic trop rapide ne compte pas double --- */
+  {
+    const avant = scene.dataset.griffe;
+    castor.click(); castor.click();
+    await sleep(200);
+    ok("le ciel ne cède pas deux fois", scene.dataset.griffe === avant, scene.dataset.griffe);
+  }
+
+  await sleep(11000);
+  const st2 = () => { const s = d.createElement("style"); s.textContent = "*{transition:none!important;animation:none!important}"; d.head.appendChild(s); void d.body.offsetWidth; return () => s.remove(); };
+
+  ok("le ciel a cédé", scene.dataset.fin === "1", scene.dataset.fin);
+  let un = st2();
+  ok("les cinq paliers de griffures sont visibles",
+     [...d.querySelectorAll(".gx-s")].every((g) => getComputedStyle(g).opacity === "1"));
+  ok("le trou blanc est là",
+     getComputedStyle(d.querySelector(".gx-b5")).opacity === "1" &&
+     getComputedStyle(d.querySelector(".gx-b1")).opacity === "0");
+  ok("le sol est vide", getComputedStyle(d.querySelector(".pj-elements--desert")).opacity === "0",
+     getComputedStyle(d.querySelector(".pj-elements--desert")).opacity);
+  ok("le compteur s'efface", getComputedStyle(d.querySelector(".pj-count")).opacity === "0");
+  ok("la boîte est là", !posee.hidden && getComputedStyle(posee).opacity === "1");
+  un();
+  ok("l'amorce dit ce qui reste", /ne reste que ça/i.test(hint.textContent), hint.textContent);
+
+  /* --- le trou blanc est bien à gauche --- */
+  {
+    const b5 = d.querySelector(".gx-b5").getBoundingClientRect();
+    ok("la brûlure couvre le côté gauche", b5.left <= 1, Math.round(b5.left));
+  }
+
+  /* --- plus rien d'autre à toucher --- */
+  {
+    const jeep = d.querySelector(".pj-el--jeep").getBoundingClientRect();
+    const hit = d.elementFromPoint(jeep.left + jeep.width * 0.55, jeep.top + jeep.height * 0.55);
+    const owner = hit && hit.closest ? hit.closest(".pj-el") : null;
+    ok("la jeep n'est plus cliquable", owner === null, owner && owner.dataset.el);
+  }
+  ok("la carte du ciel ne se rouvre plus", posee && roue.hidden);
+
+  /* --- la boîte --- */
+  posee.click();
+  await sleep(9500);
+  ok("le premier clic sur la boîte fait parler", /boîte|coffre/i.test(line.textContent), line.textContent);
+  ok("elle ne s'ouvre pas au premier clic", boite.hidden);
+  ok("le carnet devient consultable depuis le bandeau", !d.querySelector(".pj-act--carnet").hidden);
+  posee.click();
+  await sleep(900);
+  ok("le second clic l'ouvre", !boite.hidden && boite.classList.contains("is-open"));
+  ok("trois carrés vides", d.querySelectorAll(".gx-case-btn").length === 3, d.querySelectorAll(".gx-case-btn").length);
+
+  /* --- on clique là où l'on voit : la zone doit épouser le carré dessiné --- */
+  [...d.querySelectorAll(".gx-case")].forEach((g) => {
+    const id = g.dataset.case;
+    const r = g.getBoundingClientRect();
+    [[0.5, 0.5], [0.2, 0.2], [0.8, 0.8]].forEach(([px, py], k) => {
+      const hit = d.elementFromPoint(r.left + r.width * px, r.top + r.height * py);
+      const owner = hit && hit.closest ? hit.closest(".gx-case-btn") : null;
+      ok("clic réel sur le carré « " + id + " » (" + (k + 1) + ")", owner && owner.dataset.case === id,
+         owner ? owner.dataset.case : "rien");
+    });
+  });
+  ok("aucun n'est encore rempli", d.querySelectorAll(".gx-case.is-ok").length === 0);
+  ok("la fiche est fermée au départ", d.querySelector("[data-fiche]").hidden);
+
+  /* --- le carnet, depuis la boîte, et le retour --- */
+  d.querySelector(".lb-carnet").click();
+  await sleep(1200);
+  ok("le carnet s'ouvre depuis la boîte", !d.querySelector(".cn").hidden);
+  d.querySelectorAll(".cn-tab")[25].click();
+  await sleep(200);
+  ok("on y lit l'indice du Lion", /point d'interrogation/.test(d.querySelector('[data-leaf="droite"]').textContent),
+     d.querySelector('[data-leaf="droite"]').textContent.slice(0, 60));
+  esc();
+  await sleep(1600);
+  ok("on revient dans la boîte", d.querySelector(".cn").hidden && !boite.hidden);
+
+  /* --- premier carré : la carte du ciel --- */
+  d.querySelector('.gx-case-btn[data-case="ciel"]').click();
+  await sleep(400);
+  const ficheT = d.querySelector("[data-fiche-texte]");
+  ok("la fiche du premier carré s'ouvre", !d.querySelector("[data-fiche]").hidden);
+  ok("elle pose la question", /point d'interrogation/.test(ficheT.textContent), ficheT.textContent.slice(0, 60));
+  ok("pas de champ de saisie ici", d.querySelector("[data-form]").hidden);
+  ok("mais un bouton vers la carte", !d.querySelector("[data-roue]").hidden);
+
+  d.querySelector("[data-roue]").click();
+  await sleep(1200);
+  ok("la carte se rouvre", !roue.hidden && roue.classList.contains("is-open"));
+  ok("elle pose la question au centre", /point d'interrogation/.test(d.querySelector("[data-centre]").textContent),
+     d.querySelector("[data-centre]").textContent.slice(0, 50));
+
+  d.querySelector('.gx-secteur[data-cons="taureau"]').click();
+  await sleep(500);
+  ok("une mauvaise constellation ne passe pas", d.querySelectorAll(".gx-case.is-ok").length === 0);
+  ok("la carte reste ouverte", !roue.hidden);
+
+  d.querySelector('.gx-secteur[data-cons="lion"]').click();
+  await sleep(2600);
+  ok("le Lion est la bonne réponse", d.querySelectorAll(".gx-case.is-ok").length === 1,
+     d.querySelectorAll(".gx-case.is-ok").length);
+  ok("la carte se referme et rend la main", roue.hidden && !boite.hidden);
+  ok("la réussite s'affiche", /Il se levait déjà/.test(d.querySelector("[data-etat]").textContent),
+     d.querySelector("[data-etat]").textContent.slice(0, 60));
+
+  /* --- deuxième carré : un numéro --- */
+  d.querySelector('.gx-case-btn[data-case="nombre"]').click();
+  await sleep(400);
+  const champ = d.querySelector("[data-input]");
+  ok("le champ apparaît", !d.querySelector("[data-form]").hidden);
+  ok("il attend un nombre", champ.inputMode === "numeric", champ.inputMode);
+  champ.value = "12";
+  d.querySelector("[data-form]").dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
+  await sleep(400);
+  ok("une mauvaise réponse est refusée", d.querySelectorAll(".gx-case.is-ok").length === 1);
+  ok("et on le dit", d.querySelector("[data-etat]").classList.contains("is-faux"));
+  champ.value = "  Onze  ";
+  d.querySelector("[data-form]").dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
+  await sleep(400);
+  ok("« onze » vaut 11", d.querySelectorAll(".gx-case.is-ok").length === 2,
+     d.querySelectorAll(".gx-case.is-ok").length);
+
+  /* --- troisième carré : un mot --- */
+  d.querySelector('.gx-case-btn[data-case="objet"]').click();
+  await sleep(400);
+  ok("la question du carton", /carton trop grand/.test(d.querySelector("[data-fiche-texte]").textContent));
+  const champ3 = d.querySelector("[data-input]");
+  champ3.value = "LE TÉLESCOPE";
+  d.querySelector("[data-form]").dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
+  await sleep(500);
+  ok("accents et article ignorés", d.querySelectorAll(".gx-case.is-ok").length === 3,
+     d.querySelectorAll(".gx-case.is-ok").length);
+
+  /* --- le mot d'Arthur, puis le blanc --- */
+  await sleep(3000);
+  const mot = d.querySelector("[data-mot]");
+  ok("le mot d'Arthur apparaît", !mot.hidden && /Ne reste pas après le lever du jour/.test(mot.textContent),
+     mot.textContent.slice(0, 60));
+  ok("la fiche s'efface", d.querySelector("[data-fiche]").hidden);
+
+  await sleep(12000);
+  const fin = d.querySelector(".fin");
+  ok("l'écran devient blanc", !fin.hidden && fin.classList.contains("is-on"));
+  ok("la boîte a disparu", boite.hidden);
+  {
+    const un = freeze(d);
+    ok("le fond est clair", getComputedStyle(fin).backgroundColor === "rgb(247, 245, 240)",
+       getComputedStyle(fin).backgroundColor);
+    ok("le titre est là, en grand",
+       /Indian Springs/i.test(d.querySelector(".fin-titre").textContent) &&
+       parseFloat(getComputedStyle(d.querySelector(".fin-titre")).fontSize) > 40,
+       getComputedStyle(d.querySelector(".fin-titre")).fontSize);
+    ok("des étoiles à l'encre sombre", d.querySelectorAll(".fin-etoiles circle").length > 40,
+       d.querySelectorAll(".fin-etoiles circle").length);
+    ok("des constellations aussi", d.querySelectorAll(".fin-encre .ch-star").length > 20,
+       d.querySelectorAll(".fin-encre .ch-star").length);
+    ok("l'encre est sombre", getComputedStyle(d.querySelector(".fin-encre .ch")).stroke === "rgb(25, 27, 34)",
+       getComputedStyle(d.querySelector(".fin-encre .ch")).stroke);
+    ok("le titre tient dans l'écran",
+       d.querySelector(".fin-titre").getBoundingClientRect().width <= d.documentElement.clientWidth + 1);
+    // Il est en haut dès le premier instant : plus de descente ni de remontée.
+    const hautTitre = d.querySelector(".fin-titre").getBoundingClientRect();
+    ok("le titre est en haut tout de suite",
+       hautTitre.bottom < d.documentElement.clientHeight * 0.3,
+       Math.round(hautTitre.top) + "→" + Math.round(hautTitre.bottom) + " / " + d.documentElement.clientHeight);
+    // Même vocabulaire typographique que le titre du film sur l'accueil.
+    const ts = getComputedStyle(d.querySelector(".fin-titre"));
+    const pied = getComputedStyle(d.querySelector(".footline .film"));
+    ok("le titre parle la typographie du site",
+       ts.fontFamily === pied.fontFamily && ts.fontWeight === pied.fontWeight &&
+       ts.textTransform === "uppercase" &&
+       parseFloat(ts.letterSpacing) / parseFloat(ts.fontSize) > 0.25,
+       ts.fontFamily + " / " + ts.fontWeight + " / " + ts.letterSpacing);
+    avantCredits = { top: Math.round(hautTitre.top), taille: ts.fontSize };
+    un();
+  }
+  ok("un retour discret est proposé", !!d.querySelector(".fin-retour"));
+  ok("le logotype n'est pas sur l'écran blanc", !fin.querySelector(".pj-wordmark"));
+
+  /* --- le générique : la troupe se rassemble --- */
+  const cartes = [...d.querySelectorAll(".fin-carte")];
+  const figures = [...d.querySelectorAll(".fin-membre")];
+  ok("neuf cartes de générique", cartes.length === 9, cartes.length);
+  ok("huit figures dans la rangée", figures.length === 8, figures.length);
+  ok("chacune a son visage", d.querySelectorAll(".fin-face").length === 8,
+     d.querySelectorAll(".fin-face").length);
+  ok("ce sont les dessins de l'Équipe", d.querySelectorAll(".fin-fig .ch-limb").length >= 8 * 5,
+     d.querySelectorAll(".fin-fig .ch-limb").length);
+  ok("et la page Équipe garde les siens",
+     d.querySelectorAll(".chalk-people .cm-figure").length === 8,
+     d.querySelectorAll(".chalk-people .cm-figure").length);
+
+  const carte = (i) => cartes[i].textContent.replace(/\s+/g, " ").trim();
+  ok("première carte : écrit et réalisé par Benjamin Cléry",
+     /Écrit et réalisé par Benjamin Cléry/.test(carte(0)), carte(0));
+  ok("son personnage y figure", /Axel/.test(carte(0)), carte(0));
+  ok("Louis vient juste après", /Avec Louis Bachetti/.test(carte(1)), carte(1));
+  ok("dans le rôle d'Arthur", /Arthur/.test(carte(1)), carte(1));
+  ok("puis Julie", /Co-écrit par Julie Cortese/.test(carte(2)), carte(2));
+  ok("puis Thomas", /Co-réalisé par Thomas Cortese/.test(carte(3)), carte(3));
+  ok("le reste de l'équipe suit",
+     /Damien Carlier/.test(carte(4)) && /Alexis Motreff/.test(carte(5)) &&
+     /Alix Moulin/.test(carte(6)) && /Alexis Clercelet-Baguet/.test(carte(7)), carte(4));
+  ok("et l'association pour finir", /Film 97/.test(carte(8)), carte(8));
+  ok("les huit membres de l'équipe sont tous là",
+     ["benjamin", "louis", "julie", "thomas", "damien", "alexis-m", "alix", "alexis-c"]
+       .every((id) => figures.some((g) => g.dataset.membre === id)),
+     figures.map((g) => g.dataset.membre).join(","));
+  ok("Louis se tient juste à côté de Benjamin",
+     figures[0].dataset.membre === "benjamin" && figures[1].dataset.membre === "louis",
+     figures.slice(0, 2).map((g) => g.dataset.membre).join(","));
+
+  /* --- la première entre seule, au centre --- */
+  await sleep(6000);
+  ok("le générique a commencé", fin.classList.contains("is-credits"));
+  const enScene = () => figures.findIndex((g) => g.classList.contains("is-scene"));
+  const rangees = () => figures.filter((g) => g.classList.contains("is-rangee")).length;
+  const A = enScene();
+  ok("quelqu'un est au centre", A >= 0, A);
+  ok("une seule personne à la fois", figures.filter((g) => g.classList.contains("is-scene")).length === 1);
+  ok("les précédentes sont restées", rangees() === A, rangees() + " / " + A);
+  // En temps virtuel les transitions CSS n'avancent pas : on les neutralise
+  // avant toute mesure, pour lire les positions d'arrivée.
+  const groupe = () => {
+    const vus = figures.filter((g) => g.classList.contains("is-scene") || g.classList.contains("is-rangee"));
+    return {
+      l: Math.min(...vus.map((g) => g.getBoundingClientRect().left)),
+      r: Math.max(...vus.map((g) => g.getBoundingClientRect().right)),
+    };
+  };
+  let gel = freeze(d);
+  {
+    const c = d.documentElement.clientWidth / 2;
+    const g = groupe();
+    ok("le groupe est centré", Math.abs((g.l + g.r) / 2 - c) < 12, Math.round((g.l + g.r) / 2) + " vs " + Math.round(c));
+  }
+  const xA = figures[0].getBoundingClientRect().left;
+  gel();
+  ok("le titre reste devant les yeux",
+     parseFloat(getComputedStyle(d.querySelector(".fin-titre")).opacity) > 0.9 &&
+     parseFloat(getComputedStyle(d.querySelector(".fin-titre")).fontSize) > 20,
+     getComputedStyle(d.querySelector(".fin-titre")).fontSize);
+  {
+    const g2 = freeze(d);
+    const r = d.querySelector(".fin-titre").getBoundingClientRect();
+    const ts2 = getComputedStyle(d.querySelector(".fin-titre"));
+    ok("le titre n'a pas bougé d'un pouce pour le générique",
+       Math.abs(Math.round(r.top) - avantCredits.top) <= 1 && ts2.fontSize === avantCredits.taille,
+       Math.round(r.top) + "/" + ts2.fontSize + " vs " + avantCredits.top + "/" + avantCredits.taille);
+    g2();
+  }
+
+  /* --- la suivante arrive : la précédente se décale --- */
+  await sleep(5600);
+  const B = enScene();
+  ok("le générique avance", B > A, A + " → " + B);
+  gel = freeze(d);
+  const xB = figures[0].getBoundingClientRect().left;
+  ok("la première s'est décalée vers la gauche", xB < xA - 4,
+     Math.round(xA) + " → " + Math.round(xB));
+  ok("mais elle est toujours à l'écran",
+     figures[0].classList.contains("is-rangee") &&
+     parseFloat(getComputedStyle(figures[0]).opacity) > 0.2,
+     getComputedStyle(figures[0]).opacity);
+  {
+    const c = d.documentElement.clientWidth / 2;
+    const g = groupe();
+    ok("le groupe est resté centré", Math.abs((g.l + g.r) / 2 - c) < 12,
+       Math.round((g.l + g.r) / 2) + " vs " + Math.round(c));
+    ok("et il ne dépasse pas de l'écran",
+       g.l >= -1 && g.r <= d.documentElement.clientWidth + 1,
+       Math.round(g.l) + "→" + Math.round(g.r));
+  }
+  gel();
+  ok("aucune carte ne dépasse", cartes.every((c) => {
+    const r = c.getBoundingClientRect();
+    return r.top >= -1 && r.bottom <= d.documentElement.clientHeight + 1;
+  }));
+}
+
+function freeze(d) {
+  const st = d.createElement("style");
+  st.textContent = "*{transition:none!important;animation:none!important}";
+  d.head.appendChild(st);
+  void d.body.offsetWidth;
+  return () => st.remove();
+}
+</script>

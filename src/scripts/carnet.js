@@ -27,10 +27,13 @@ const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabi
  * `strike` : le fondu vers le désert, prêté par `projet.js`.
  * `busy`   : prévient la scène qu'un calque est ouvert — elle retient alors
  *            son fondu automatique plutôt que de le jouer dans notre dos.
+ * `audio`  : la régie sonore ; muette si absente.
  */
-export function initCarnet(scene, { strike, busy } = {}) {
+export function initCarnet(scene, { strike, busy, audio } = {}) {
   const vide = { ouvrir() { return false; }, fermer() {}, ouvert: () => false };
   if (!scene) return vide;
+
+  const snd = audio || { playFx() {} };
 
   const source = scene.querySelector("#cn-data");
   const cn = scene.querySelector(".cn");
@@ -63,7 +66,9 @@ export function initCarnet(scene, { strike, busy } = {}) {
   let page = 0;
   let opened = null;       // le calque ouvert, ou null
   let opener = null;       // à qui rendre le focus en refermant
+  let revenir = null;      // où rendre la main en refermant
   let armed = false;
+  let deja = false;        // le carnet a été ouvert au moins une fois
 
   /* --------------------------------------------------------- l'écriture */
 
@@ -149,6 +154,7 @@ export function initCarnet(scene, { strike, busy } = {}) {
   /* ------------------------------------------------------- ouverture    */
 
   function ouvrirCalque(calque) {
+    if (calque === cn) deja = true;
     if (opened) fermer();
     opener = document.activeElement;
     opened = calque;
@@ -185,6 +191,10 @@ export function initCarnet(scene, { strike, busy } = {}) {
     if (opener && opener.isConnected) opener.focus({ preventScroll: true });
     opener = null;
     if (busy) busy(false);
+
+    const suite = revenir;
+    revenir = null;
+    if (suite) window.setTimeout(suite, reduce.matches ? 30 : 260);
   }
 
   /** Le carnet s'ouvre là où on l'avait laissé. */
@@ -195,7 +205,20 @@ export function initCarnet(scene, { strike, busy } = {}) {
     return true;
   }
 
+  /**
+   * Le rouvrir n'importe quand — depuis le bandeau, ou depuis la boîte.
+   * `retour` est rappelé à la fermeture : on remet le visiteur exactement là
+   * où il en était, sinon consulter le carnet coûterait toute sa progression.
+   */
+  function consulter(retour) {
+    revenir = typeof retour === "function" ? retour : null;
+    return ouvrirCarnet();
+  }
+
   function ouvrirCassette() {
+    // La trappe du caméscope qui s'ouvre — avant même que l'étiquette soit
+    // remplie.
+    snd.playFx("camcorder-open");
     ouvrirCalque(cs);
     return true;
   }
@@ -209,6 +232,7 @@ export function initCarnet(scene, { strike, busy } = {}) {
   function armer() {
     if (armed) return;
     armed = true;
+    snd.playFx("cassette-insert");
     cs.classList.add("is-armed");
     if (help) help.textContent = "Vlog 51 — enregistrement";
     dire(cs, "La cassette porte enfin un numéro. L'enregistrement commence.");
@@ -291,6 +315,9 @@ export function initCarnet(scene, { strike, busy } = {}) {
       if (id === "camera") return ouvrirCassette();
       return false;
     },
+    consulter,
+    /** Le carnet a-t-il déjà été ouvert ? Le bandeau s'en sert. */
+    vu: () => deja,
     fermer,
     ouvert: () => opened !== null,
   };

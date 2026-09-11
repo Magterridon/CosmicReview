@@ -15,295 +15,980 @@
     "La page 51 porte le champ 'indice' : c'est la ligne laissee libre pour vous. Elle s'affiche en dore, detachee du reste. Videz-la et elle disparait.",
     "Le code de la cassette (51) est dans src/scripts/carnet.js, constante CODE."
   ],
-
   "titre": "CARNET — A.",
   "sousTitre": "Cosmic Review · relevés",
   "ouvrir": "Ouvrir le carnet",
   "fermer": "Fermer le carnet",
-
   "pages": [
-    { "n": 1, "type": "obs", "date": "14.09", "lieu": "La cour", "titre": "Première lumière",
-      "meta": ["Ciel : dégagé", "Lune : 12 %", "114 mm — première sortie"],
-      "notes": ["Il est arrivé ce matin dans un carton trop grand.", "Deux heures pour le régler, quarante secondes pour voir Jupiter.", "Axel a crié. Les voisins ont allumé."],
-      "croquis": "spirale", "main": "arthur", "raye": false },
-
-    { "n": 2, "type": "vlog", "date": "16.09", "lieu": "La cour", "titre": "Vlog 03 — On a un télescope",
-      "meta": ["Tourné : 22 min", "Gardé : 9 min", "Batterie : 61 %"],
-      "notes": ["Axel parle trop vite au début. On garde.", "Plan de fin : le télescope seul dans le noir. C'est celui-là qui marche."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 3, "type": "obs", "date": "22.09", "lieu": "La cour", "titre": "Voilé",
-      "meta": ["Ciel : voilé", "Lune : 58 %", "Vent : nul"],
-      "notes": ["Rien. Deux heures pour rien.", "Noté quand même : une nuit sans rien est une nuit."],
-      "croquis": "lune", "main": "arthur", "raye": false },
-
-    { "n": 4, "type": "vlog", "date": "28.09", "lieu": "La cour", "titre": "Vlog 05 — Les anneaux",
-      "meta": ["Tourné : 41 min", "Gardé : 14 min", "1 400 vues en trois jours"],
-      "notes": ["Saturne à 21 h 40. Nette pendant peut-être six secondes.", "Axel dit qu'on ne verra jamais mieux d'ici. Il a raison et ça m'agace."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 5, "type": "obs", "date": "03.10", "lieu": "La cour", "titre": "Halo",
-      "meta": ["Ciel : dégagé", "Lune : 4 %", "Lampadaires : allumés"],
-      "notes": ["Le halo orange monte jusqu'à 20° au-dessus de l'horizon.", "Sous ça, on ne voit rien. Au-dessus, on voit tout.", "Il faudrait partir. Personne ne le dit encore."],
-      "croquis": "horizon", "main": "arthur", "raye": false },
-
-    { "n": 6, "type": "obs", "date": "09.10", "lieu": "Le champ", "titre": "Deux cents mètres plus loin",
-      "meta": ["Ciel : dégagé", "Lune : 26 %", "Froid : 6 °C"],
-      "notes": ["Essai depuis le champ. Deux cents mètres suffisent à gagner une magnitude.", "Axel a eu peur d'une vache. J'ai filmé."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 7, "type": "vlog", "date": "14.10", "lieu": "La cour", "titre": "Vlog 08 — Perséides ratées",
-      "meta": ["Tourné : 3 h 12", "Gardé : 11 min", "Zéro météore"],
-      "notes": ["Trois heures d'attente, rien. La vidéo marche mieux que celles où on voit quelque chose.", "Conclusion d'Axel : les gens viennent pour nous, pas pour le ciel. Je ne sais pas si c'est rassurant."],
-      "croquis": "etoiles", "main": "arthur", "raye": false },
-
-    { "n": 8, "type": "obs", "date": "21.10", "lieu": "La cour", "titre": "Rien à signaler",
-      "meta": ["Ciel : couvert", "Lune : 91 %"],
-      "notes": ["Couvert. Rangé à 22 h.", "J'ai relu les pages d'avant. On y parle beaucoup de nous et peu du ciel."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 9, "type": "vlog", "date": "26.10", "lieu": "La cour", "titre": "Vlog 10 — Dixième",
-      "meta": ["Tourné : 28 min", "Gardé : 12 min", "Abonnés : 2 040"],
-      "notes": ["Dix vidéos. On a fait un gâteau, on l'a filmé, on l'a coupé au montage.", "Axel veut une centième. Je note la promesse ici, comme ça il ne pourra pas dire le contraire."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 10, "type": "obs", "date": "02.11", "lieu": "La cour", "titre": "Nuit propre",
-      "meta": ["Ciel : dégagé", "Lune : 0 %", "Transparence : bonne"],
-      "notes": ["Meilleure nuit depuis septembre.", "Andromède à l'œil nu pendant quelques minutes. Je n'y croyais pas."],
-      "croquis": "spirale", "main": "arthur", "raye": false },
-
-    { "n": 11, "type": "obs", "date": "08.11", "lieu": "La cour", "titre": "22 h 51",
-      "meta": ["Ciel : dégagé", "Lune : 14 %", "Est-nord-est, 30° environ"],
-      "notes": ["Une lumière fixe pendant onze secondes, puis plus rien.", "Pas un avion : pas de clignotant, pas de bruit.", "Sûrement un satellite. Je note l'heure au cas où."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 12, "type": "vlog", "date": "15.11", "lieu": "La cour", "titre": "Vlog 13 — Le froid",
-      "meta": ["Tourné : 34 min", "Gardé : 10 min", "−1 °C"],
-      "notes": ["Axel a oublié les gants. Encore.", "On garde le passage où il ne peut plus faire la mise au point. C'est le meilleur."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 13, "type": "obs", "date": "21.11", "lieu": "La cour", "titre": "Voilé, puis clair",
-      "meta": ["Ciel : variable", "Lune : 72 %"],
-      "notes": ["Deux trouées de vingt minutes.", "Rien à l'est-nord-est. J'ai regardé, quand même."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 14, "type": "obs", "date": "27.11", "lieu": "La cour", "titre": "22 h 51 — encore",
-      "meta": ["Ciel : dégagé", "Lune : 8 %", "Est-nord-est, 30°"],
-      "notes": ["Même heure. Même endroit du ciel. Onze secondes.", "Dix-neuf jours d'écart. Un satellite ne repasse pas comme ça.",
-                "Je commence une liste à part, à la fin du carnet."],
-      "croquis": "etoiles", "main": "arthur", "raye": false },
-
-    { "n": 15, "type": "vlog", "date": "02.12", "lieu": "La cour", "titre": "Vlog 16 — Questions/réponses",
-      "meta": ["Tourné : 51 min", "Gardé : 16 min", "Abonnés : 3 300"],
-      "notes": ["On répond aux commentaires. Trois personnes demandent si on a déjà vu quelque chose qu'on n'explique pas.",
-                "J'ai dit non. Axel a dit non aussi, mais lui c'est vrai."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 16, "type": "obs", "date": "09.12", "lieu": "La cour", "titre": "Rien",
-      "meta": ["Ciel : couvert", "Lune : 46 %"],
-      "notes": ["Couvert du début à la fin.", "Attendu jusqu'à 23 h 30 quand même."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 17, "type": "note", "date": "13.12", "lieu": "Cuisine", "titre": "À faire",
-      "meta": ["Sans observation", "Liste"],
-      "notes": ["Filtre lunaire — 24 €", "Rallonge 10 m (celle du garage est morte)", "Demander à Alex pour le micro-cravate",
-                "Sauvegarder les rushes. Vraiment, cette fois."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 18, "type": "obs", "date": "18.12", "lieu": "La cour", "titre": "Gelée",
-      "meta": ["Ciel : dégagé", "Lune : 88 %", "−4 °C"],
-      "notes": ["Trop de lune. Belle nuit pour rien voir.", "22 h 51 : rien. Noté aussi, ça compte."],
-      "croquis": "lune", "main": "arthur", "raye": false },
-
-    { "n": 19, "type": "vlog", "date": "23.12", "lieu": "La cour", "titre": "Vlog 20 — Spécial hiver",
-      "meta": ["Tourné : 1 h 04", "Gardé : 18 min"],
-      "notes": ["Vidéo de Noël. On rit beaucoup. Elle marchera bien.", "Je n'ai pas parlé de la lumière. Je ne sais pas pourquoi."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 20, "type": "obs", "date": "29.12", "lieu": "La cour", "titre": "Fin d'année",
-      "meta": ["Ciel : dégagé", "Lune : 20 %"],
-      "notes": ["Cinquante-trois nuits notées cette année.", "Onze avec quelque chose. Deux que je ne sais pas ranger."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 21, "type": "obs", "date": "04.01", "lieu": "La cour", "titre": "Très froid, très clair",
-      "meta": ["Ciel : dégagé", "Lune : 6 %", "−7 °C"],
-      "notes": ["La meilleure transparence de l'année. Les doigts ne tiennent pas dix minutes.",
-                "22 h 51 : rien. Trente-huit jours depuis la dernière fois."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 22, "type": "vlog", "date": "09.01", "lieu": "La cour", "titre": "Vlog 23 — Le matériel",
-      "meta": ["Tourné : 46 min", "Gardé : 15 min", "Abonnés : 4 900"],
-      "notes": ["Axel présente le télescope comme s'il venait de l'acheter. Il l'a fait trois fois déjà.",
-                "Ça marche à chaque fois."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 23, "type": "obs", "date": "15.01", "lieu": "La cour", "titre": "22 h 51 — troisième fois",
-      "meta": ["Ciel : dégagé", "Lune : 34 %", "Est-nord-est, 30°"],
-      "notes": ["Onze secondes. Toujours au même endroit, toujours à la même heure.",
-                "08.11 — 27.11 — 15.01. Ce n'est pas une période régulière. Ou alors je ne l'ai pas trouvée.",
-                "Je ne l'ai pas dit à Axel. Il ferait une vidéo, et là ce serait fini."],
-      "croquis": "cible", "main": "arthur", "raye": false },
-
-    { "n": 24, "type": "obs", "date": "21.01", "lieu": "La cour", "titre": "Attente",
-      "meta": ["Ciel : dégagé", "Lune : 82 %"],
-      "notes": ["Sorti à 22 h 20, rentré à 23 h 40. Rien.", "Je commence à sortir pour ça et pas pour le reste."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 25, "type": "note", "date": "24.01", "lieu": "Chambre", "titre": "Ce que j'ai trouvé",
-      "meta": ["Sans observation", "Recherches"],
-      "notes": ["Trois messages sur un forum décrivent la même chose. Deux du Nevada, un de l'Utah.",
-                "Même durée, à la seconde près. Même hauteur au-dessus de l'horizon.",
-                "Le troisième a effacé son message pendant que je le lisais."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 26, "type": "vlog", "date": "29.01", "lieu": "La cour", "titre": "Vlog 27 — Le ciel d'hiver",
-      "meta": ["Tourné : 38 min", "Gardé : 13 min"],
-      "notes": ["Orion, tranquille. Bonne vidéo, sans histoire.", "Axel me demande si je dors. Je réponds que oui."],
-      "croquis": "etoiles", "main": "arthur", "raye": false },
-
-    { "n": 27, "type": "obs", "date": "04.02", "lieu": "Le champ", "titre": "Depuis le champ",
-      "meta": ["Ciel : dégagé", "Lune : 18 %", "Seul"],
-      "notes": ["Deux cents mètres plus loin, l'horizon est plus bas de trois degrés.",
-                "22 h 51 : rien. Peut-être qu'il faut être exactement dans la cour."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 28, "type": "obs", "date": "09.02", "lieu": "La cour", "titre": "",
-      "meta": ["Ciel : dégagé", "Lune : 44 %"],
-      "notes": ["22 h 51. Cette fois j'ai compté à voix haute.", "Onze. Toujours onze.", "Ce n'est pas un satellite et je le sais depuis novembre."],
-      "croquis": "", "main": "arthur", "raye": true },
-
-    { "n": 29, "type": "obs", "date": "14.02", "lieu": "La cour", "titre": "Reprise",
-      "meta": ["Ciel : variable", "Lune : 96 %"],
-      "notes": ["J'ai barré la page d'avant. Je la laisse quand même : ce que j'ai écrit était vrai, c'est la façon de le dire qui n'allait pas.",
-                "Reprendre proprement. Heure, direction, durée. Rien d'autre."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 30, "type": "vlog", "date": "18.02", "lieu": "La cour", "titre": "Vlog 31 — La Lune, en gros",
-      "meta": ["Tourné : 25 min", "Gardé : 9 min", "Abonnés : 6 100"],
-      "notes": ["Filtre lunaire enfin utilisé. Belles images, vraiment.", "Je monte de moins en moins. Axel s'en charge et ne dit rien."],
-      "croquis": "lune", "main": "arthur", "raye": false },
-
-    { "n": 31, "type": "obs", "date": "23.02", "lieu": "La cour", "titre": "Seul",
-      "meta": ["Ciel : dégagé", "Lune : 40 %", "Seul"],
-      "notes": ["22 h 51. Onze secondes.", "Quatrième fois. Je ne préviens plus personne quand je sors."],
-      "croquis": "cible", "main": "arthur", "raye": false },
-
-    { "n": 32, "type": "obs", "date": "26.02", "lieu": "La cour", "titre": "Rien, deux heures",
-      "meta": ["Ciel : dégagé", "Lune : 68 %"],
-      "notes": ["Rien. J'attends des choses qui arrivent tous les deux mois, tous les soirs."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 33, "type": "note", "date": "01.03", "lieu": "Chambre", "titre": "Le Nevada",
-      "meta": ["Sans observation", "À garder"],
-      "notes": ["Jean Dry Lake. Un lac asséché à une heure de Las Vegas.",
-                "Ciel classé parmi les plus noirs du pays. Deux des trois messages venaient de là.",
-                "Vols en avril : 640 € l'aller-retour. Deux places, tant qu'à faire."],
-      "croquis": "mesa", "main": "arthur", "raye": false },
-
-    { "n": 34, "type": "obs", "date": "05.03", "lieu": "La cour", "titre": "Bruit",
-      "meta": ["Ciel : dégagé", "Lune : 12 %", "Radio : parasites"],
-      "notes": ["Le poste de la cuisine grésille entre 22 h 45 et 23 h. Trois soirs de suite.",
-                "Rien dans le ciel. Le bruit, lui, était là."],
-      "croquis": "antenne", "main": "arthur", "raye": false },
-
-    { "n": 35, "type": "vlog", "date": "09.03", "lieu": "La cour", "titre": "Vlog 36 — On part au Nevada",
-      "meta": ["Tourné : 19 min", "Gardé : 8 min", "Meilleure vidéo de la chaîne"],
-      "notes": ["Annonce du voyage. Axel n'était pas au courant, sa réaction est vraie, ça se voit.",
-                "Quatre cents commentaires en une nuit."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 36, "type": "obs", "date": "12.03", "lieu": "", "titre": "",
-      "meta": ["36°28'51\" N", "115°51'02\" W", "05:51"],
-      "notes": ["Onze secondes.", "Le même ciel, vu d'en bas."],
-      "croquis": "grille", "main": "autre", "raye": false },
-
-    { "n": 37, "type": "obs", "date": "14.03", "lieu": "La cour", "titre": "Ce n'est pas mon écriture",
-      "meta": ["Ciel : dégagé", "Lune : 30 %"],
-      "notes": ["La page d'avant n'est pas de moi.", "Le carnet ne quitte pas la maison. Personne d'autre n'y touche.",
-                "Les coordonnées tombent à onze kilomètres de Jean Dry Lake. Je n'avais écrit ce nom nulle part."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 38, "type": "obs", "date": "17.03", "lieu": "La cour", "titre": "Vérifié",
-      "meta": ["Ciel : couvert", "Sans observation"],
-      "notes": ["Relu tout le carnet, page par page. Rien d'autre d'étranger.",
-                "J'ai comparé avec des vieux cahiers de cours. Ce n'est l'écriture de personne que je connais."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 39, "type": "vlog", "date": "20.03", "lieu": "La cour", "titre": "Vlog 41 — Préparatifs",
-      "meta": ["Tourné : 33 min", "Gardé : 12 min"],
-      "notes": ["On liste le matériel devant la caméra. Axel est heureux, ça se voit aussi.",
-                "Je souris au bon moment. J'ai appris à faire ça."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 40, "type": "obs", "date": "22.03", "lieu": "La cour", "titre": "Première nuit",
-      "meta": ["Ciel : dégagé", "Lune : 8 %", "Est-nord-est, 30°"],
-      "notes": ["22 h 51. Onze secondes."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 41, "type": "obs", "date": "23.03", "lieu": "La cour", "titre": "Deuxième nuit",
-      "meta": ["Ciel : dégagé", "Lune : 4 %", "Est-nord-est, 30°"],
-      "notes": ["22 h 51. Onze secondes.", "Deux soirs de suite. Ça n'était jamais arrivé."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 42, "type": "obs", "date": "24.03", "lieu": "La cour", "titre": "Troisième nuit",
-      "meta": ["Ciel : dégagé", "Lune : 1 %", "Est-nord-est, 30°"],
-      "notes": ["22 h 51. Onze secondes.", "Ce n'est plus tous les deux mois. C'est tous les soirs maintenant.",
-                "Je crois que ça a fini de compter quelque chose."],
-      "croquis": "cible", "main": "arthur", "raye": false },
-
-    { "n": 43, "type": "note", "date": "26.03", "lieu": "Chambre", "titre": "Billets",
-      "meta": ["Sans observation", "Réservé"],
-      "notes": ["Deux billets, 14 au 29 avril. Payés.", "Voiture louée à Las Vegas. Une jeep, on ne sait jamais.",
-                "Ne pas oublier : cassettes neuves. Il en faut plus qu'on ne croit."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 44, "type": "obs", "date": "28.03", "lieu": "La cour", "titre": "Toujours",
-      "meta": ["Ciel : variable", "Lune : 32 %"],
-      "notes": ["22 h 51, à travers les nuages. On la voit quand même.", "Ce n'est pas une lumière dans le ciel. C'est une lumière qui traverse le ciel."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 45, "type": "obs", "date": "31.03", "lieu": "La cour", "titre": "",
-      "meta": ["Ciel : dégagé", "Lune : 62 %"],
-      "notes": ["onze secondes", "onze secondes", "onze secondes", "onze secondes", "onze secondes", "onze secondes"],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 46, "type": "vlog", "date": "02.04", "lieu": "La cour", "titre": "Vlog 47 — Ciel de printemps",
-      "meta": ["Tourné : 29 min", "Gardé : 11 min", "Abonnés : 9 700"],
-      "notes": ["Vidéo normale. Personne ne remarque rien.", "C'est ce que je voulais et ça me fait quelque chose quand même."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 47, "type": "obs", "date": "05.04", "lieu": "La cour", "titre": "Neuf jours",
-      "meta": ["Ciel : dégagé", "Lune : 20 %"],
-      "notes": ["Neuf jours avant le départ.", "Je relis les coordonnées de la page 36 tous les soirs. Je les connais par cœur.",
-                "Ce n'est pas là qu'on va. C'est à onze kilomètres."],
-      "croquis": "grille", "main": "arthur", "raye": false },
-
-    { "n": 48, "type": "obs", "date": "08.04", "lieu": "La cour", "titre": "Le matériel est prêt",
-      "meta": ["Ciel : couvert", "Sans observation"],
-      "notes": ["Tout est dans le sac depuis trois jours. Je le vide et je le refais chaque soir.",
-                "Axel a mis un mot sur la caméra : « ne pas oublier de vivre ». Je l'ai laissé."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 49, "type": "vlog", "date": "12.04", "lieu": "La cour", "titre": "Vlog 50 — Dans la cour, moins deux",
-      "meta": ["Tourné : ce soir", "Gardé : tout", "Abonnés : 11 200"],
-      "notes": ["Cinquante. Il fait moins deux et j'ai encore oublié les gants — c'est faux, je les ai laissés exprès, ça le fait rire.",
-                "Il dit : en avril on part, quinze jours, le ciel le plus noir des États-Unis.",
-                "Il ne sait pas que je regarde ailleurs pendant qu'il parle. Est-nord-est, trente degrés.",
-                "Bonne vidéo. La meilleure, peut-être."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 50, "type": "obs", "date": "07.11", "lieu": "Jean Dry Lake", "titre": "",
-      "meta": ["Ciel : dégagé", "Lune : 0 %", "05:51"],
-      "notes": ["Il fait le tour de la jeep. Il laisse le moteur tourner.", "Il n'y a rien pendant quatre-vingt-dix kilomètres et il le sait.",
-                "Onze secondes. Il ne les compte pas, lui."],
-      "croquis": "", "main": "arthur", "raye": false },
-
-    { "n": 51, "type": "obs", "date": "", "lieu": "", "titre": "La page que je ne montre pas",
-      "meta": ["36°28'51\" N", "115°51'02\" W", "05:51"],
-      "notes": ["Onze kilomètres après le panneau. Après, plus de route.",
-                "La cassette est déjà dans la caméra. Elle n'a pas d'étiquette.",
-                "Écris le numéro dessus, Axel. Tu sais lequel."],
+    {
+      "n": 1,
+      "type": "obs",
+      "date": "14.09",
+      "lieu": "La cour",
+      "titre": "Première lumière",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 12 %",
+        "114 mm — première sortie"
+      ],
+      "notes": [
+        "Il est arrivé ce matin dans un carton trop grand.",
+        "Deux heures pour le régler, quarante secondes pour voir Jupiter.",
+        "Axel a crié. Les voisins ont allumé."
+      ],
+      "croquis": "spirale",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 2,
+      "type": "vlog",
+      "date": "16.09",
+      "lieu": "La cour",
+      "titre": "Vlog 03 — On a un télescope",
+      "meta": [
+        "Tourné : 22 min",
+        "Gardé : 9 min",
+        "Batterie : 61 %"
+      ],
+      "notes": [
+        "Axel parle trop vite au début. On garde.",
+        "Plan de fin : le télescope seul dans le noir. C'est celui-là qui marche."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 3,
+      "type": "obs",
+      "date": "22.09",
+      "lieu": "La cour",
+      "titre": "Voilé",
+      "meta": [
+        "Ciel : voilé",
+        "Lune : 58 %",
+        "Vent : nul"
+      ],
+      "notes": [
+        "Rien. Deux heures pour rien.",
+        "Noté quand même : une nuit sans rien est une nuit."
+      ],
+      "croquis": "lune",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 4,
+      "type": "vlog",
+      "date": "28.09",
+      "lieu": "La cour",
+      "titre": "Vlog 05 — Les anneaux",
+      "meta": [
+        "Tourné : 41 min",
+        "Gardé : 14 min",
+        "1 400 vues en trois jours"
+      ],
+      "notes": [
+        "Saturne à 21 h 40. Nette pendant peut-être six secondes.",
+        "Axel dit qu'on ne verra jamais mieux d'ici. Il a raison et ça m'agace."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 5,
+      "type": "obs",
+      "date": "03.10",
+      "lieu": "La cour",
+      "titre": "Halo",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 4 %",
+        "Lampadaires : allumés"
+      ],
+      "notes": [
+        "Le halo orange monte jusqu'à 20° au-dessus de l'horizon.",
+        "Sous ça, on ne voit rien. Au-dessus, on voit tout.",
+        "Il faudrait partir. Personne ne le dit encore."
+      ],
+      "croquis": "horizon",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 6,
+      "type": "obs",
+      "date": "09.10",
+      "lieu": "Le champ",
+      "titre": "Deux cents mètres plus loin",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 26 %",
+        "Froid : 6 °C"
+      ],
+      "notes": [
+        "Essai depuis le champ. Deux cents mètres suffisent à gagner une magnitude.",
+        "Axel a eu peur d'une vache. J'ai filmé."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 7,
+      "type": "vlog",
+      "date": "14.10",
+      "lieu": "La cour",
+      "titre": "Vlog 08 — Perséides ratées",
+      "meta": [
+        "Tourné : 3 h 12",
+        "Gardé : 11 min",
+        "Zéro météore"
+      ],
+      "notes": [
+        "Trois heures d'attente, rien. La vidéo marche mieux que celles où on voit quelque chose.",
+        "Conclusion d'Axel : les gens viennent pour nous, pas pour le ciel. Je ne sais pas si c'est rassurant."
+      ],
+      "croquis": "etoiles",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 8,
+      "type": "obs",
+      "date": "21.10",
+      "lieu": "La cour",
+      "titre": "Rien à signaler",
+      "meta": [
+        "Ciel : couvert",
+        "Lune : 91 %"
+      ],
+      "notes": [
+        "Couvert. Rangé à 22 h.",
+        "J'ai relu les pages d'avant. On y parle beaucoup de nous et peu du ciel."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 9,
+      "type": "vlog",
+      "date": "26.10",
+      "lieu": "La cour",
+      "titre": "Vlog 10 — Dixième",
+      "meta": [
+        "Tourné : 28 min",
+        "Gardé : 12 min",
+        "Abonnés : 2 040"
+      ],
+      "notes": [
+        "Dix vidéos. On a fait un gâteau, on l'a filmé, on l'a coupé au montage.",
+        "Axel veut une centième. Je note la promesse ici, comme ça il ne pourra pas dire le contraire."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 10,
+      "type": "obs",
+      "date": "02.11",
+      "lieu": "La cour",
+      "titre": "Nuit propre",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 0 %",
+        "Transparence : bonne"
+      ],
+      "notes": [
+        "Meilleure nuit depuis septembre.",
+        "Andromède à l'œil nu pendant quelques minutes. Je n'y croyais pas."
+      ],
+      "croquis": "spirale",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 11,
+      "type": "obs",
+      "date": "08.11",
+      "lieu": "La cour",
+      "titre": "22 h 51",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 14 %",
+        "Est-nord-est, 30° environ"
+      ],
+      "notes": [
+        "Une lumière fixe pendant onze secondes, puis plus rien.",
+        "Pas un avion : pas de clignotant, pas de bruit.",
+        "Sûrement un satellite. Je note l'heure au cas où."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 12,
+      "type": "vlog",
+      "date": "15.11",
+      "lieu": "La cour",
+      "titre": "Vlog 13 — Le froid",
+      "meta": [
+        "Tourné : 34 min",
+        "Gardé : 10 min",
+        "−1 °C"
+      ],
+      "notes": [
+        "Axel a oublié les gants. Encore.",
+        "On garde le passage où il ne peut plus faire la mise au point. C'est le meilleur."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 13,
+      "type": "obs",
+      "date": "21.11",
+      "lieu": "La cour",
+      "titre": "Voilé, puis clair",
+      "meta": [
+        "Ciel : variable",
+        "Lune : 72 %"
+      ],
+      "notes": [
+        "Deux trouées de vingt minutes.",
+        "Rien à l'est-nord-est. J'ai regardé, quand même."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 14,
+      "type": "obs",
+      "date": "27.11",
+      "lieu": "La cour",
+      "titre": "22 h 51 — encore",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 8 %",
+        "Est-nord-est, 30°"
+      ],
+      "notes": [
+        "Même heure. Même endroit du ciel. Onze secondes.",
+        "Dix-neuf jours d'écart. Un satellite ne repasse pas comme ça.",
+        "Je commence une liste à part, à la fin du carnet."
+      ],
+      "croquis": "etoiles",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 15,
+      "type": "vlog",
+      "date": "02.12",
+      "lieu": "La cour",
+      "titre": "Vlog 16 — Questions/réponses",
+      "meta": [
+        "Tourné : 51 min",
+        "Gardé : 16 min",
+        "Abonnés : 3 300"
+      ],
+      "notes": [
+        "On répond aux commentaires. Trois personnes demandent si on a déjà vu quelque chose qu'on n'explique pas.",
+        "J'ai dit non. Axel a dit non aussi, mais lui c'est vrai."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 16,
+      "type": "obs",
+      "date": "09.12",
+      "lieu": "La cour",
+      "titre": "Rien",
+      "meta": [
+        "Ciel : couvert",
+        "Lune : 46 %"
+      ],
+      "notes": [
+        "Couvert du début à la fin.",
+        "Attendu jusqu'à 23 h 30 quand même."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 17,
+      "type": "note",
+      "date": "13.12",
+      "lieu": "Cuisine",
+      "titre": "À faire",
+      "meta": [
+        "Sans observation",
+        "Liste"
+      ],
+      "notes": [
+        "Filtre lunaire — 24 €",
+        "Rallonge 10 m (celle du garage est morte)",
+        "Demander à Alex pour le micro-cravate",
+        "Sauvegarder les rushes. Vraiment, cette fois."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 18,
+      "type": "obs",
+      "date": "18.12",
+      "lieu": "La cour",
+      "titre": "Gelée",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 88 %",
+        "−4 °C"
+      ],
+      "notes": [
+        "Trop de lune. Belle nuit pour rien voir.",
+        "22 h 51 : rien. Noté aussi, ça compte."
+      ],
+      "croquis": "lune",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 19,
+      "type": "vlog",
+      "date": "23.12",
+      "lieu": "La cour",
+      "titre": "Vlog 20 — Spécial hiver",
+      "meta": [
+        "Tourné : 1 h 04",
+        "Gardé : 18 min"
+      ],
+      "notes": [
+        "Vidéo de Noël. On rit beaucoup. Elle marchera bien.",
+        "Je n'ai pas parlé de la lumière. Je ne sais pas pourquoi."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 20,
+      "type": "obs",
+      "date": "29.12",
+      "lieu": "La cour",
+      "titre": "Fin d'année",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 20 %"
+      ],
+      "notes": [
+        "Cinquante-trois nuits notées cette année.",
+        "Onze avec quelque chose. Deux que je ne sais pas ranger."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 21,
+      "type": "obs",
+      "date": "04.01",
+      "lieu": "La cour",
+      "titre": "Très froid, très clair",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 6 %",
+        "−7 °C"
+      ],
+      "notes": [
+        "La meilleure transparence de l'année. Les doigts ne tiennent pas dix minutes.",
+        "22 h 51 : rien. Trente-huit jours depuis la dernière fois."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 22,
+      "type": "vlog",
+      "date": "09.01",
+      "lieu": "La cour",
+      "titre": "Vlog 23 — Le matériel",
+      "meta": [
+        "Tourné : 46 min",
+        "Gardé : 15 min",
+        "Abonnés : 4 900"
+      ],
+      "notes": [
+        "Axel présente le télescope comme s'il venait de l'acheter. Il l'a fait trois fois déjà.",
+        "Ça marche à chaque fois."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 23,
+      "type": "obs",
+      "date": "15.01",
+      "lieu": "La cour",
+      "titre": "22 h 51 — troisième fois",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 34 %",
+        "Est-nord-est, 30°"
+      ],
+      "notes": [
+        "Onze secondes. Toujours au même endroit, toujours à la même heure.",
+        "08.11 — 27.11 — 15.01. Ce n'est pas une période régulière. Ou alors je ne l'ai pas trouvée.",
+        "Je ne l'ai pas dit à Axel. Il ferait une vidéo, et là ce serait fini."
+      ],
+      "croquis": "cible",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 24,
+      "type": "obs",
+      "date": "21.01",
+      "lieu": "La cour",
+      "titre": "Attente",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 82 %"
+      ],
+      "notes": [
+        "Sorti à 22 h 20, rentré à 23 h 40. Rien.",
+        "Je commence à sortir pour ça et pas pour le reste."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 25,
+      "type": "note",
+      "date": "24.01",
+      "lieu": "Chambre",
+      "titre": "Ce que j'ai trouvé",
+      "meta": [
+        "Sans observation",
+        "Recherches"
+      ],
+      "notes": [
+        "Trois messages sur un forum décrivent la même chose. Deux du Nevada, un de l'Utah.",
+        "Même durée, à la seconde près. Même hauteur au-dessus de l'horizon.",
+        "Le troisième a effacé son message pendant que je le lisais."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 26,
+      "type": "vlog",
+      "date": "29.01",
+      "lieu": "La cour",
+      "titre": "Vlog 27 — Le ciel d'hiver",
+      "meta": [
+        "Tourné : 38 min",
+        "Gardé : 13 min"
+      ],
+      "notes": [
+        "Orion, tranquille. Bonne vidéo, sans histoire.",
+        "Le Lion se lève déjà à l'est. Il ressemble à un point d'interrogation à l'envers, et personne ne le voit jamais comme ça.",
+        "Axel me demande si je dors. Je réponds que oui."
+      ],
+      "croquis": "etoiles",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 27,
+      "type": "obs",
+      "date": "04.02",
+      "lieu": "Le champ",
+      "titre": "Depuis le champ",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 18 %",
+        "Seul"
+      ],
+      "notes": [
+        "Deux cents mètres plus loin, l'horizon est plus bas de trois degrés.",
+        "22 h 51 : rien. Peut-être qu'il faut être exactement dans la cour."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 28,
+      "type": "obs",
+      "date": "09.02",
+      "lieu": "La cour",
+      "titre": "",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 44 %"
+      ],
+      "notes": [
+        "22 h 51. Cette fois j'ai compté à voix haute.",
+        "Onze. Toujours onze.",
+        "Ce n'est pas un satellite et je le sais depuis novembre."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": true
+    },
+    {
+      "n": 29,
+      "type": "obs",
+      "date": "14.02",
+      "lieu": "La cour",
+      "titre": "Reprise",
+      "meta": [
+        "Ciel : variable",
+        "Lune : 96 %"
+      ],
+      "notes": [
+        "J'ai barré la page d'avant. Je la laisse quand même : ce que j'ai écrit était vrai, c'est la façon de le dire qui n'allait pas.",
+        "Reprendre proprement. Heure, direction, durée. Rien d'autre."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 30,
+      "type": "vlog",
+      "date": "18.02",
+      "lieu": "La cour",
+      "titre": "Vlog 31 — La Lune, en gros",
+      "meta": [
+        "Tourné : 25 min",
+        "Gardé : 9 min",
+        "Abonnés : 6 100"
+      ],
+      "notes": [
+        "Filtre lunaire enfin utilisé. Belles images, vraiment.",
+        "Je monte de moins en moins. Axel s'en charge et ne dit rien."
+      ],
+      "croquis": "lune",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 31,
+      "type": "obs",
+      "date": "23.02",
+      "lieu": "La cour",
+      "titre": "Seul",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 40 %",
+        "Seul"
+      ],
+      "notes": [
+        "22 h 51. Onze secondes.",
+        "Quatrième fois. Je ne préviens plus personne quand je sors."
+      ],
+      "croquis": "cible",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 32,
+      "type": "obs",
+      "date": "26.02",
+      "lieu": "La cour",
+      "titre": "Rien, deux heures",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 68 %"
+      ],
+      "notes": [
+        "Rien. J'attends des choses qui arrivent tous les deux mois, tous les soirs."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 33,
+      "type": "note",
+      "date": "01.03",
+      "lieu": "Chambre",
+      "titre": "Le Nevada",
+      "meta": [
+        "Sans observation",
+        "À garder"
+      ],
+      "notes": [
+        "Jean Dry Lake. Un lac asséché à une heure de Las Vegas.",
+        "Ciel classé parmi les plus noirs du pays. Deux des trois messages venaient de là.",
+        "Vols en avril : 640 € l'aller-retour. Deux places, tant qu'à faire."
+      ],
+      "croquis": "mesa",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 34,
+      "type": "obs",
+      "date": "05.03",
+      "lieu": "La cour",
+      "titre": "Bruit",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 12 %",
+        "Radio : parasites"
+      ],
+      "notes": [
+        "Le poste de la cuisine grésille entre 22 h 45 et 23 h. Trois soirs de suite.",
+        "Rien dans le ciel. Le bruit, lui, était là."
+      ],
+      "croquis": "antenne",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 35,
+      "type": "vlog",
+      "date": "09.03",
+      "lieu": "La cour",
+      "titre": "Vlog 36 — On part au Nevada",
+      "meta": [
+        "Tourné : 19 min",
+        "Gardé : 8 min",
+        "Meilleure vidéo de la chaîne"
+      ],
+      "notes": [
+        "Annonce du voyage. Axel n'était pas au courant, sa réaction est vraie, ça se voit.",
+        "Quatre cents commentaires en une nuit."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 36,
+      "type": "obs",
+      "date": "12.03",
+      "lieu": "",
+      "titre": "",
+      "meta": [
+        "36°28'51\" N",
+        "115°51'02\" W",
+        "05:51"
+      ],
+      "notes": [
+        "Onze secondes.",
+        "Le même ciel, vu d'en bas."
+      ],
+      "croquis": "grille",
+      "main": "autre",
+      "raye": false
+    },
+    {
+      "n": 37,
+      "type": "obs",
+      "date": "14.03",
+      "lieu": "La cour",
+      "titre": "Ce n'est pas mon écriture",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 30 %"
+      ],
+      "notes": [
+        "La page d'avant n'est pas de moi.",
+        "Le carnet ne quitte pas la maison. Personne d'autre n'y touche.",
+        "Les coordonnées tombent à onze kilomètres de Jean Dry Lake. Je n'avais écrit ce nom nulle part."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 38,
+      "type": "obs",
+      "date": "17.03",
+      "lieu": "La cour",
+      "titre": "Vérifié",
+      "meta": [
+        "Ciel : couvert",
+        "Sans observation"
+      ],
+      "notes": [
+        "Relu tout le carnet, page par page. Rien d'autre d'étranger.",
+        "J'ai comparé avec des vieux cahiers de cours. Ce n'est l'écriture de personne que je connais."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 39,
+      "type": "vlog",
+      "date": "20.03",
+      "lieu": "La cour",
+      "titre": "Vlog 41 — Préparatifs",
+      "meta": [
+        "Tourné : 33 min",
+        "Gardé : 12 min"
+      ],
+      "notes": [
+        "On liste le matériel devant la caméra. Axel est heureux, ça se voit aussi.",
+        "Je souris au bon moment. J'ai appris à faire ça."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 40,
+      "type": "obs",
+      "date": "22.03",
+      "lieu": "La cour",
+      "titre": "Première nuit",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 8 %",
+        "Est-nord-est, 30°"
+      ],
+      "notes": [
+        "22 h 51. Onze secondes."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 41,
+      "type": "obs",
+      "date": "23.03",
+      "lieu": "La cour",
+      "titre": "Deuxième nuit",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 4 %",
+        "Est-nord-est, 30°"
+      ],
+      "notes": [
+        "22 h 51. Onze secondes.",
+        "Deux soirs de suite. Ça n'était jamais arrivé."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 42,
+      "type": "obs",
+      "date": "24.03",
+      "lieu": "La cour",
+      "titre": "Troisième nuit",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 1 %",
+        "Est-nord-est, 30°"
+      ],
+      "notes": [
+        "22 h 51. Onze secondes.",
+        "Ce n'est plus tous les deux mois. C'est tous les soirs maintenant.",
+        "Je crois que ça a fini de compter quelque chose."
+      ],
+      "croquis": "cible",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 43,
+      "type": "note",
+      "date": "26.03",
+      "lieu": "Chambre",
+      "titre": "Billets",
+      "meta": [
+        "Sans observation",
+        "Réservé"
+      ],
+      "notes": [
+        "Deux billets, 14 au 29 avril. Payés.",
+        "Voiture louée à Las Vegas. Une jeep, on ne sait jamais.",
+        "Ne pas oublier : cassettes neuves. Il en faut plus qu'on ne croit."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 44,
+      "type": "obs",
+      "date": "28.03",
+      "lieu": "La cour",
+      "titre": "Toujours",
+      "meta": [
+        "Ciel : variable",
+        "Lune : 32 %"
+      ],
+      "notes": [
+        "22 h 51, à travers les nuages. On la voit quand même.",
+        "Ce n'est pas une lumière dans le ciel. C'est une lumière qui traverse le ciel."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 45,
+      "type": "obs",
+      "date": "31.03",
+      "lieu": "La cour",
+      "titre": "",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 62 %"
+      ],
+      "notes": [
+        "onze secondes",
+        "onze secondes",
+        "onze secondes",
+        "onze secondes",
+        "onze secondes",
+        "onze secondes"
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 46,
+      "type": "vlog",
+      "date": "02.04",
+      "lieu": "La cour",
+      "titre": "Vlog 47 — Ciel de printemps",
+      "meta": [
+        "Tourné : 29 min",
+        "Gardé : 11 min",
+        "Abonnés : 9 700"
+      ],
+      "notes": [
+        "Vidéo normale. Personne ne remarque rien.",
+        "C'est ce que je voulais et ça me fait quelque chose quand même."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 47,
+      "type": "obs",
+      "date": "05.04",
+      "lieu": "La cour",
+      "titre": "Neuf jours",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 20 %"
+      ],
+      "notes": [
+        "Neuf jours avant le départ.",
+        "Je relis les coordonnées de la page 36 tous les soirs. Je les connais par cœur.",
+        "Ce n'est pas là qu'on va. C'est à onze kilomètres."
+      ],
+      "croquis": "grille",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 48,
+      "type": "obs",
+      "date": "08.04",
+      "lieu": "La cour",
+      "titre": "Le matériel est prêt",
+      "meta": [
+        "Ciel : couvert",
+        "Sans observation"
+      ],
+      "notes": [
+        "Tout est dans le sac depuis trois jours. Je le vide et je le refais chaque soir.",
+        "Axel a mis un mot sur la caméra : « ne pas oublier de vivre ». Je l'ai laissé."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 49,
+      "type": "vlog",
+      "date": "12.04",
+      "lieu": "La cour",
+      "titre": "Vlog 50 — Dans la cour, moins deux",
+      "meta": [
+        "Tourné : ce soir",
+        "Gardé : tout",
+        "Abonnés : 11 200"
+      ],
+      "notes": [
+        "Cinquante. Il fait moins deux et j'ai encore oublié les gants — c'est faux, je les ai laissés exprès, ça le fait rire.",
+        "Il dit : en avril on part, quinze jours, le ciel le plus noir des États-Unis.",
+        "Il ne sait pas que je regarde ailleurs pendant qu'il parle. Est-nord-est, trente degrés.",
+        "Bonne vidéo. La meilleure, peut-être."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 50,
+      "type": "obs",
+      "date": "07.11",
+      "lieu": "Jean Dry Lake",
+      "titre": "",
+      "meta": [
+        "Ciel : dégagé",
+        "Lune : 0 %",
+        "05:51"
+      ],
+      "notes": [
+        "Il fait le tour de la jeep. Il laisse le moteur tourner.",
+        "Il n'y a rien pendant quatre-vingt-dix kilomètres et il le sait.",
+        "Onze secondes. Il ne les compte pas, lui."
+      ],
+      "croquis": "",
+      "main": "arthur",
+      "raye": false
+    },
+    {
+      "n": 51,
+      "type": "obs",
+      "date": "",
+      "lieu": "",
+      "titre": "La page que je ne montre pas",
+      "meta": [
+        "36°28'51\" N",
+        "115°51'02\" W",
+        "05:51"
+      ],
+      "notes": [
+        "Onze kilomètres après le panneau. Après, plus de route.",
+        "La cassette est déjà dans la caméra. Elle n'a pas d'étiquette.",
+        "Écris le numéro dessus, Axel. Tu sais lequel."
+      ],
       "indice": "",
-      "croquis": "cassette", "main": "arthur", "raye": false }
+      "croquis": "cassette",
+      "main": "arthur",
+      "raye": false
+    }
   ]
 }

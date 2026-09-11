@@ -1,9 +1,10 @@
 /**
  * Cosmic Review — point d'entrée du navigateur.
  *
- * Assemble les cinq morceaux : le ciel animé, le routeur de scènes, le
- * désert du Projet, le monde à la craie de l'Équipe et la galaxie des
- * Partenaires. Tout le reste de la page est déjà là, en HTML statique.
+ * Assemble les six morceaux : le ciel animé, le routeur de scènes, le
+ * désert du Projet, le monde à la craie de l'Équipe, la galaxie des
+ * Partenaires et la régie sonore. Tout le reste de la page est déjà là,
+ * en HTML statique.
  */
 
 import { initSky } from "./skyfx.js";
@@ -11,10 +12,12 @@ import { initRouter } from "./router.js";
 import { initTeam } from "./team.js";
 import { initProjet } from "./projet.js";
 import { initPartenaires } from "./partenaires.js";
+import { initAudio } from "./audio.js";
 
+const audio = initAudio();
 const sky = initSky();
 const team = initTeam();
-const projet = initProjet();
+const projet = initProjet(audio);
 const partenaires = initPartenaires();
 
 initRouter({

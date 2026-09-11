@@ -23,6 +23,7 @@ const HORIZON = 668;
 
 import { rng, n, esc, circle, path, wobble, ticks, ch, pen } from "./draw.js";
 import { calquesCarnet } from "./carnet.js";
+import { calquesGemeaux, calquesGemeauxOverlays, pellicule } from "./gemeaux.js";
 
 export { esc };
 const pc = (v, total) => n((v / total) * 100) + "%";
@@ -510,8 +511,9 @@ const SYNOPSIS = [
   `Le désert y est traité comme un personnage à part entière : plans-séquences, lumière naturelle, mise en scène discrète, et une bascule progressive de l'énergie du vlog vers l'horreur brute.`,
 ];
 
-export function sceneProjet(data, carnet) {
+export function sceneProjet(data, secrets = {}, membres = []) {
   const { elements, slate, hint } = data;
+  const { carnet, gemeaux } = secrets;
 
   return `<section class="scene scene--projet" id="scene-le-projet" data-scene="le-projet" data-state="cour"
   data-slate="${esc(JSON.stringify(slate))}" data-hints="${esc(JSON.stringify(hint))}"
@@ -540,8 +542,9 @@ export function sceneProjet(data, carnet) {
         ${elements.desert.map((el) => element(el, "desert")).join("\n        ")}
       </div>
 
+      ${gemeaux ? calquesGemeaux(gemeaux, place) : ""}
+
       <img class="pj-wordmark" src="/cosmic-logo.webp" alt="" width="900" height="339" aria-hidden="true" />
-      <p class="pj-filmtitle" aria-hidden="true">L'Incident d'Indian Springs</p>
     </div>
   </div>
 
@@ -549,6 +552,7 @@ export function sceneProjet(data, carnet) {
   <div class="pj-grain" aria-hidden="true"></div>
   <div class="pj-milk" aria-hidden="true"></div>
   <div class="pj-wash" aria-hidden="true"></div>
+  ${gemeaux ? pellicule() : ""}
 
   <div class="pj-transcript" id="pj-transcript">
     <div class="pj-slate" aria-hidden="true">
@@ -564,7 +568,7 @@ export function sceneProjet(data, carnet) {
     <p class="pj-cue"><span data-hint>${esc(hint.cour)}</span><span class="pj-swipe">Faites glisser la scène pour la voir en entier</span></p>
     <p class="sr-only" id="pj-live" aria-live="polite"></p>
     <div class="pj-actions">
-      <button type="button" class="pj-act pj-act--end" data-end hidden>Fin de l'enregistrement</button>
+      <button type="button" class="pj-act pj-act--carnet" data-consulter hidden>Le carnet</button>
       <button type="button" class="pj-act pj-act--info" data-info aria-expanded="false" aria-controls="pj-panel">Le film en trois lignes</button>
     </div>
   </div>
@@ -584,6 +588,7 @@ export function sceneProjet(data, carnet) {
   <!-- Ce qu'on trouve en insistant : le carnet d'Arthur et la cassette
        vierge. Les deux restent masquées jusqu'au second clic. -->
   ${carnet ? calquesCarnet(carnet) : ""}
+  ${gemeaux ? calquesGemeauxOverlays(gemeaux, membres) : ""}
 
 ${transcriptSource(elements)}
 </section>`;

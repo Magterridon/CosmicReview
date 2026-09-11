@@ -1,0 +1,910 @@
+/* ============================================================
+ Cosmic Review — les Gémeaux.
+
+ Le second secret de la scène « Le Projet », dans le désert : la carte du
+ ciel, la constellation qui vient se poser en haut à droite, la pellicule qui
+ se griffe à chaque fois qu'on touche Castor, et la boîte qui reste seule au
+ sol quand tout le reste a disparu.
+
+ Comme le carnet, les calques appartiennent à l'écran (`fixed`), pas à la
+ scène : sur un téléphone couché la scène est plus haute que l'écran.
+ ============================================================ */
+
+.gx,
+.lb {
+  --hand: "Caveat", "Repli manuscrit", "Repli sobre", cursive, sans-serif;
+  --u: 0.1cqw; /* une unité du repère 1000 de la roue */
+}
+
+/* `display: flex` l'emporterait sur l'attribut `hidden`. */
+.gx[hidden],
+.lb[hidden],
+.gx-gemini[hidden],
+.gx-boite[hidden] { display: none !important; }
+
+.gx,
+.lb {
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.6rem, 2vw, 1.6rem);
+  background: rgba(2, 3, 8, 0.92);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.gx.is-open,
+.lb.is-open { opacity: 1; }
+
+.gx-frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  max-width: 900px;
+  /* Garde-fou : sur un écran vraiment petit, le cadre défile plutôt que de
+     laisser une question à moitié coupée. */
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  /* Le bouton de fermeture vit dans le cadre : posé en débord, son liseré de
+     focus se faisait couper par le garde-fou ci-dessus. */
+  padding: 2.3rem 0.5rem 0.3rem;
+  transform: translateY(14px) scale(0.985);
+  transition: transform 0.5s cubic-bezier(0.16, 0.8, 0.3, 1);
+}
+
+.gx.is-open .gx-frame,
+.lb.is-open .gx-frame { transform: none; }
+
+/* ---------- la carte du ciel ---------- */
+
+.gx-wheel {
+  position: relative;
+  width: min(100%, 760px, calc((100dvh - 12rem)));
+  aspect-ratio: 1 / 1;
+  container-type: inline-size;
+}
+
+.gx-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.gx-nom {
+  fill: var(--chalk, #efe7d8);
+  stroke: none;
+  font-family: var(--font, inherit);
+  font-size: 21px;
+  letter-spacing: 0.2em;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.gx.is-open .gx-nom { opacity: 0.44; }
+.gx-graduation { opacity: 0.16; }
+
+/* Sur le fond presque noir du calque, la craie a besoin d'un peu plus de
+   présence que sur la photo du ciel : ce sont des cibles, pas du décor. */
+.gx-art .ch-star { opacity: 0.82; }
+.gx-art .ch-tick { opacity: 0.55; }
+
+/* Ce qu'Axel dit, au milieu du trou de la carte. */
+.gx-centre {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(556 * var(--u));
+  margin: 0;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: calc(26 * var(--u));
+  font-weight: 300;
+  line-height: 1.75;
+  color: rgba(236, 230, 218, 0.86);
+  opacity: 0;
+  transition: opacity 1.6s ease 0.9s;
+}
+
+.gx-centre span { display: block; }
+.gx-centre span + span { margin-top: 0.5em; color: var(--gold, #e8c07a); }
+.gx.is-open .gx-centre { opacity: 1; }
+
+/* Les zones de visée : rondes et généreuses, centrées sur chaque figure. */
+.gx-secteur {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.gx-secteur:hover,
+.gx-secteur:focus-visible { background: rgba(232, 192, 122, 0.07); }
+.gx-secteur:focus-visible { outline: 2px solid var(--gold, #e8c07a); outline-offset: 2px; }
+
+/* Une figure qu'on survole s'éclaire ; celle qu'on refuse s'éteint. */
+.gx-fig { transition: opacity 0.4s ease; }
+.gx-wheel:has(.gx-secteur:hover) .gx-fig { opacity: 0.4; }
+.gx-fig.is-lit { opacity: 1 !important; }
+.gx-fig.is-lit .ch-star { stroke: var(--chalk-or, #e8c07a); }
+.gx-fig.is-refusee { animation: gx-refus 1.1s ease both; }
+
+@keyframes gx-refus {
+  0% { opacity: 1; }
+  30% { opacity: 1; }
+  100% { opacity: 0.18; }
+}
+
+/* Celle qu'on a trouvée reste allumée. */
+.gx-fig.is-trouvee .ch-star { stroke: var(--chalk-or, #e8c07a); }
+.gx-fig.is-trouvee .ch-tick { opacity: 0.7; }
+
+.gx-amorce {
+  margin: 0;
+  min-height: 1.4em;
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(236, 230, 218, 0.46);
+  transition: color 0.3s ease;
+}
+
+.gx.is-trouve .gx-amorce { color: var(--gold-bright, #f6e3b6); }
+
+.gx-close {
+  position: absolute;
+  top: 0.1rem;
+  right: 0.3rem;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: none;
+  color: rgba(236, 230, 218, 0.6);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gx-close:hover,
+.gx-close:focus-visible { color: var(--gold-bright, #f6e3b6); }
+.gx-close:focus-visible { outline: 2px solid var(--gold, #e8c07a); outline-offset: 3px; border-radius: 2px; }
+
+/* ---------- la constellation, dans le ciel du désert ---------- */
+
+.gx-gemini {
+  position: absolute;
+  z-index: 6;
+  opacity: 0;
+  transition: opacity 2.4s ease;
+}
+
+/* Un peu de nuit derrière : posée sur la Voie lactée, la craie perdrait ses
+   traits les plus fins. */
+.gx-gemini::before {
+  content: "";
+  position: absolute;
+  inset: -14% -10%;
+  background: radial-gradient(ellipse at 50% 45%, rgba(3, 4, 10, 0.62), rgba(3, 4, 10, 0) 68%);
+  pointer-events: none;
+}
+
+.scene--projet[data-gemini="1"] .gx-gemini { opacity: 1; }
+
+.gx-gemini-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.gx-gemini .ch-star { opacity: 0.8; }
+.gx-gemini .ch-tick { opacity: 0.34; }
+
+.gx-etoile-nom {
+  fill: var(--chalk, #efe7d8);
+  stroke: none;
+  font-family: var(--font, inherit);
+  font-size: 15px;
+  letter-spacing: 0.24em;
+  opacity: 0.4;
+}
+
+/* Castor et Pollux sont deux boutons posés sur le dessin. Castor est celui
+   qu'on peut abîmer. */
+.gx-twin {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.gx-twin--castor { left: 6%; top: 4%; width: 46%; height: 94%; }
+.gx-twin--pollux { left: 54%; top: 12%; width: 42%; height: 86%; }
+
+.gx-twin:hover,
+.gx-twin:focus-visible { background: rgba(246, 227, 182, 0.05); }
+.gx-twin:focus-visible { outline: 1px solid rgba(232, 192, 122, 0.6); }
+
+.gx-gemini .gx-jumeau { transition: opacity 0.5s ease; }
+.gx-twin--castor:hover ~ .gx-gemini-art { }
+
+/* ---------- la pellicule qui s'abîme ---------- */
+
+/* La pellicule abîmée s'arrête au bas de l'image : le bandeau, c'est le
+   sous-titre, il n'est pas sur la bobine. Et comme les calques, elle
+   appartient à l'écran — d'où `fixed`, avec la hauteur du bandeau retirée. */
+.gx-pellicule {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: var(--pj-bar, 200px);
+  z-index: 30;
+  overflow: hidden;
+  overflow: clip;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.gx-burn,
+.gx-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Chaque palier est là dès le départ, éteint. Une griffure n'a pas de geste :
+   elle apparaît, elle ne se dessine pas. */
+.gx-s,
+.gx-b {
+  opacity: 0;
+  transition: opacity 0.55s ease;
+}
+
+.scene--projet[data-griffe="1"] .gx-s1,
+.scene--projet[data-griffe="2"] .gx-s1, .scene--projet[data-griffe="2"] .gx-s2,
+.scene--projet[data-griffe="3"] .gx-s1, .scene--projet[data-griffe="3"] .gx-s2, .scene--projet[data-griffe="3"] .gx-s3,
+.scene--projet[data-griffe="4"] .gx-s1, .scene--projet[data-griffe="4"] .gx-s2, .scene--projet[data-griffe="4"] .gx-s3, .scene--projet[data-griffe="4"] .gx-s4,
+.scene--projet[data-griffe="5"] .gx-s1, .scene--projet[data-griffe="5"] .gx-s2, .scene--projet[data-griffe="5"] .gx-s3, .scene--projet[data-griffe="5"] .gx-s4, .scene--projet[data-griffe="5"] .gx-s5 {
+  opacity: 1;
+}
+
+/* La brûlure : un seul palier visible à la fois, le plus avancé. Les
+   premiers ne sont pas encore tout à fait blancs — la couche s'amincit avant
+   de partir. */
+.scene--projet[data-griffe="1"] .gx-b1 { opacity: 0.5; }
+.scene--projet[data-griffe="2"] .gx-b2 { opacity: 0.66; }
+.scene--projet[data-griffe="3"] .gx-b3 { opacity: 0.8; }
+.scene--projet[data-griffe="4"] .gx-b4 { opacity: 0.92; }
+.scene--projet[data-griffe="5"] .gx-b5 { opacity: 1; }
+
+/* 🔒 Le logotype ne se déforme pas et ne se laisse pas entamer : plutôt que
+   de le laisser couper en deux par la brûlure, on l'éteint pendant que le
+   ciel s'en va. La chaîne s'arrête avant le reste. */
+.scene--projet[data-griffe="3"] .pj-wordmark { opacity: 0.4; }
+.scene--projet[data-griffe="4"] .pj-wordmark,
+.scene--projet[data-griffe="5"] .pj-wordmark { opacity: 0; }
+
+/* Le dernier palier ne recule plus : la lampe passe au travers. */
+.scene--projet[data-griffe="5"] .gx-pellicule { transition: filter 2.6s ease; filter: brightness(1.25); }
+
+/* La secousse : la bande saute dans le couloir. */
+.scene--projet.is-griffe .pj-viewport { animation: gx-saut 0.24s steps(3) 1; }
+
+@keyframes gx-saut {
+  0% { transform: none; }
+  33% { transform: translate(-3px, 2px); }
+  66% { transform: translate(2px, -2px); }
+  100% { transform: none; }
+}
+
+/* ---------- ce qu'il reste ---------- */
+
+/* Le sol se vide : les trois objets du désert s'effacent, et la boîte
+   apparaît là où quelqu'un se tenait. */
+.scene--projet[data-fin="1"] .pj-elements--desert {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2.6s ease;
+}
+
+/* `pointer-events` ne s'hérite pas comme on le croit : la zone de visée de
+   chaque objet (`.ch-hit`) le remet à `all` pour elle-même, et l'objet reste
+   cliquable alors qu'on ne le voit plus. Il faut l'éteindre là où il est
+   allumé. */
+.scene--projet[data-fin="1"] .pj-elements--desert .ch-hit,
+.scene--projet[data-fin="1"] .pj-elements--desert .pj-el { pointer-events: none; }
+
+.scene--projet[data-fin="1"] .pj-count,
+.scene--projet[data-fin="1"] .pj-act--info { opacity: 0; pointer-events: none; }
+
+.gx-boite {
+  position: absolute;
+  z-index: 7;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 2.2s ease 1.8s;
+}
+
+.scene--projet[data-fin="1"] .gx-boite { opacity: 1; }
+.gx-boite .gx-draw { pointer-events: none; }
+.gx-boite:hover .ch, .gx-boite:focus-visible .ch { stroke: var(--chalk-or, #e8c07a); }
+.gx-boite:focus-visible { outline: 1px solid rgba(232, 192, 122, 0.5); }
+
+/* ---------- la boîte ouverte ---------- */
+
+.lb { z-index: 46; }
+.lb-frame { max-width: 940px; }
+
+.lb-boite {
+  position: relative;
+  width: min(100%, 760px, calc((100dvh - 23rem) * 1.538));
+  aspect-ratio: 800 / 520;
+  container-type: inline-size;
+}
+
+.gx-boite-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.gx-tole { fill: #14161d; opacity: 0.9; }
+.gx-tole--fond { fill: #0c0e14; opacity: 0.94; }
+.gx-photo { fill: #b6ae9c; opacity: 0.55; }
+.gx-etiquette { fill: #b9b1a0; opacity: 0.9; }
+
+.gx-obj-btn {
+  position: absolute;
+  top: 46%;
+  width: 20%;
+  height: 32%;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.gx-obj-btn:hover,
+.gx-obj-btn:focus-visible { background: rgba(232, 192, 122, 0.08); }
+.gx-obj-btn:focus-visible { outline: 2px solid var(--gold, #e8c07a); outline-offset: 2px; }
+
+.gx-objet { transition: opacity 0.35s ease; }
+.gx-objet.is-lu .ch-star, .gx-objet.is-lu .ch-limb { stroke: var(--chalk-or, #e8c07a); }
+
+/* Ce qu'on lit quand on sort une chose de la boîte : écrit à la main, comme
+   le carnet. */
+.lb-mot {
+  width: min(100%, 46rem);
+  min-height: 7.5rem;
+  margin: 0;
+  font-family: var(--hand);
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  line-height: 1.55;
+  text-align: center;
+  color: var(--chalk, #efe7d8);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.lb-mot.is-on { opacity: 1; }
+.lb-mot span { display: block; }
+.lb-mot span + span { margin-top: 0.25em; }
+.lb-mot.is-axel { color: rgba(236, 230, 218, 0.72); }
+
+/* ---------- le tracé à l'ouverture ---------- */
+
+.gx .ch-draw,
+.lb .ch-draw { stroke-dasharray: 1; stroke-dashoffset: 0; }
+
+.gx.is-drawing .ch-draw,
+.lb.is-drawing .ch-draw {
+  animation: ch-draw 0.5s ease-out both;
+  animation-delay: calc(var(--d, 0s) + var(--o, 0s));
+}
+
+.gx.is-drawing .chf,
+.lb.is-drawing .chf {
+  animation: ch-appear 0.4s ease-out both;
+  animation-delay: calc(var(--d, 0s) + var(--o, 0s));
+}
+
+/* ---------- petits écrans ---------- */
+
+@media (max-width: 860px), (max-height: 620px) {
+  .gx-wheel { width: min(100%, calc(100dvh - 7.5rem)); }
+  .lb-boite { width: min(100%, calc((100dvh - 10rem) * 1.538)); }
+  .gx-frame { gap: 0.6rem; }
+  .gx-close { top: 0; right: 0; }
+  .lb-mot { min-height: 6rem; font-size: 1.05rem; }
+}
+
+/* ---------- mouvement réduit ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .gx, .lb { transition-duration: 0.01s; }
+  .gx-frame { transform: none; transition: none; }
+  .gx-centre, .gx-nom { transition-delay: 0s; transition-duration: 0.01s; }
+  .gx.is-drawing .ch-draw, .lb.is-drawing .ch-draw,
+  .gx.is-drawing .chf, .lb.is-drawing .chf { animation: none; }
+  .gx-fig.is-refusee { animation: none; opacity: 0.18; }
+  .scene--projet.is-griffe .pj-viewport { animation: none; }
+  .gx-gemini { transition-duration: 0.3s; }
+  .gx-s, .gx-b { transition-duration: 0.2s; }
+  .scene--projet[data-fin="1"] .pj-elements--desert { transition-duration: 0.3s; }
+  .gx-boite { transition: opacity 0.3s ease 0.2s; }
+}
+
+/* ============================================================
+ L'énigme : trois carrés vides, et la fin blanche.
+ ============================================================ */
+
+/* ---------- les trois carrés ---------- */
+
+.gx-case-num {
+  fill: var(--chalk, #efe7d8);
+  stroke: none;
+  font-family: var(--font, inherit);
+  font-size: 17px;
+  letter-spacing: 0.18em;
+  opacity: 0.34;
+}
+
+.gx-case-ok { opacity: 0; transition: opacity 0.6s ease; }
+.gx-case.is-ok .gx-case-ok { opacity: 1; }
+.gx-case.is-ok .ch-limb { stroke: var(--chalk-or, #e8c07a); }
+.gx-case.is-en-cours .ch-limb { stroke: var(--chalk-or, #e8c07a); opacity: 0.9; }
+
+/* La place vient du dessin (`CARRES` dans src/lib/gemeaux.js), pas d'ici :
+   deux jeux de coordonnées finissent toujours par se contredire. */
+.gx-case-btn {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.gx-case-btn:hover,
+.gx-case-btn:focus-visible { background: rgba(232, 192, 122, 0.09); }
+.gx-case-btn:focus-visible { outline: 2px solid var(--gold, #e8c07a); outline-offset: 2px; }
+
+/* ---------- la fiche d'une case ---------- */
+
+.lb-fiche[hidden] { display: none !important; }
+
+.lb-fiche {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: min(100%, 48rem);
+  text-align: center;
+}
+
+.lb-fiche-titre {
+  margin: 0;
+  font-size: 0.64rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(232, 192, 122, 0.8);
+}
+
+.lb-fiche-texte span { display: block; }
+
+.lb-fiche-texte {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.9vw, 1.12rem);
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(236, 230, 218, 0.84);
+}
+
+.lb-form {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.lb-form[hidden] { display: none !important; }
+
+/* Le champ est une ligne à remplir, pas une boîte : on écrit sur le trait,
+   comme on écrirait sur le carnet. */
+.lb-input {
+  width: 15ch;
+  padding: 0.3em 0.4em;
+  border: 0;
+  border-bottom: 1px solid rgba(232, 192, 122, 0.4);
+  background: none;
+  color: var(--chalk, #efe7d8);
+  font-family: var(--hand);
+  font-size: 1.55rem;
+  line-height: 1.2;
+  text-align: center;
+  caret-color: var(--gold, #e8c07a);
+  outline: none;
+}
+
+.lb-input::placeholder { color: rgba(236, 230, 218, 0.26); font-size: 0.62em; letter-spacing: 0.14em; }
+.lb-input:focus-visible { border-bottom-color: var(--gold-bright, #f6e3b6); }
+
+.lb-ok,
+.lb-roue-ouvrir {
+  padding: 0.5em 1.1em;
+  border: 1px solid rgba(232, 192, 122, 0.34);
+  border-radius: 2px;
+  background: none;
+  color: var(--gold, #e8c07a);
+  font-family: inherit;
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.lb-ok:hover, .lb-ok:focus-visible,
+.lb-roue-ouvrir:hover, .lb-roue-ouvrir:focus-visible {
+  color: var(--gold-bright, #f6e3b6);
+  border-color: rgba(246, 227, 182, 0.75);
+}
+
+.lb-roue-ouvrir[hidden] { display: none !important; }
+
+.lb-etat {
+  margin: 0;
+  min-height: 3.4em;
+  font-family: var(--hand);
+  font-size: clamp(1.05rem, 2.1vw, 1.4rem);
+  line-height: 1.5;
+  color: var(--chalk, #efe7d8);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.lb-etat.is-on { opacity: 1; }
+.lb-etat.is-faux { color: rgba(236, 230, 218, 0.5); }
+.lb-etat span { display: block; }
+
+/* ---------- le pied : le carnet reste à portée ---------- */
+
+.lb-pied {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.lb-carnet {
+  padding: 0.45em 1em;
+  border: 1px solid rgba(232, 192, 122, 0.26);
+  border-radius: 2px;
+  background: none;
+  color: rgba(236, 230, 218, 0.72);
+  font-family: inherit;
+  font-size: 0.6rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.lb-carnet:hover, .lb-carnet:focus-visible {
+  color: var(--gold-bright, #f6e3b6);
+  border-color: rgba(246, 227, 182, 0.7);
+}
+
+.lb-aide {
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(236, 230, 218, 0.32);
+}
+
+/* Le mot d'Arthur, une fois les trois choses retrouvées. */
+.lb-mot[hidden] { display: none !important; }
+
+.lb-mot {
+  width: min(100%, 44rem);
+  margin: 0;
+  font-family: var(--hand);
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  line-height: 1.55;
+  text-align: center;
+  color: var(--chalk, #efe7d8);
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+.lb-mot.is-on { opacity: 1; }
+.lb-mot span { display: block; }
+.lb-mot span + span { margin-top: 0.25em; }
+
+/* ---------- la fin ----------
+
+ Tout le site est noir ; la fin est blanche. Le même trait, à l'encre sombre
+ sur le papier. Rien d'autre que le titre. */
+
+.fin[hidden] { display: none !important; }
+
+.fin {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: #f7f5f0;
+  opacity: 0;
+  transition: opacity 3.4s ease;
+}
+
+.fin.is-on { opacity: 1; }
+
+.fin-ciel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 2.6s ease 1.4s;
+}
+
+.fin.is-on .fin-ciel { opacity: 1; }
+
+.fin-etoiles circle { fill: #191b22; }
+.fin-encre .ch { stroke: #191b22; }
+.fin-encre .ch-star { fill: rgba(25, 27, 34, 0.12); opacity: 0.7; }
+.fin-encre .ch-tick { opacity: 0.4; }
+
+/* Le titre est en haut dès le premier instant : il ne descend pas, il ne
+   remonte pas, il ne change pas de taille. Il apparaît à sa place et il y
+   reste pendant tout le générique.
+
+   Sa typographie est celle que le site donne déjà au titre du film, en bas
+   de l'accueil (`.footline .film`) : Jost, capitales, graisse légère, chasse
+   très ouverte. Même vocabulaire, à l'encre sombre sur le papier. */
+.fin-titre {
+  position: absolute;
+  top: clamp(4.5%, 8vh, 11%);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0 6vw;
+  font-size: clamp(1.25rem, 3.7vw, 3.2rem);
+  font-weight: 300;
+  line-height: 1.32;
+  letter-spacing: 0.3em;
+  text-align: center;
+  /* sur un écran étroit le titre tient sur deux lignes : autant qu'elles
+     soient de longueur voisine plutôt qu'un mot seul en dessous */
+  text-wrap: balance;
+  text-transform: uppercase;
+  color: #14161d;
+  opacity: 0;
+  transition: opacity 3.2s ease 1.2s;
+}
+
+.fin.is-on .fin-titre { opacity: 1; }
+
+/* `is-credits` ne déplace plus rien : elle reste le drapeau qui dit que le
+   générique a commencé. */
+
+.fin-sous {
+  position: absolute;
+  bottom: 16%;
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(20, 22, 29, 0.5);
+}
+
+/* ---------- le générique ----------
+
+ Une troupe qui se rassemble. Chaque personne entre au centre avec son nom et
+ ce qu'elle fait ; quand la suivante arrive, elle se décale et reste là. À la
+ fin, l'équipe entière est alignée sous le titre.
+
+ Les huit figures sont dans la rangée dès le départ, éteintes : leur place est
+ donc connue d'avance et rien ne saute. C'est la rangée entière qui glisse,
+ d'une demi-place à chaque arrivée, pour que le groupe déjà là reste centré.
+ Ce sont les mêmes dessins que la page Équipe, à l'encre sombre. */
+
+.fin-troupe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 27%;
+  /* La hauteur commande la largeur (une figure fait 144 sur 420). Huit
+     doivent tenir de front : d'où le plafond en `vw`, sans quoi la rangée
+     déborderait sur un écran étroit. */
+  height: min(clamp(118px, 37vh, 340px), 30vw);
+  pointer-events: none;
+}
+
+.fin-rang {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;   /* c'est la mise en page qui centre */
+  gap: clamp(2px, 0.7vw, 18px);
+  transform: translateX(var(--dx, 0px));   /* et la transformation qui décale */
+  transition: transform 1.2s cubic-bezier(0.16, 0.8, 0.3, 1);
+}
+
+.fin-membre {
+  position: relative;
+  flex: 0 0 auto;
+  height: 100%;
+  aspect-ratio: 144 / 420;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+/* Déjà passée : elle reste, en retrait. */
+.fin-membre.is-rangee { opacity: 0.5; }
+/* Au centre, c'est son tour. */
+.fin-membre.is-scene { opacity: 1; }
+
+.fin-corps {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform: scale(0.82);
+  transform-origin: 50% 100%;   /* les pieds ne quittent pas le sol */
+  transition: transform 1s cubic-bezier(0.16, 0.8, 0.3, 1);
+}
+
+.fin-membre.is-scene .fin-corps { transform: scale(1); }
+
+/* L'encre du blanc, pas la craie du noir. */
+.fin-fig {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.fin-fig .ch { stroke: #191b22; }
+.fin-fig .ch-tick { opacity: 0.3; }
+.fin-fig .ch-limb { opacity: 0.62; }
+.fin-fig .ch-hand { opacity: 0.62; }
+.fin-membre.is-scene .fin-fig .ch-limb,
+.fin-membre.is-scene .fin-fig .ch-hand { opacity: 0.95; }
+.fin-membre.is-scene .fin-fig .ch-tick { opacity: 0.44; }
+
+/* Le visage, exactement où il se pose sur la page Équipe. */
+.fin-face {
+  position: absolute;
+  left: 50%;
+  top: 17.62%;
+  height: 23.81%;
+  width: auto;
+  max-width: none;
+  transform: translateX(-50%);
+  filter: saturate(0.9) contrast(1.02);
+}
+
+/* ---------- ce qui est écrit sous la troupe ---------- */
+
+.fin-credits {
+  position: absolute;
+  left: 50%;
+  top: 69%;
+  width: min(94%, 62rem);
+  height: clamp(5.5rem, 17vh, 9rem);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.fin-carte {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: clamp(0.4rem, 1.2vh, 0.8rem);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+.fin-carte.is-on { opacity: 1; }
+
+.fin-role {
+  font-size: clamp(0.54rem, 1.15vw, 0.72rem);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(20, 22, 29, 0.5);
+}
+
+.fin-qui {
+  font-size: clamp(1.05rem, 2.7vw, 1.9rem);
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: #14161d;
+}
+
+.fin-perso {
+  font-size: clamp(0.6rem, 1.25vw, 0.82rem);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(20, 22, 29, 0.46);
+}
+
+/* Discret, et tardif : on ne referme pas la porte sur le visiteur, mais on
+   ne lui propose pas de partir avant qu'il ait regardé. */
+.fin-retour {
+  position: absolute;
+  bottom: 6%;
+  font-size: 0.58rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(20, 22, 29, 0.42);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(20, 22, 29, 0.2);
+  padding-bottom: 4px;
+  opacity: 0;
+  transition: opacity 2s ease 7s;
+}
+
+.fin.is-on .fin-retour { opacity: 1; }
+.fin-retour:hover, .fin-retour:focus-visible { color: #14161d; border-bottom-color: rgba(20, 22, 29, 0.6); }
+
+/* ---------- le carnet, depuis le bandeau ---------- */
+
+.pj-act--carnet[hidden] { display: none !important; }
+
+@media (max-width: 860px), (max-height: 620px) {
+  .lb-fiche { gap: 0.5rem; }
+  .lb-fiche-texte { font-size: 0.92rem; line-height: 1.55; }
+  .lb-etat { min-height: 2.8em; font-size: 1rem; }
+  .lb-input { font-size: 1.25rem; width: 12ch; }
+  .lb-boite { width: min(100%, calc((100dvh - 20rem) * 1.538)); }
+  .lb-aide { display: none; }
+  .fin-troupe { top: 26%; height: min(clamp(90px, 36vh, 220px), 30vw); }
+  .fin-credits { top: 70%; height: clamp(4.6rem, 22vh, 8rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fin { transition-duration: 0.4s; }
+  .fin-ciel { transition: opacity 0.4s ease 0.2s; }
+  .fin-titre { transition: opacity 1.2s ease 0.5s; }
+  .fin-carte { transition-duration: 0.25s; }
+  .fin-rang, .fin-corps, .fin-membre { transition-duration: 0.3s; }
+  .fin-retour { transition: opacity 0.6s ease 2s; }
+  .lb-mot { transition-duration: 0.3s; }
+}

@@ -1,0 +1,279 @@
+{
+  "_lisezmoi": [
+    "Les Gémeaux — le second easter egg de la scène « Le Projet », dans le désert.",
+    "Enchaînement : second clic sur Axel → la carte du ciel s'ouvre → on choisit les Gémeaux → la constellation se pose en haut à droite → cinq clics sur Castor (la figure de gauche) griffent le ciel → le sol se vide, il ne reste que la boîte → second clic sur la boîte, elle s'ouvre → trois carrés vides, trois questions → tout trouvé, l'écran passe au blanc.",
+    "Tout le texte se modifie ici. Les dessins (la roue, les constellations, la boîte) sont dans src/lib/gemeaux.js.",
+    "  reponse     ce qu'Axel dit au premier clic, avant que la roue ne s'ouvre",
+    "  roue        les libellés du calque de la roue",
+    "  constellations  les douze du zodiaque. 'id' correspond au dessin dans gemeaux.js — ne pas le changer.",
+    "                  'refus' est la ligne qui s'écrit quand on en choisit une autre que les Gémeaux.",
+    "  gemeaux.nomGauche / nomDroite  les deux noms écrits dans le ciel à côté des",
+    "               étoiles. La figure de GAUCHE est celle qu'on touche pour griffer",
+    "               le ciel : c'est Castor, le frère mortel — donc Arthur.",
+    "  gemeaux.griffes  les cinq lignes, une par clic sur la figure de gauche.",
+    "  lunchbox.cases   LES TROIS ÉNIGMES. C'est ici qu'on écrit les questions et les réponses.",
+    "      type       'roue' (on répond en choisissant une constellation) | 'numero' | 'mot'",
+    "      texte      la question, une ligne par entrée du tableau",
+    "      reponses   toutes les réponses acceptées. La comparaison ignore la casse, les accents,",
+    "                 les espaces et les articles : « Le Lion », « lion » et « LION » passent toutes.",
+    "      reussite   ce qui s'affiche quand c'est trouvé",
+    "      champ      le texte gris dans le champ de saisie (types 'numero' et 'mot' seulement)",
+    "  lunchbox.fin   l'écran blanc de la fin et son générique.",
+    "      avant    le temps (ms) avant que la première personne n'entre",
+    "      duree    combien de temps (ms) chacune reste au centre",
+    "      credits  le générique, dans l'ordre. Cet ordre est aussi celui de la",
+    "               rangée : la 2e personne se tient à côté de la 1re, etc.",
+    "      Une carte porte 'id' (l'identifiant du membre dans team.json — c'est lui",
+    "      qui apporte le nom, la figure dessinée et le portrait), 'role' (ce qu'elle",
+    "      fait) et, si besoin, 'perso' (une seconde ligne : son personnage, ou la",
+    "      suite de son rôle). Une carte sans 'id' n'a pas de figure : elle porte",
+    "      alors son propre 'nom' — c'est le cas de Film 97, en fin de générique.",
+    "Les indices des réponses de départ sont dans le carnet (src/data/carnet.json) :",
+    "  case 1 → page 26 (« un point d'interrogation à l'envers ») — réponse : le Lion",
+    "  case 2 → partout, et surtout page 45 (« onze secondes ») — réponse : 11",
+    "  case 3 → page 1 (« un carton trop grand ») — réponse : télescope",
+    "Le nombre de clics sur Castor est la constante GRIFFES dans src/scripts/gemeaux.js."
+  ],
+  "reponse": {
+    "lignes": [
+      "Il la voyait et ne se sentait plus seul.",
+      "Aujourd'hui, c'est moi qui la suis."
+    ],
+    "credit": "Axel — rôle principal, joué par Benjamin Cléry"
+  },
+  "roue": {
+    "titre": "La carte du ciel",
+    "amorce": "Laquelle ?",
+    "fermer": "Ranger la carte",
+    "juste": "gemeaux",
+    "refusDefaut": "Non. Pas celle-là."
+  },
+  "constellations": [
+    {
+      "id": "belier",
+      "nom": "Le Bélier",
+      "latin": "Aries",
+      "refus": "Mars. On n'a jamais rien filmé en mars."
+    },
+    {
+      "id": "taureau",
+      "nom": "Le Taureau",
+      "latin": "Taurus",
+      "refus": "Aldébaran. La première qu'on ait trouvée tout seuls."
+    },
+    {
+      "id": "gemeaux",
+      "nom": "Les Gémeaux",
+      "latin": "Gemini",
+      "refus": ""
+    },
+    {
+      "id": "cancer",
+      "nom": "Le Cancer",
+      "latin": "Cancer",
+      "refus": "Celle-là, on ne l'a jamais vue. Trop pâle d'ici."
+    },
+    {
+      "id": "lion",
+      "nom": "Le Lion",
+      "latin": "Leo",
+      "refus": "Il disait qu'elle ressemblait à un point d'interrogation à l'envers."
+    },
+    {
+      "id": "vierge",
+      "nom": "La Vierge",
+      "latin": "Virgo",
+      "refus": "Trop grande. On n'arrivait jamais à la tenir dans le cadre."
+    },
+    {
+      "id": "balance",
+      "nom": "La Balance",
+      "latin": "Libra",
+      "refus": "Quatre étoiles et rien au milieu. Comme d'habitude."
+    },
+    {
+      "id": "scorpion",
+      "nom": "Le Scorpion",
+      "latin": "Scorpius",
+      "refus": "Elle ne monte jamais assez haut chez nous."
+    },
+    {
+      "id": "sagittaire",
+      "nom": "Le Sagittaire",
+      "latin": "Sagittarius",
+      "refus": "La théière. Il l'appelait comme ça pour m'embêter."
+    },
+    {
+      "id": "capricorne",
+      "nom": "Le Capricorne",
+      "latin": "Capricornus",
+      "refus": "Non."
+    },
+    {
+      "id": "verseau",
+      "nom": "Le Verseau",
+      "latin": "Aquarius",
+      "refus": "L'eau qui coule. Il n'y a pas d'eau ici."
+    },
+    {
+      "id": "poissons",
+      "nom": "Les Poissons",
+      "latin": "Pisces",
+      "refus": "Deux qui tirent chacun de leur côté. Non."
+    }
+  ],
+  "gemeaux": {
+    "trouvee": "Les Gémeaux. Castor et Pollux.",
+    "amorce": "Ce n'est pas comme ça que je les appelle.",
+    "nomGauche": "ARTHUR",
+    "nomDroite": "AXEL",
+    "castor": "Arthur, la figure de gauche",
+    "pollux": "Axel, la figure de droite",
+    "pollucLigne": "Celui-là, c'est moi.",
+    "griffes": [
+      "Deux frères. Celui de gauche était mortel, l'autre non.",
+      "Quand le premier est mort, l'autre a demandé à partager sa vie pour ne pas rester seul.",
+      "On raconte ça aux enfants comme si c'était une belle histoire.",
+      "Moi on ne m'a rien demandé.",
+      "Il n'y a rien derrière. Je le savais déjà."
+    ],
+    "apres": "Il ne reste que ça."
+  },
+  "lunchbox": {
+    "label": "La boîte",
+    "lignes": [
+      "Sa boîte. Il l'avait depuis le collège, avec la fusée dessus à moitié effacée.",
+      "Elle était dans le coffre. Je ne l'ai pas mise là."
+    ],
+    "credit": "Ce qu'Arthur avait laissé dedans",
+    "amorce": "Elle n'est pas vide.",
+    "titre": "Trois choses à retrouver",
+    "fermer": "Refermer la boîte",
+    "consulter": "Le carnet",
+    "aide": "Tout est dans le carnet.",
+    "valider": "Vérifier",
+    "faux": "Non.",
+    "cases": [
+      {
+        "id": "ciel",
+        "type": "roue",
+        "nom": "Le premier carré",
+        "titre": "Celle qu'il regardait quand il ne me montrait rien",
+        "texte": [
+          "Il y en a une qu'il notait sans jamais la filmer.",
+          "Il disait qu'elle ressemblait à un point d'interrogation à l'envers."
+        ],
+        "champ": "Ouvrir la carte du ciel",
+        "question": "Laquelle ressemblait à un point d'interrogation à l'envers ?",
+        "reponses": [
+          "lion",
+          "le lion",
+          "leo"
+        ],
+        "reussite": [
+          "Le Lion. Il se levait déjà, ces soirs-là.",
+          "Il n'en a jamais parlé dans une vidéo. Pas une fois."
+        ]
+      },
+      {
+        "id": "nombre",
+        "type": "numero",
+        "nom": "Le deuxième carré",
+        "titre": "Toujours la même durée",
+        "texte": [
+          "Il l'a écrit des dizaines de fois, et une page entière rien que pour ça.",
+          "Combien de secondes, à chaque fois ?"
+        ],
+        "champ": "Un nombre",
+        "reponses": [
+          "11",
+          "onze"
+        ],
+        "reussite": [
+          "Onze. Jamais dix, jamais douze.",
+          "Il comptait à voix haute pour être sûr."
+        ]
+      },
+      {
+        "id": "objet",
+        "type": "mot",
+        "nom": "Le troisième carré",
+        "titre": "Le premier soir",
+        "texte": [
+          "Ça a commencé un 14 septembre, avec un colis livré le matin.",
+          "Qu'est-ce qu'il y avait dans le carton trop grand ?"
+        ],
+        "champ": "Un mot",
+        "reponses": [
+          "telescope",
+          "un telescope",
+          "le telescope",
+          "114",
+          "114 mm"
+        ],
+        "reussite": [
+          "Le télescope. Cent quatorze millimètres, payé à deux, en quatre fois.",
+          "Deux heures pour le régler, quarante secondes pour voir Jupiter."
+        ]
+      }
+    ],
+    "mot": {
+      "nom": "Un mot plié en quatre",
+      "texte": [
+        "Axel —",
+        "Si tu lis ça c'est que tu es allé jusqu'au bout, et je suis désolé de t'y avoir envoyé.",
+        "Ne reste pas après le lever du jour.",
+        "A."
+      ]
+    },
+    "fin": {
+      "titre": "L'Incident d'Indian Springs",
+      "sous": "",
+      "retour": "Retour au ciel",
+      "avant": 4600,
+      "duree": 4600,
+      "credits": [
+        {
+          "id": "benjamin",
+          "role": "Écrit et réalisé par",
+          "perso": "et dans le rôle d'Axel"
+        },
+        {
+          "id": "louis",
+          "role": "Avec",
+          "perso": "dans le rôle d'Arthur"
+        },
+        {
+          "id": "julie",
+          "role": "Co-écrit par"
+        },
+        {
+          "id": "thomas",
+          "role": "Co-réalisé par"
+        },
+        {
+          "id": "damien",
+          "role": "Ingénieur du son",
+          "perso": "et sound design"
+        },
+        {
+          "id": "alexis-m",
+          "role": "Effets visuels"
+        },
+        {
+          "id": "alix",
+          "role": "Graphisme et illustrations"
+        },
+        {
+          "id": "alexis-c",
+          "role": "Contenus et réseaux",
+          "perso": "et making-of"
+        },
+        {
+          "nom": "Film 97",
+          "role": "Produit par l'association"
+        }
+      ]
+    }
+  }
+}
