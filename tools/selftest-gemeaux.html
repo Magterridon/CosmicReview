@@ -117,14 +117,32 @@ async function run() {
   ok("toucher Pollux ne griffe rien", !scene.hasAttribute("data-griffe"));
   ok("mais Axel répond", /c'est moi/.test(line.textContent), line.textContent);
 
-  /* --- Castor : cinq fois --- */
+  /* --- Castor : quatre fois, et la quatrième est celle qui emporte tout --- */
   const castor = d.querySelector(".gx-twin--castor");
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 3; i++) {
     castor.click();
-    await sleep(i < 5 ? 5200 : 1200);
-    if (i < 5) ok("griffure " + i, scene.dataset.griffe === String(i), scene.dataset.griffe);
+    await sleep(5200);
+    ok("griffure " + i, scene.dataset.griffe === String(i), scene.dataset.griffe);
+    ok("rien n'arrive avant l'heure (" + i + ")", scene.dataset.fin !== "1" && posee.hidden,
+       scene.dataset.fin + " / " + posee.hidden);
   }
-  ok("cinquième griffure", scene.dataset.griffe === "5", scene.dataset.griffe);
+
+  /* La règle : la dernière cassure et la boîte sont le même instant. On
+     regarde donc tout de suite après le clic, pendant que la réplique
+     s'écrit encore — pas une fois qu'elle est finie. */
+  castor.click();
+  await sleep(120);
+  ok("quatrième griffure", scene.dataset.griffe === "4", scene.dataset.griffe);
+  ok("le sol se vide dans le même instant", scene.dataset.fin === "1", scene.dataset.fin);
+  ok("la boîte est démasquée tout de suite", !posee.hidden);
+  // En mouvement réduit la réplique s'affiche d'un coup : il n'y a plus de
+  // frappe à devancer, et la question ne se pose pas.
+  const frappe = !w.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  ok("et la réplique n'a pas eu le temps de s'écrire",
+     !frappe || line.textContent.length < 40, JSON.stringify(line.textContent));
+  await sleep(900);
+  ok("la boîte est à l'écran en moins d'une seconde",
+     getComputedStyle(posee).opacity === "1", getComputedStyle(posee).opacity);
 
   /* --- un clic trop rapide ne compte pas double --- */
   {
@@ -134,12 +152,12 @@ async function run() {
     ok("le ciel ne cède pas deux fois", scene.dataset.griffe === avant, scene.dataset.griffe);
   }
 
-  await sleep(11000);
+  await sleep(9000);
   const st2 = () => { const s = d.createElement("style"); s.textContent = "*{transition:none!important;animation:none!important}"; d.head.appendChild(s); void d.body.offsetWidth; return () => s.remove(); };
 
   ok("le ciel a cédé", scene.dataset.fin === "1", scene.dataset.fin);
   let un = st2();
-  ok("les cinq paliers de griffures sont visibles",
+  ok("tous les paliers de griffures sont visibles",
      [...d.querySelectorAll(".gx-s")].every((g) => getComputedStyle(g).opacity === "1"));
   ok("le trou blanc est là",
      getComputedStyle(d.querySelector(".gx-b5")).opacity === "1" &&
@@ -148,6 +166,26 @@ async function run() {
      getComputedStyle(d.querySelector(".pj-elements--desert")).opacity);
   ok("le compteur s'efface", getComputedStyle(d.querySelector(".pj-count")).opacity === "0");
   ok("la boîte est là", !posee.hidden && getComputedStyle(posee).opacity === "1");
+  // Être « là » ne suffit pas : sur le lac délavé, une boîte dessinée à la
+  // craie pâle serait invisible. Elle doit être de l'encre, comme les autres
+  // objets de la scène, et assez opaque pour se détacher du sol.
+  {
+    const t = getComputedStyle(posee.querySelector(".ch"));
+    ok("la boîte est de l'encre, pas de la craie",
+       t.stroke === "rgb(5, 6, 10)" && t.fill === "rgb(5, 6, 10)", t.stroke + " / " + t.fill);
+    ok("la boîte se détache du sol", parseFloat(t.opacity) > 0.4, t.opacity);
+    const r = posee.getBoundingClientRect();
+    ok("la boîte occupe une vraie place", r.width > 40 && r.height > 30,
+       Math.round(r.width) + "x" + Math.round(r.height));
+    const hit = d.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+    ok("on peut cliquer au milieu de la boîte",
+       !!(hit && hit.closest && hit.closest(".gx-boite")), hit && hit.getAttribute("class"));
+    const fusee = posee.querySelector(".ch-faint");
+    ok("le décalque de la fusée a survécu",
+       !!fusee && getComputedStyle(fusee).display !== "none" &&
+       parseFloat(getComputedStyle(fusee).opacity) > 0.05,
+       fusee && getComputedStyle(fusee).opacity);
+  }
   un();
   ok("l'amorce dit ce qui reste", /ne reste que ça/i.test(hint.textContent), hint.textContent);
 

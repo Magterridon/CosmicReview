@@ -20,7 +20,7 @@ document.getElementById("f").addEventListener("load", async () => {
   if (K !== "roue") {
     el('.gx-secteur[data-cons="gemeaux"]').click(); await sleep(3300);
     if (K !== "gemini") {
-      for (let k = 0; k < 5; k++) { el(".gx-twin--castor").click(); await sleep(800); }
+      for (let k = 0; k < 4; k++) { el(".gx-twin--castor").click(); await sleep(800); }
       await sleep(9000);
       if (K !== "fin") { el(".gx-boite").click(); await sleep(250); el(".gx-boite").click(); await sleep(800); }
       if (K === "case") { el('.gx-case-btn[data-case="nombre"]').click(); await sleep(400); }

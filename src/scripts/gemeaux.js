@@ -5,8 +5,10 @@
  * on y cherche la constellation dont il parle sans la nommer. Les Gémeaux
  * trouvés, ils viennent se poser en haut à droite — deux figures debout, la
  * main dans la main. Castor, celui de gauche, est le frère mortel : chaque
- * fois qu'on le touche, la pellicule se griffe un peu plus. Au cinquième, il
- * n'y a plus de ciel de ce côté-là, plus rien au sol, et une boîte.
+ * fois qu'on le touche, la pellicule se griffe un peu plus. Au quatrième, et
+ * dans le même instant : plus de ciel de ce côté-là, plus rien au sol, et une
+ * boîte. C'est la règle, et c'est la seule — la boîte ne se fait pas
+ * attendre, elle arrive avec la dernière cassure.
  *
  * Dans la boîte, trois carrés vides. Trois questions dont les réponses sont
  * dans le carnet — qui reste consultable à tout moment, y compris d'ici.
@@ -16,7 +18,7 @@
  */
 
 /** Combien de fois il faut toucher Castor pour que le ciel cède. */
-const GRIFFES = 5;
+const GRIFFES = 4;
 
 /** Le temps mort après un clic : la bande ne saute pas deux fois de suite. */
 const REPOS = 620;
@@ -50,7 +52,7 @@ export function initGemeaux(scene, { dire, busy, amorce, carnet, montrerCarnet, 
   const vide = { ouvrir() { return false; }, fermer() {}, ouvert: () => false };
   if (!scene) return vide;
 
-  const snd = audio || { playLoop() {}, playFx() {} };
+  const snd = audio || { playLoop() {} };
 
   const source = scene.querySelector("#gx-data");
   const roue = scene.querySelector(".gx");
@@ -258,7 +260,6 @@ export function initGemeaux(scene, { dire, busy, amorce, carnet, montrerCarnet, 
     if (t - dernier < REPOS) return;
     dernier = t;
 
-    snd.playFx("scratch");
     griffe = Math.min(GRIFFES, griffe + 1);
     scene.setAttribute("data-griffe", String(griffe));
 
@@ -269,14 +270,16 @@ export function initGemeaux(scene, { dire, busy, amorce, carnet, montrerCarnet, 
       window.setTimeout(() => scene.classList.remove("is-griffe"), 300);
     }
 
-    const ligne = G.gemeaux.griffes[griffe - 1];
-    const p = dire ? dire([ligne], "") : Promise.resolve();
-
+    // La dernière cassure et la boîte sont le même instant : on vide le sol
+    // avant d'écrire la réplique, sans quoi la boîte attendrait la fin de la
+    // frappe pour arriver.
     if (griffe >= GRIFFES) {
       fini = true;
-      await p;
-      window.setTimeout(vider, reduce.matches ? 300 : 1500);
+      vider();
     }
+
+    const ligne = G.gemeaux.griffes[griffe - 1];
+    if (dire) dire([ligne], "");
   }
 
   /** Le sol se vide. Il ne reste que la boîte. */
@@ -386,7 +389,6 @@ export function initGemeaux(scene, { dire, busy, amorce, carnet, montrerCarnet, 
     scene.setAttribute("data-acheve", "1");
     const live = scene.querySelector("#pj-live");
     if (live) live.textContent = G.lunchbox.fin.titre;
-    snd.playLoop("fin");
     generique();
   }
 
@@ -421,13 +423,14 @@ export function initGemeaux(scene, { dire, busy, amorce, carnet, montrerCarnet, 
     });
 
     // La dernière carte s'efface, mais la troupe reste : l'équipe entière
-    // sous le titre, c'est la dernière image du site. La musique de fin,
-    // elle, s'installe bien plus tôt — dès `blanchir()`, à l'instant même
-    // où l'écran blanc et le titre apparaissent, pas ici.
+    // sous le titre, c'est la dernière image du site. C'est là, sur cette
+    // dernière page du générique, que la musique de fin s'installe — en
+    // fondu depuis l'ambiance du désert, comme les autres transitions.
     minuteries.push(window.setTimeout(() => {
       cartes.forEach((c) => c.classList.remove("is-on"));
       figures.forEach((g) => { g.classList.remove("is-scene"); g.classList.add("is-rangee"); });
       caler(figures.length - 1);
+      snd.playLoop("fin");
     }, avant + cartes.length * duree));
 
     /**

@@ -73,6 +73,49 @@ async function run() {
   ok("aucun bouton de retour n'existe", !d.querySelector("[data-rewind]"));
   ok("aucune porte de secours n'existe", !d.querySelector("[data-end]"));
 
+  /* --- les objets sont des ombres, plus des traits de craie --- */
+  {
+    const gel = d.createElement("style");
+    gel.textContent = "*{transition:none!important;animation:none!important}";
+    d.head.appendChild(gel);
+    void d.body.offsetWidth;
+    const trait = getComputedStyle(byId("axel").querySelector(".ch"));
+    ok("les objets sont de l'encre, pas de la craie",
+       trait.stroke === "rgb(5, 6, 10)" && trait.fill === "rgb(5, 6, 10)",
+       trait.stroke + " / " + trait.fill);
+    // la valeur calculée arrive sous la forme « calc(12px) » : on en extrait
+    // le nombre plutôt que de la lire telle quelle.
+    const epaisseur = parseFloat((trait.strokeWidth.match(/[\d.]+/) || [0])[0]);
+    ok("l'épaisseur fait un corps, pas un trait", epaisseur >= 6, trait.strokeWidth);
+    ok("le grain de craie a disparu",
+       [...byId("axel").querySelectorAll(".ch-tick")].every((e) => getComputedStyle(e).display === "none"));
+    ok("la silhouette est floue au repos",
+       /blur/.test(getComputedStyle(byId("axel").querySelector(".pj-art")).filter),
+       getComputedStyle(byId("axel").querySelector(".pj-art")).filter);
+    ok("la fenêtre garde sa lumière",
+       getComputedStyle(d.querySelector(".pj-el--fenetre .pj-pane")).fill === "rgb(246, 178, 92)",
+       getComputedStyle(d.querySelector(".pj-el--fenetre .pj-pane")).fill);
+    ok("le châssis de la fenêtre reste un contour",
+       getComputedStyle(d.querySelector(".pj-el--fenetre .ch")).fill === "none",
+       getComputedStyle(d.querySelector(".pj-el--fenetre .ch")).fill);
+    ok("le témoin rouge de la caméra survit",
+       getComputedStyle(d.querySelector(".pj-el--camera .pj-rec")).fill === "rgb(212, 52, 42)",
+       getComputedStyle(d.querySelector(".pj-el--camera .pj-rec")).fill);
+    gel.remove();
+  }
+
+  /* --- le tableau noir de l'Équipe garde sa craie : rien n'a débordé --- */
+  {
+    const eq = d.querySelector(".scene--equipe .ch") || d.querySelector(".cm .ch");
+    if (eq) {
+      const cr = getComputedStyle(eq);
+      ok("la craie de l'Équipe est intacte", cr.fill === "none" && cr.stroke !== "rgb(5, 6, 10)",
+         cr.fill + " / " + cr.stroke);
+    } else {
+      ok("la craie de l'Équipe est intacte", true, "scène absente du document");
+    }
+  }
+
   /* --- ce qui se cache derrière les objets ne gêne pas la scène --- */
   ok("le carnet dort", d.querySelector(".cn").hidden && getComputedStyle(d.querySelector(".cn")).display === "none");
   ok("la cassette dort", d.querySelector(".cs").hidden && getComputedStyle(d.querySelector(".cs")).display === "none");
@@ -109,9 +152,13 @@ async function run() {
      getComputedStyle(d.querySelector(".pj-sky")).filter);
   ok("le désert est délavé", getComputedStyle(d.querySelector(".pj-viewport")).filter !== "none",
      getComputedStyle(d.querySelector(".pj-viewport")).filter);
-  ok("les traits du désert sont pâlis",
-     parseFloat(getComputedStyle(d.querySelector(".pj-el--jeep .ch")).opacity) < 0.5,
+  ok("les ombres du désert sont plus minces qu'en pleine nuit",
+     parseFloat(getComputedStyle(d.querySelector(".pj-el--jeep .ch")).opacity) < 0.7,
      getComputedStyle(d.querySelector(".pj-el--jeep .ch")).opacity);
+  ok("le panneau garde son écriture lisible",
+     d.querySelectorAll(".pj-el--panneau .pj-signtext text").length === 6 &&
+     getComputedStyle(d.querySelector(".pj-el--panneau .pj-signtext text")).fill !== "none",
+     getComputedStyle(d.querySelector(".pj-el--panneau .pj-signtext text")).fill);
   ok("le titre du film n'est plus dans le désert", !d.querySelector(".pj-filmtitle"));
   unfreeze();
 

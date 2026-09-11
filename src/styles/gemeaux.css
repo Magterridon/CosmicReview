@@ -277,11 +277,13 @@
   transition: opacity 0.55s ease;
 }
 
+/* Quatre coups, quatre paliers. Le dessin en compte cinq : le troisième coup
+   en découvre deux d'un coup, et ça se lit comme une accélération — la
+   déchirure prend de la vitesse juste avant de tout emporter. */
 .scene--projet[data-griffe="1"] .gx-s1,
 .scene--projet[data-griffe="2"] .gx-s1, .scene--projet[data-griffe="2"] .gx-s2,
-.scene--projet[data-griffe="3"] .gx-s1, .scene--projet[data-griffe="3"] .gx-s2, .scene--projet[data-griffe="3"] .gx-s3,
-.scene--projet[data-griffe="4"] .gx-s1, .scene--projet[data-griffe="4"] .gx-s2, .scene--projet[data-griffe="4"] .gx-s3, .scene--projet[data-griffe="4"] .gx-s4,
-.scene--projet[data-griffe="5"] .gx-s1, .scene--projet[data-griffe="5"] .gx-s2, .scene--projet[data-griffe="5"] .gx-s3, .scene--projet[data-griffe="5"] .gx-s4, .scene--projet[data-griffe="5"] .gx-s5 {
+.scene--projet[data-griffe="3"] .gx-s1, .scene--projet[data-griffe="3"] .gx-s2, .scene--projet[data-griffe="3"] .gx-s3, .scene--projet[data-griffe="3"] .gx-s4,
+.scene--projet[data-griffe="4"] .gx-s1, .scene--projet[data-griffe="4"] .gx-s2, .scene--projet[data-griffe="4"] .gx-s3, .scene--projet[data-griffe="4"] .gx-s4, .scene--projet[data-griffe="4"] .gx-s5 {
   opacity: 1;
 }
 
@@ -289,20 +291,19 @@
    premiers ne sont pas encore tout à fait blancs — la couche s'amincit avant
    de partir. */
 .scene--projet[data-griffe="1"] .gx-b1 { opacity: 0.5; }
-.scene--projet[data-griffe="2"] .gx-b2 { opacity: 0.66; }
-.scene--projet[data-griffe="3"] .gx-b3 { opacity: 0.8; }
-.scene--projet[data-griffe="4"] .gx-b4 { opacity: 0.92; }
-.scene--projet[data-griffe="5"] .gx-b5 { opacity: 1; }
+.scene--projet[data-griffe="2"] .gx-b2 { opacity: 0.7; }
+.scene--projet[data-griffe="3"] .gx-b3 { opacity: 0.88; }
+.scene--projet[data-griffe="4"] .gx-b5 { opacity: 1; }
 
 /* 🔒 Le logotype ne se déforme pas et ne se laisse pas entamer : plutôt que
    de le laisser couper en deux par la brûlure, on l'éteint pendant que le
    ciel s'en va. La chaîne s'arrête avant le reste. */
-.scene--projet[data-griffe="3"] .pj-wordmark { opacity: 0.4; }
-.scene--projet[data-griffe="4"] .pj-wordmark,
-.scene--projet[data-griffe="5"] .pj-wordmark { opacity: 0; }
+.scene--projet[data-griffe="2"] .pj-wordmark { opacity: 0.4; }
+.scene--projet[data-griffe="3"] .pj-wordmark,
+.scene--projet[data-griffe="4"] .pj-wordmark { opacity: 0; }
 
 /* Le dernier palier ne recule plus : la lampe passe au travers. */
-.scene--projet[data-griffe="5"] .gx-pellicule { transition: filter 2.6s ease; filter: brightness(1.25); }
+.scene--projet[data-griffe="4"] .gx-pellicule { transition: filter 2.6s ease; filter: brightness(1.25); }
 
 /* La secousse : la bande saute dans le couloir. */
 .scene--projet.is-griffe .pj-viewport { animation: gx-saut 0.24s steps(3) 1; }
@@ -342,12 +343,17 @@
   background: none;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 2.2s ease 1.8s;
+  /* Pas d'attente : la boîte arrive avec la dernière cassure, dans le même
+     instant. Le demi-temps de fondu est là pour qu'elle ne claque pas, pas
+     pour la faire désirer. */
+  transition: opacity 0.45s ease;
 }
 
 .scene--projet[data-fin="1"] .gx-boite { opacity: 1; }
 .gx-boite .gx-draw { pointer-events: none; }
-.gx-boite:hover .ch, .gx-boite:focus-visible .ch { stroke: var(--chalk-or, #e8c07a); }
+/* La boîte parle la langue des ombres (voir `projet.css`) : au survol elle ne
+   s'allume pas, elle se précise — comme les autres objets de la scène. Le
+   cadre de focus, lui, reste franc : il est là pour le clavier. */
 .gx-boite:focus-visible { outline: 1px solid rgba(232, 192, 122, 0.5); }
 
 /* ---------- la boîte ouverte ---------- */
@@ -456,7 +462,7 @@
   .gx-gemini { transition-duration: 0.3s; }
   .gx-s, .gx-b { transition-duration: 0.2s; }
   .scene--projet[data-fin="1"] .pj-elements--desert { transition-duration: 0.3s; }
-  .gx-boite { transition: opacity 0.3s ease 0.2s; }
+  .gx-boite { transition: opacity 0.2s ease; }
 }
 
 /* ============================================================

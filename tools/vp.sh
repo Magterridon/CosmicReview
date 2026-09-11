@@ -64,7 +64,7 @@ cat > preview/__gx.html <<'HTMLEOF'
 <style>html,body{margin:0;background:#000}iframe{border:0;display:block}</style>
 <script>
 // Amène la scène à une étape des Gémeaux et la fige, pour capture d'écran.
-//   __gx.html?w=1440&h=900&e=roue|gemini|g1..g5|fin|boite|case|blanc
+//   __gx.html?w=1440&h=900&e=roue|gemini|g1..g4|fin|boite|case|blanc
 const q=new URLSearchParams(location.search);
 const W=+q.get('w')||1440,H=+q.get('h')||900,E=q.get('e')||'roue';
 document.write('<iframe id="f" src="/le-projet/" width="'+W+'" height="'+H+'"></iframe>');
@@ -80,9 +80,9 @@ document.getElementById('f').addEventListener('load',async()=>{
   q1('.pj-el--axel-seul').click(); await sleep(900);
   if(E!=='roue'){
     q1('.gx-secteur[data-cons="gemeaux"]').click(); await sleep(3400);
-    const n = ['fin','boite','case','blanc'].includes(E) ? 5 : (E[0]==='g' ? +E[1] : 0);
+    const n = ['fin','boite','case','blanc'].includes(E) ? 4 : (E[0]==='g' ? +E[1] : 0);
     for(let k=0;k<n;k++){ q1('.gx-twin--castor').click(); await sleep(900); }
-    if(n===5) await sleep(9000);
+    if(n===4) await sleep(9000);
     if(E==='boite'||E==='case'||E==='blanc'){
       q1('.gx-boite').click(); await sleep(300); q1('.gx-boite').click(); await sleep(900);
     }

@@ -272,10 +272,203 @@
 
 .chf { stroke: none; }
 
+/* ---------- les silhouettes ----------
+
+ Les objets cliquables ne sont plus tracés à la craie : ils sont faits de la
+ même encre que le bâtiment et la haie derrière eux, c'est-à-dire du noir
+ posé sur la nuit. On ne les voit qu'au bord, là où le ciel passe derrière,
+ et à un liseré froid qui en fait le tour — une chose qui arrête la lumière
+ sans en renvoyer.
+
+ Un seul réglage commande tout : `--pj-ombre-force`, de 0 (on ne voit plus
+ rien) à 1 (franc et net). Les épaisseurs, le flou, l'opacité et le liseré
+ s'y accrochent tous.
+
+ La boîte du repas, à la toute fin, est du même bois : elle n'est pas un
+ `.pj-el` (elle appartient aux Gémeaux) mais c'est un objet de la scène, et
+ le seul qui reste. D'où le `:is(.pj-el, .gx-boite)` partout ici.
+
+ Le trait à la craie reste la langue de la scène Équipe et du carnet : ces
+ règles-ci ne sortent jamais de ces deux sélecteurs.
+ --------------------------------------------------------------------------- */
+
+.scene--projet {
+  --pj-ombre-force: 0.62;
+  /* un cran plus noir que le bâtiment (#0a0a0d) : les objets sont devant */
+  --pj-ombre: #05060a;
+  --pj-liseré: rgba(166, 188, 214, calc(0.34 * var(--pj-ombre-force)));
+  /* l'épaisseur qui transforme un trait en corps (unités du viewBox) */
+  --pj-masse: calc(11 * var(--cw, 1));
+  --pj-flou: 1.2px;
+  /* l'opacité de l'encre, partagée par tous les traits d'un même objet */
+  --pj-encre-op: calc(0.4 + 0.6 * var(--pj-ombre-force));
+}
+
+.pj-art {
+  /* Le flou arrondit les angles du tracé tremblé : ce n'est plus un dessin,
+     c'est une masse. Le liseré, lui, est ce qui empêche la silhouette de
+     disparaître tout à fait quand elle passe devant le sol, aussi noir. */
+  filter: blur(var(--pj-flou)) drop-shadow(0 0 2px var(--pj-liseré));
+  /* Elles respirent. Très peu, très lentement — assez pour qu'on ne soit
+     jamais sûr d'avoir vu bouger quelque chose. */
+  animation: pj-souffle 13s ease-in-out infinite;
+  animation-delay: calc(var(--o, 0s) * -3);
+  transition: filter 700ms ease, opacity 700ms ease;
+}
+
+@keyframes pj-souffle {
+  0%, 100% { opacity: 0.88; }
+  50%      { opacity: 1; }
+}
+
+:is(.pj-el, .gx-boite) .ch {
+  /* Les cercles (les têtes) se remplissent ; les segments, eux, n'ont pas de
+     surface — pour eux c'est l'épaisseur du trait qui fait le corps. */
+  fill: var(--pj-ombre);
+  stroke: var(--pj-ombre);
+  stroke-width: var(--pj-masse);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: var(--pj-encre-op);
+}
+
+/* La texture perlée le long des membres était la signature de la craie :
+   une ombre n'a pas de grain. C'est la seule chose qu'on retire. */
+:is(.pj-el, .gx-boite) .ch-tick { display: none; }
+
+/* Les membres et les mains portaient leurs propres épaisseurs de craie ;
+   dans une masse, tout a le même poids. */
+:is(.pj-el, .gx-boite) .ch-limb,
+:is(.pj-el, .gx-boite) .ch-hand {
+  stroke-width: var(--pj-masse);
+  opacity: var(--pj-encre-op);
+}
+
+/* La structure secondaire — l'objectif de la caméra, le chercheur du
+   télescope, la vitre de la jeep, les croisillons — reste, mais plus mince :
+   c'est ce qui empêche chaque objet de finir en pâté. */
+:is(.pj-el, .gx-boite) .ch-doodle,
+:is(.pj-el, .gx-boite) .ch-hatch {
+  stroke-width: calc(var(--pj-masse) * 0.5);
+  opacity: var(--pj-encre-op);
+}
+
+/* L'épaisseur est en unités de viewBox, et chaque objet a le sien : onze
+   unités font un corps sur une figure haute de trois cents, et bouchent une
+   fenêtre large de cent-quatre-vingts. D'où une valeur par objet, réglée sur
+   ce que chacun doit encore laisser voir. */
+.pj-el--arthur,
+.pj-el--axel,
+.pj-el--axel-seul { --pj-masse: calc(12 * var(--cw, 1)); }
+.pj-el--telescope { --pj-masse: calc(8 * var(--cw, 1)); }
+.pj-el--camera    { --pj-masse: calc(7 * var(--cw, 1)); }
+.pj-el--jeep      { --pj-masse: calc(7 * var(--cw, 1)); }
+.pj-el--panneau   { --pj-masse: calc(5 * var(--cw, 1)); }
+.pj-el--carnet    { --pj-masse: calc(3 * var(--cw, 1)); }
+/* la fenêtre garde ses croisillons : c'est par eux qu'on lit qu'elle est
+   une fenêtre, et derrière eux qu'on lit qu'il y a quelqu'un */
+.pj-el--fenetre   { --pj-masse: calc(3.4 * var(--cw, 1)); }
+/* la boîte du repas : une petite tôle pleine, posée là */
+.gx-boite         { --pj-masse: calc(6 * var(--cw, 1)); }
+
+/* ---------- ce qui garde sa lumière ---------- */
+
+/* La fenêtre est la source : elle ne devient pas une ombre, c'est elle qui
+   en fabrique. Son châssis reste donc un contour — le remplir éteindrait la
+   pièce — et ce sont ses croisillons qui passent en noir devant la lumière. */
+.pj-el--fenetre .ch {
+  fill: none;
+  opacity: calc(0.55 + 0.45 * var(--pj-ombre-force));
+}
+
+/* Le carnet est par terre, dans la flaque de lumière de la fenêtre. Les deux
+   pages n'ont pas la même valeur : sans ça, un livre ouvert n'est qu'une
+   bosse noire. */
+.pj-paper { fill: #0b0c11; opacity: 0.95; }
+.pj-paper--lit { fill: #191a21; }
+/* le petit croquis sur la page : à l'encre, il ne ferait qu'un trou */
+.pj-el--carnet .ch-or { display: none; }
+
+/* Sur la tôle noire de la boîte, une seule marque : la fusée à moitié
+   effacée. C'est le seul `ch-tick` qu'on garde, et il passe en clair — un
+   décalque usé, pas un trait de craie. */
+.gx-boite .ch-faint {
+  display: inline;
+  fill: none;
+  stroke: #cfd4dc;
+  stroke-width: calc(var(--pj-masse) * 0.3);
+  opacity: calc(0.12 + 0.18 * var(--pj-ombre-force));
+}
+
+/* Le panneau devient une plaque pleine, et c'est l'écriture qui accroche la
+   lumière — comme un vrai panneau pris dans des phares. Elle dit où l'on est :
+   elle garde donc un bord net là où tout le reste est flou. */
+.pj-el--panneau .pj-art { --pj-flou: 0.45px; }
+
+.pj-el--panneau .pj-signtext text {
+  fill: #d9d5cb;
+  opacity: calc(0.35 + 0.45 * var(--pj-ombre-force));
+}
+
+/* Un point rouge dans le noir. C'est tout ce qui dit que ça tourne. */
+.pj-el--camera .pj-rec,
+.pj-el--camera .pj-lamp { opacity: 1; }
+
+/* ---------- on les touche ---------- */
+
+/* Rien ne s'allume : la chose se précise, simplement. Le flou tombe, le
+   liseré se resserre. C'est le seul retour visuel, et il suffit. */
+:is(.pj-el, .gx-boite):hover .pj-art,
+:is(.pj-el, .gx-boite):focus-visible .pj-art,
+.pj-el.is-on .pj-art {
+  filter: blur(0.3px)
+          drop-shadow(0 0 3px rgba(176, 198, 224, calc(0.5 * var(--pj-ombre-force))));
+  animation-play-state: paused;
+  opacity: 1;
+}
+
+.pj-el:focus-visible { outline: none; }
+:is(.pj-el, .gx-boite):focus-visible .pj-art {
+  filter: blur(0.3px) drop-shadow(0 0 5px rgba(232, 192, 122, 0.7));
+}
+
+/* ---------- elles ne se dessinent plus : elles sortent du noir ---------- */
+
+.scene--projet.is-drawing .pj-el .pj-draw {
+  animation: pj-sortir 2.2s ease-out both;
+  animation-delay: var(--o, 0s);
+}
+
+/* le tracé trait par trait n'a plus de sens sur une masse */
+.scene--projet.is-drawing .pj-el .ch-draw {
+  stroke-dasharray: none;
+  animation: none;
+}
+
+.scene--projet.is-drawing .pj-el .chf { animation: none; }
+
+@keyframes pj-sortir {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* et elles ne se dé-tracent plus non plus : elles se retirent */
+.scene--projet.is-melting .pj-elements--cour .pj-el .ch-draw {
+  stroke-dasharray: none;
+  animation: none;
+}
+
+.scene--projet.is-melting .pj-elements--cour .pj-el .pj-draw {
+  animation: pj-vanish 2.8s ease-in both;
+  animation-delay: calc(var(--o, 0s) * 0.45);
+}
+
 /* La signalétique du panneau reste du texte, pas du trait : elle doit rester
    lisible et sélectionnable. */
+/* Sur le sol délavé du désert, la craie pâle ne se verrait plus : la
+   signalétique passe à l'encre, comme le reste. */
 .pj-signtext text {
-  fill: var(--chalk, #efe7d8);
+  fill: #1a1b21;
   stroke: none;
   font-family: var(--font);
   font-size: 12px;
@@ -427,13 +620,12 @@
   transition: filter 4s ease;
 }
 
-/* Les objets du désert ne se tracent pas : ils sont déjà là, et déjà pâlis.
-   Rien n'est rompu — c'est la craie qui a perdu de sa force. */
+/* Les objets du désert ne sortent pas du noir : ils sont déjà là. Le grand
+   jour délavé les éclaircit de lui-même (le filtre du cadre remonte les
+   noirs), et on les baisse encore : à midi, une ombre est plus mince. */
 .scene--projet[data-state="desert"] .pj-elements--desert .ch {
-  opacity: 0.42;
+  opacity: calc(0.28 + 0.42 * var(--pj-ombre-force));
 }
-
-.scene--projet[data-state="desert"] .pj-elements--desert .ch-tick { opacity: 0.2; }
 
 .scene--projet[data-state="desert"] .pj-elements--desert {
   animation: pj-emerge 5s ease-out 1.6s both;
@@ -443,7 +635,20 @@
 
 .scene--projet[data-state="desert"] .pj-el:hover .ch,
 .scene--projet[data-state="desert"] .pj-el:focus-visible .ch,
-.scene--projet[data-state="desert"] .pj-el.is-on .ch { opacity: 0.92; }
+.scene--projet[data-state="desert"] .pj-el.is-on .ch { opacity: 0.9; }
+
+/* Le désert n'a pas de ciel noir derrière pour détourer les formes : le
+   liseré froid n'y sert à rien, et une ombre portée sombre les assied sur
+   le sol pâle. */
+.scene--projet[data-state="desert"] .pj-art {
+  filter: blur(var(--pj-flou)) drop-shadow(0 1px 2px rgba(28, 26, 22, 0.28));
+}
+
+.scene--projet[data-state="desert"] .pj-el:hover .pj-art,
+.scene--projet[data-state="desert"] .pj-el:focus-visible .pj-art,
+.scene--projet[data-state="desert"] .pj-el.is-on .pj-art {
+  filter: blur(0.3px) drop-shadow(0 1px 3px rgba(28, 26, 22, 0.42));
+}
 
 /* ---------- le bandeau de transcription ---------- */
 
@@ -698,6 +903,10 @@
 /* ---------- petits écrans ---------- */
 
 @media (max-width: 700px), (max-height: 520px) {
+  /* Les objets sont trois fois plus petits ici : un flou en pixels y
+     pèserait trois fois plus lourd. On le rend au dessin. */
+  .scene--projet { --pj-flou: 0.55px; }
+
   /* On ne réorganise pas la scène : on l'agrandit et on la parcourt du
      doigt, comme le désert de la page Équipe. */
   .pj-viewport {
@@ -751,6 +960,8 @@
   .pj-trail { animation: none; stroke-dashoffset: 0; }
   .pj-head { animation: none; opacity: 1; }
   .pj-el .pj-draw { animation: none !important; }
+  /* les ombres ne respirent plus : elles se tiennent tranquilles */
+  .pj-art { animation: none; }
   .pj-rec-dot { animation: none; }
   .pj-line.is-typing::after { animation: none; }
   /* Le fondu reste — c'est le pivot du récit — mais raccourci, et sans

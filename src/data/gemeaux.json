@@ -1,7 +1,7 @@
 {
   "_lisezmoi": [
     "Les Gémeaux — le second easter egg de la scène « Le Projet », dans le désert.",
-    "Enchaînement : second clic sur Axel → la carte du ciel s'ouvre → on choisit les Gémeaux → la constellation se pose en haut à droite → cinq clics sur Castor (la figure de gauche) griffent le ciel → le sol se vide, il ne reste que la boîte → second clic sur la boîte, elle s'ouvre → trois carrés vides, trois questions → tout trouvé, l'écran passe au blanc.",
+    "Enchaînement : second clic sur Axel → la carte du ciel s'ouvre → on choisit les Gémeaux → la constellation se pose en haut à droite → quatre clics sur Castor (la figure de gauche) griffent le ciel → au quatrième, le sol se vide et la boîte est là → second clic sur la boîte, elle s'ouvre → trois carrés vides, trois questions → tout trouvé, l'écran passe au blanc.",
     "Tout le texte se modifie ici. Les dessins (la roue, les constellations, la boîte) sont dans src/lib/gemeaux.js.",
     "  reponse     ce qu'Axel dit au premier clic, avant que la roue ne s'ouvre",
     "  roue        les libellés du calque de la roue",
@@ -32,7 +32,7 @@
     "  case 1 → page 26 (« un point d'interrogation à l'envers ») — réponse : le Lion",
     "  case 2 → partout, et surtout page 45 (« onze secondes ») — réponse : 11",
     "  case 3 → page 1 (« un carton trop grand ») — réponse : télescope",
-    "Le nombre de clics sur Castor est la constante GRIFFES dans src/scripts/gemeaux.js."
+    "Le nombre de clics sur Castor est la constante GRIFFES dans src/scripts/gemeaux.js : il doit y avoir autant de lignes dans 'griffes' que de clics."
   ],
   "reponse": {
     "lignes": [
@@ -113,7 +113,7 @@
       "id": "verseau",
       "nom": "Le Verseau",
       "latin": "Aquarius",
-      "refus": "L'eau qui coule. Il n'y en a pas ici..."
+      "refus": "L'eau qui coule. Il n'y a pas d'eau ici."
     },
     {
       "id": "poissons",
@@ -134,15 +134,15 @@
       "Deux frères. Celui de gauche était mortel, l'autre non.",
       "Quand le premier est mort, l'autre a demandé à partager sa vie pour ne pas rester seul.",
       "Moi on ne m'a rien demandé.",
-      "Ne partage pas ma mort, efface moi"
+      "Il n'y a rien derrière. Je le savais déjà."
     ],
     "apres": "Il ne reste que ça."
   },
   "lunchbox": {
     "label": "La boîte",
     "lignes": [
-      "Sa boîte E.T. Il l'avait depuis le collège. Il est à moitié effacé dessus.",
-      "Elle était dans le coffre."
+      "Sa boîte. Il l'avait depuis le collège, avec la fusée dessus à moitié effacée.",
+      "Elle était dans le coffre. Je ne l'ai pas mise là."
     ],
     "credit": "Ce qu'Arthur avait laissé dedans",
     "amorce": "Elle n'est pas vide.",
@@ -163,15 +163,15 @@
           "Il disait qu'elle ressemblait à un point d'interrogation à l'envers."
         ],
         "champ": "Ouvrir la carte du ciel",
-        "question": "Tu y est maintenant... ",
+        "question": "Laquelle ressemblait à un point d'interrogation à l'envers ?",
         "reponses": [
-          "scorpion",
-          "le scorpion",
-          "scorpio"
+          "lion",
+          "le lion",
+          "leo"
         ],
         "reussite": [
-          "On aurait enfin pu l'observer",
-          "Tu me la décrira quand nous nous reverrons..."
+          "Le Lion. Il se levait déjà, ces soirs-là.",
+          "Il n'en a jamais parlé dans une vidéo. Pas une fois."
         ]
       },
       {
@@ -180,19 +180,17 @@
         "nom": "Le deuxième carré",
         "titre": "Toujours la même durée",
         "texte": [
-          "C'est comme si le ciel s'ouvrait et se refermait",
-          "Cela fait maintenant 4 épisodes que je veux t'en parler.",
-          "Je ne comprends toujours pas ce qu'il se passe."
+          "Il l'a écrit des dizaines de fois, et une page entière rien que pour ça.",
+          "Combien de secondes, à chaque fois ?"
         ],
         "champ": "Un nombre",
         "reponses": [
           "11",
-          "onze",
-          "onze secondes"
+          "onze"
         ],
         "reussite": [
           "Onze. Jamais dix, jamais douze.",
-          "Il n'y a rien qui peut expliquer cela."
+          "Il comptait à voix haute pour être sûr."
         ]
       },
       {
@@ -201,9 +199,8 @@
         "nom": "Le troisième carré",
         "titre": "Le premier soir",
         "texte": [
-          "Toujours la tête dans le ciel,",
-          "Nous avons enfin pu l'observer,",
-          "Il est la depuis le début."
+          "Ça a commencé un 14 septembre, avec un colis livré le matin.",
+          "Qu'est-ce qu'il y avait dans le carton trop grand ?"
         ],
         "champ": "Un mot",
         "reponses": [
@@ -214,9 +211,8 @@
           "114 mm"
         ],
         "reussite": [
-          "Deux heures pour le régler, quarante secondes pour voir Jupiter.",
-          "On a toujours eu la tête dans les étoiles",
-          "Ne t'en approche pas trop près"
+          "Le télescope. Cent quatorze millimètres, payé à deux, en quatre fois.",
+          "Deux heures pour le régler, quarante secondes pour voir Jupiter."
         ]
       }
     ],
