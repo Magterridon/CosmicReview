@@ -855,10 +855,10 @@
       "type": "obs",
       "date": "31.03",
       "lieu": "La cour",
-      "titre": "",
+      "titre": "ONZE SECONDES",
       "meta": [
-        "Ciel : dégagé",
-        "Lune : 62 %"
+        "Ciel : 0",
+        "Lune : 0 %"
       ],
       "notes": [
         "onze secondes",
@@ -868,9 +868,9 @@
         "onze secondes",
         "onze secondes"
       ],
-      "croquis": "",
+      "croquis": "horizon",
       "main": "arthur",
-      "raye": false
+      "raye": true
     },
     {
       "n": 46,
@@ -894,7 +894,7 @@
     {
       "n": 47,
       "type": "obs",
-      "date": "05.04",
+      "date": "07.04",
       "lieu": "La cour",
       "titre": "Neuf jours",
       "meta": [
@@ -904,11 +904,13 @@
       "notes": [
         "Neuf jours avant le départ.",
         "Je relis les coordonnées de la page 36 tous les soirs. Je les connais par cœur.",
-        "Ce n'est pas là qu'on va. C'est à onze kilomètres."
+        "Ce n'est pas là qu'on va. C'est à onze kilomètres.",
+        "Encore onze... ça fait maintenant une semaine, je ne comprends pas",
+        "Je ne vois plus que ça"
       ],
       "croquis": "grille",
       "main": "arthur",
-      "raye": false
+      "raye": true
     },
     {
       "n": 48,
